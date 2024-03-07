@@ -1,6 +1,9 @@
 #Asset Files
 /Content/Assets
-
+/Content/Maps
+/Content/ParagonAurora
+/Content/ParagonMinions
+/Content/StarterContent
 
 # Visual Studio
 .vs/
