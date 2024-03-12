@@ -6,6 +6,9 @@
 #include "Character/CharacterBase.h"
 #include "PlayerCharacter.generated.h"
 
+class USpringArmComponent;
+class UCameraComponent;
+
 /**
  * 
  */
@@ -14,4 +17,15 @@ class RPGPROJECT_API APlayerCharacter : public ACharacterBase
 {
 	GENERATED_BODY()
 	
+public:
+	APlayerCharacter();
+
+protected:
+	virtual void BeginPlay() override;
+
+private:
+	UPROPERTY(EditAnywhere, Category = "Camera")
+	TObjectPtr<USpringArmComponent> SpringArm;
+	UPROPERTY(EditAnywhere, Category = "Camera")
+	TObjectPtr<UCameraComponent> Camera;
 };
