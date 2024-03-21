@@ -6,9 +6,9 @@
 #include "Character/CharacterBase.h"
 #include "PlayerCharacter.generated.h"
 
+class AWeapon;
 class USpringArmComponent;
 class UCameraComponent;
-
 /**
  * 
  */
@@ -24,8 +24,15 @@ protected:
 	virtual void BeginPlay() override;
 
 private:
-	UPROPERTY(EditAnywhere, Category = "Camera")
-	TObjectPtr<USpringArmComponent> SpringArm;
-	UPROPERTY(EditAnywhere, Category = "Camera")
+	void SetSpringArm();
+	void SetCamera();
+
+	UPROPERTY(VisibleAnywhere, Category = "Camera")
+	TObjectPtr<USpringArmComponent> SpringArm; 
+	UPROPERTY(VisibleAnywhere, Category = "Camera")
 	TObjectPtr<UCameraComponent> Camera;
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = "Weapon")
+	TObjectPtr<UBlueprint> LeftHandWeapon;
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = "Weapon")
+	TObjectPtr<UBlueprint> RightHandWeapon;
 };

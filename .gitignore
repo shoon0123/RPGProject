@@ -3,7 +3,12 @@
 /Content/Maps
 /Content/ParagonAurora
 /Content/ParagonMinions
-/Content/StarterContent
+/Content/InfinityBladeAdversaries
+/Content/InfinityBladeEffects
+/Content/InfinityBladeGrassLands
+/Content/InfinityBladeIceLands
+/Content/InfinityBladeWarriors
+/Content/InfinityBladeWeapons
 
 # Visual Studio
 .vs/

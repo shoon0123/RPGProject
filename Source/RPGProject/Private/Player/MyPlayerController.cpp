@@ -20,14 +20,14 @@ void AMyPlayerController::BeginPlay()
 	check(Context);
 	Subsystem->AddMappingContext(Context, 0);
 
-	bShowMouseCursor = true;
+	bShowMouseCursor = false;
 	DefaultMouseCursor = EMouseCursor::Default;
-
+	/*
 	FInputModeGameAndUI InputModeData;
-	InputModeData.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
-	InputModeData.SetHideCursorDuringCapture(false);
+	InputModeData.SetLockMouseToViewportBehavior(EMouseLockMode::LockAlways);
+	InputModeData.SetHideCursorDuringCapture(true);
 	SetInputMode(InputModeData);
-   
+	*/
 }
 
 void AMyPlayerController::SetupInputComponent()
@@ -37,6 +37,7 @@ void AMyPlayerController::SetupInputComponent()
 	TObjectPtr<UEnhancedInputComponent> EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(InputComponent);
 	
 	EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AMyPlayerController::Move);
+	EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AMyPlayerController::Look);
 }
 
 void AMyPlayerController::Move(const FInputActionValue& InputActionValue)
@@ -53,4 +54,11 @@ void AMyPlayerController::Move(const FInputActionValue& InputActionValue)
 		ControlledPawn->AddMovementInput(ForwardDirection, InputAxisVector.Y);
 		ControlledPawn->AddMovementInput(RightDirection, InputAxisVector.X);
 	}
+}
+
+void AMyPlayerController::Look(const FInputActionValue& InputActionValue)
+{
+	const FVector2D InputAxisVector = InputActionValue.Get<FVector2D>();
+	AddPitchInput(-InputAxisVector.Y);
+	AddYawInput(InputAxisVector.X);
 }
