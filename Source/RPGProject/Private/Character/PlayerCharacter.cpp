@@ -22,6 +22,21 @@ APlayerCharacter::APlayerCharacter()
     bUseControllerRotationYaw = false;
 }
 
+UAnimMontage* APlayerCharacter::GetAttackMontage() const
+{
+    return AttackMontage;
+}
+
+EActionState APlayerCharacter::GetActionState() const
+{
+    return ActionState;
+}
+
+void APlayerCharacter::SetActionState(EActionState OtherActionState)
+{
+    ActionState = OtherActionState;
+}
+
 void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay(); 
@@ -30,6 +45,7 @@ void APlayerCharacter::BeginPlay()
     check(RightHandWeapon);
     FName LeftWeaponSocket(TEXT("hand_lSocket"));
     FName RightWeaponSocket(TEXT("hand_rSocket"));
+
 
     TSubclassOf<class UObject> LeftWeaponClass = LeftHandWeapon->GeneratedClass;
     TObjectPtr<AActor> LeftWeapon = GetWorld()->SpawnActor<AActor>(LeftWeaponClass, FVector::ZeroVector, FRotator::ZeroRotator);

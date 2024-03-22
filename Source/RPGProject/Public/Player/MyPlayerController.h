@@ -4,8 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
-#include "MyPlayerController.generated.h"
+#include "MyPlayerController.generated.h" 
 
+class APlayerCharacter;
 class UInputMappingContext;
 class UInputAction;
 struct FInputActionValue;
@@ -18,17 +19,33 @@ class RPGPROJECT_API AMyPlayerController : public APlayerController
 	GENERATED_BODY()
 public:
 	AMyPlayerController();
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void SetupInputComponent() override;
+
 private:
+	TObjectPtr<APlayerCharacter> ControlledCharacter;
+
+	//Input Actions
 	UPROPERTY(EditAnywhere, Category="Input")
 	TObjectPtr<UInputMappingContext> Context;
 	UPROPERTY(EditAnywhere, Category="Input")
 	TObjectPtr<UInputAction> MoveAction;
 	UPROPERTY(EditAnywhere, Category = "Input")
 	TObjectPtr<UInputAction> LookAction;
+	UPROPERTY(EditAnywhere, Category = "Input")
+	TObjectPtr<UInputAction> AttackAction;
+
+	
+
 
 	void Move(const FInputActionValue& InputActionValue);
 	void Look(const FInputActionValue& InputActionValue);
+	void Attack(const FInputActionValue& InputActionValue);
+
+	void PlayAttackMontage();
+
+	UFUNCTION(BlueprintCallable)
+	void AttackEnd();
 };

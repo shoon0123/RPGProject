@@ -17,6 +17,6 @@ class RPGPROJECT_API AWeapon : public AActor
 public:
 	AWeapon();
 private:
-	UPROPERTY(VisibleAnywhere, meta = (AllowPrivateAccess = "true"), Category = Weapon)
+	UPROPERTY(EditAnywhere, Category = Weapon)
 	TObjectPtr<USkeletalMeshComponent> Mesh;
 };
