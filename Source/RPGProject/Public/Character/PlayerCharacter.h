@@ -30,7 +30,7 @@ private:
 	EActionState ActionState = EActionState::EAS_Unoccupied;
 
 	UPROPERTY(VisibleAnywhere, Category = "Camera")
-	TObjectPtr<USpringArmComponent> SpringArm; 
+	TObjectPtr<USpringArmComponent> SpringArm;
 	UPROPERTY(VisibleAnywhere, Category = "Camera")
 	TObjectPtr<UCameraComponent> Camera;
 	UPROPERTY(EditAnywhere, Category = "Weapon")
@@ -43,8 +43,6 @@ private:
 	TObjectPtr<UAnimMontage> AttackMontage;
 
 
-
 	void SetSpringArm();
 	void SetCamera();
-
 };

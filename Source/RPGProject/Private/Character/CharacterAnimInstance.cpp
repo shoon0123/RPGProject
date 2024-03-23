@@ -11,6 +11,7 @@ void UCharacterAnimInstance::NativeBeginPlay()
 {
 	Super::NativeBeginPlay();
 	MyPlayerController = Cast<AMyPlayerController>(PlayerCharacter->GetController());
+	ActionState = EActionState::EAS_Unoccupied;
 }
 
 
@@ -31,6 +32,10 @@ void UCharacterAnimInstance::NativeUpdateAnimation(float DeltaTime)
 	if (PlayerCharacterMovement)
 	{
 		GroundSpeed = UKismetMathLibrary::VSizeXY(PlayerCharacterMovement->Velocity);
+	}
+	if (PlayerCharacter)
+	{
+		ActionState = PlayerCharacter->GetActionState();
 	}
 }
 

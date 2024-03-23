@@ -9,6 +9,7 @@
 class AMyPlayerController;
 class APlayerCharacter;
 class UCharacterMovementComponent;
+enum class EActionState : uint8;
 
 UCLASS()
 class RPGPROJECT_API UCharacterAnimInstance : public UAnimInstance
@@ -25,6 +26,9 @@ public:
 
 	UPROPERTY(BlueprintReadOnly)
 	TObjectPtr<AMyPlayerController> MyPlayerController;
+
+	UPROPERTY(BlueprintReadOnly)
+	EActionState ActionState;
 
 	UPROPERTY(BlueprintReadOnly, Category = Movement)
 	TObjectPtr<UCharacterMovementComponent> PlayerCharacterMovement;
