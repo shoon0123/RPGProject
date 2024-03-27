@@ -21,6 +21,7 @@ void AMyPlayerController::BeginPlay()
 	Subsystem->AddMappingContext(Context, 0);
 
 	ControlledCharacter = GetPawn<APlayerCharacter>();
+	check(ControlledCharacter);
 
 	bShowMouseCursor = false;
 	DefaultMouseCursor = EMouseCursor::Default;
@@ -34,7 +35,8 @@ void AMyPlayerController::SetupInputComponent()
 	
 	EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AMyPlayerController::Move);
 	EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AMyPlayerController::Look);
-	EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Triggered, this, &AMyPlayerController::Attack);
+	EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Started, this, &AMyPlayerController::Attack);
+	EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Started, this, &AMyPlayerController::DoNextAttack);
 }
 
 void AMyPlayerController::Move(const FInputActionValue& InputActionValue)
@@ -46,9 +48,8 @@ void AMyPlayerController::Move(const FInputActionValue& InputActionValue)
 	const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 	const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 
-	const float WalkSpeed = 0.5 ;
+	const float WalkSpeed = 1 ;
 
-	check(ControlledCharacter);
 	ControlledCharacter->AddMovementInput(ForwardDirection, InputAxisVector.Y * WalkSpeed);
 	ControlledCharacter->AddMovementInput(RightDirection, InputAxisVector.X * WalkSpeed);
 }
@@ -60,7 +61,7 @@ void AMyPlayerController::Look(const FInputActionValue& InputActionValue)
 	AddYawInput(InputAxisVector.X);
 }
 
-void AMyPlayerController::Attack(const FInputActionValue& InputActionValue)
+void AMyPlayerController::Attack()
 {
 	if (ControlledCharacter->GetActionState() == EActionState::EAS_Attacking)
 	{
@@ -68,6 +69,14 @@ void AMyPlayerController::Attack(const FInputActionValue& InputActionValue)
 	}
 	PlayAttackMontage();
 	ControlledCharacter->SetActionState(EActionState::EAS_Attacking);
+}
+
+void AMyPlayerController::DoNextAttack()
+{
+	if (ControlledCharacter->GetActionState() == EActionState::EAS_Attacking)
+	{
+		bDoNextAttack = true;
+	}
 }
 
 void AMyPlayerController::PlayAttackMontage()
@@ -83,5 +92,14 @@ void AMyPlayerController::PlayAttackMontage()
 
 void AMyPlayerController::AttackEnd()
 {
-	ControlledCharacter->SetActionState(EActionState::EAS_Unoccupied);
+	if (!bDoNextAttack)
+	{
+		ControlledCharacter->SetActionState(EActionState::EAS_Unoccupied);
+		TObjectPtr<UAnimInstance> AnimInstance = ControlledCharacter->GetMesh()->GetAnimInstance();
+		TObjectPtr<UAnimMontage> AttackMontage = ControlledCharacter->GetAttackMontage();
+		check(AnimInstance);
+		check(AttackMontage);
+		AnimInstance->Montage_Stop(0.4f, AttackMontage);
+	}
+	bDoNextAttack = false;
 }

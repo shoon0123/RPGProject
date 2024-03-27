@@ -27,6 +27,8 @@ protected:
 private:
 	TObjectPtr<APlayerCharacter> ControlledCharacter;
 
+	bool bDoNextAttack = false;
+
 	//Input Actions
 	UPROPERTY(EditAnywhere, Category="Input")
 	TObjectPtr<UInputMappingContext> Context;
@@ -42,7 +44,8 @@ private:
 
 	void Move(const FInputActionValue& InputActionValue);
 	void Look(const FInputActionValue& InputActionValue);
-	void Attack(const FInputActionValue& InputActionValue);
+	void Attack();
+	void DoNextAttack();
 
 	void PlayAttackMontage();
 
