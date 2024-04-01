@@ -18,8 +18,12 @@ class RPGPROJECT_API APlayerCharacter : public ACharacterBase
 	
 public:
 	APlayerCharacter();
+	
+	UFUNCTION()
 	UAnimMontage* GetAttackMontage() const;
+	UFUNCTION()
 	EActionState GetActionState() const;
+	UFUNCTION()
 	void SetActionState(EActionState OtherActionState);
 
 
@@ -27,6 +31,7 @@ protected:
 	virtual void BeginPlay() override;
 
 private:
+	UPROPERTY(VisibleAnywhere, Category = "State")
 	EActionState ActionState = EActionState::EAS_Unoccupied;
 
 	UPROPERTY(VisibleAnywhere, Category = "Camera")

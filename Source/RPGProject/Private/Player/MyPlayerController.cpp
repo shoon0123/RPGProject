@@ -36,7 +36,6 @@ void AMyPlayerController::SetupInputComponent()
 	EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AMyPlayerController::Move);
 	EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AMyPlayerController::Look);
 	EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Started, this, &AMyPlayerController::Attack);
-	EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Started, this, &AMyPlayerController::DoNextAttack);
 }
 
 void AMyPlayerController::Move(const FInputActionValue& InputActionValue)
@@ -65,17 +64,12 @@ void AMyPlayerController::Attack()
 {
 	if (ControlledCharacter->GetActionState() == EActionState::EAS_Attacking)
 	{
-		return;
-	}
-	PlayAttackMontage();
-	ControlledCharacter->SetActionState(EActionState::EAS_Attacking);
-}
-
-void AMyPlayerController::DoNextAttack()
-{
-	if (ControlledCharacter->GetActionState() == EActionState::EAS_Attacking)
-	{
 		bDoNextAttack = true;
+	}
+	else
+	{
+		PlayAttackMontage();
+		ControlledCharacter->SetActionState(EActionState::EAS_Attacking);
 	}
 }
 
@@ -99,7 +93,7 @@ void AMyPlayerController::AttackEnd()
 		TObjectPtr<UAnimMontage> AttackMontage = ControlledCharacter->GetAttackMontage();
 		check(AnimInstance);
 		check(AttackMontage);
-		AnimInstance->Montage_Stop(0.4f, AttackMontage);
+		AnimInstance->Montage_Stop(0.5f, AttackMontage);
 	}
 	bDoNextAttack = false;
 }
