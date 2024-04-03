@@ -37,23 +37,21 @@ void APlayerCharacter::SetActionState(EActionState OtherActionState)
     ActionState = OtherActionState;
 }
 
+AWeapon* APlayerCharacter::GetLeftHandWeapon() const
+{
+    return LeftHandWeapon;
+}
+
+AWeapon* APlayerCharacter::GetRightHandWeapon() const
+{
+    return RightHandWeapon;
+}
+
 void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay(); 
 
-    check(LeftHandWeapon);
-    check(RightHandWeapon);
-    FName LeftWeaponSocket(TEXT("hand_lSocket"));
-    FName RightWeaponSocket(TEXT("hand_rSocket"));
-
-
-    TSubclassOf<class UObject> LeftWeaponClass = LeftHandWeapon->GeneratedClass;
-    TObjectPtr<AActor> LeftWeapon = GetWorld()->SpawnActor<AActor>(LeftWeaponClass, FVector::ZeroVector, FRotator::ZeroRotator);
-    LeftWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, LeftWeaponSocket);
-
-    TSubclassOf<class UObject> RightWeaponClass = RightHandWeapon->GeneratedClass;
-    TObjectPtr<AActor> RightWeapon = GetWorld()->SpawnActor<AActor>(RightWeaponClass, FVector::ZeroVector, FRotator::ZeroRotator);
-    RightWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, RightWeaponSocket);
+    SpawnWeapons();
 }
 
 void APlayerCharacter::SetSpringArm()
@@ -74,4 +72,22 @@ void APlayerCharacter::SetCamera()
 {
     Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
     Camera->SetupAttachment(SpringArm);
+}
+
+void APlayerCharacter::SpawnWeapons()
+{
+    check(LeftHandWeaponType);
+    check(RightHandWeaponType);
+    FName LeftWeaponSocket(TEXT("hand_lSocket"));
+    FName RightWeaponSocket(TEXT("hand_rSocket"));
+
+    TSubclassOf<class UObject> LeftWeaponClass = LeftHandWeaponType->GeneratedClass;
+    LeftHandWeapon = GetWorld()->SpawnActor<AWeapon>(LeftWeaponClass, FVector::ZeroVector, FRotator::ZeroRotator);
+    LeftHandWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, LeftWeaponSocket);
+    LeftHandWeapon->SetOwner(this);
+
+    TSubclassOf<class UObject> RightWeaponClass = RightHandWeaponType->GeneratedClass;
+    RightHandWeapon = GetWorld()->SpawnActor<AWeapon>(RightWeaponClass, FVector::ZeroVector, FRotator::ZeroRotator);
+    RightHandWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, RightWeaponSocket);
+    RightHandWeapon->SetOwner(this);
 }

@@ -15,6 +15,7 @@ class RPGPROJECT_API AWeapon : public AActor
 	
 public:
 	AWeapon();
+	TObjectPtr<UBoxComponent> GetWeaponBox() const;
 
 protected:
 	virtual void BeginPlay() override;

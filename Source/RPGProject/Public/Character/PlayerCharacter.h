@@ -25,6 +25,11 @@ public:
 	EActionState GetActionState() const;
 	UFUNCTION()
 	void SetActionState(EActionState OtherActionState);
+	UFUNCTION()
+	AWeapon* GetLeftHandWeapon() const;
+	UFUNCTION()
+	AWeapon* GetRightHandWeapon() const;
+
 
 
 protected:
@@ -38,10 +43,15 @@ private:
 	TObjectPtr<USpringArmComponent> SpringArm;
 	UPROPERTY(VisibleAnywhere, Category = "Camera")
 	TObjectPtr<UCameraComponent> Camera;
+
 	UPROPERTY(EditAnywhere, Category = "Weapon")
-	TObjectPtr<UBlueprint> LeftHandWeapon;
+	TObjectPtr<UBlueprint> LeftHandWeaponType;
 	UPROPERTY(EditAnywhere, Category = "Weapon")
-	TObjectPtr<UBlueprint> RightHandWeapon;
+	TObjectPtr<UBlueprint> RightHandWeaponType;
+	UPROPERTY(VisibleAnywhere, Category = "Weapon")
+	TObjectPtr<AWeapon> LeftHandWeapon;
+	UPROPERTY(VisibleAnywhere, Category = "Weapon")
+	TObjectPtr<AWeapon> RightHandWeapon;
 
 	//Animation Montages
 	UPROPERTY(EditAnywhere, Category = "Montage")
@@ -50,4 +60,5 @@ private:
 
 	void SetSpringArm();
 	void SetCamera();
+	void SpawnWeapons();
 };

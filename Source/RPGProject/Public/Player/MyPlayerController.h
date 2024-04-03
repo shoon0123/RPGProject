@@ -39,8 +39,6 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Input")
 	TObjectPtr<UInputAction> AttackAction;
 
-	
-
 
 	void Move(const FInputActionValue& InputActionValue);
 	void Look(const FInputActionValue& InputActionValue);
@@ -49,4 +47,6 @@ private:
 
 	UFUNCTION(BlueprintCallable)
 	void AttackEnd();
+	UFUNCTION(BlueprintCallable)
+	void SetWeaponCollisionEnable(bool bIsLeftHandWeapon, ECollisionEnabled::Type CollisionEnabled);
 };

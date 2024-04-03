@@ -22,16 +22,13 @@ public:
 	virtual void NativeBeginPlay() override;
 
 	UPROPERTY(BlueprintReadOnly)
-	TObjectPtr<APlayerCharacter> PlayerCharacter;
+	TObjectPtr<ACharacter> Character;
 
 	UPROPERTY(BlueprintReadOnly)
 	TObjectPtr<AMyPlayerController> MyPlayerController;
 
-	UPROPERTY(BlueprintReadOnly)
-	EActionState ActionState;
-
 	UPROPERTY(BlueprintReadOnly, Category = Movement)
-	TObjectPtr<UCharacterMovementComponent> PlayerCharacterMovement;
+	TObjectPtr<UCharacterMovementComponent> CharacterMovement;
 
 	UPROPERTY(BlueprintReadOnly, Category = Movement)
 	float GroundSpeed;

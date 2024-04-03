@@ -5,6 +5,8 @@
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
 #include "Character/PlayerCharacter.h"
+#include "Components/BoxComponent.h"
+#include "Weapon/Weapon.h"
 
 AMyPlayerController::AMyPlayerController()
 {
@@ -21,7 +23,6 @@ void AMyPlayerController::BeginPlay()
 	Subsystem->AddMappingContext(Context, 0);
 
 	ControlledCharacter = GetPawn<APlayerCharacter>();
-	check(ControlledCharacter);
 
 	bShowMouseCursor = false;
 	DefaultMouseCursor = EMouseCursor::Default;
@@ -49,6 +50,7 @@ void AMyPlayerController::Move(const FInputActionValue& InputActionValue)
 
 	const float WalkSpeed = 1 ;
 
+	check(ControlledCharacter);
 	ControlledCharacter->AddMovementInput(ForwardDirection, InputAxisVector.Y * WalkSpeed);
 	ControlledCharacter->AddMovementInput(RightDirection, InputAxisVector.X * WalkSpeed);
 }
@@ -62,6 +64,7 @@ void AMyPlayerController::Look(const FInputActionValue& InputActionValue)
 
 void AMyPlayerController::Attack()
 {
+	check(ControlledCharacter);
 	if (ControlledCharacter->GetActionState() == EActionState::EAS_Attacking)
 	{
 		bDoNextAttack = true;
@@ -75,6 +78,7 @@ void AMyPlayerController::Attack()
 
 void AMyPlayerController::PlayAttackMontage()
 {
+	check(ControlledCharacter);
 	TObjectPtr<UAnimInstance> AnimInstance = ControlledCharacter->GetMesh()->GetAnimInstance();
 	TObjectPtr<UAnimMontage> AttackMontage = ControlledCharacter->GetAttackMontage();
 	check(AnimInstance);
@@ -88,6 +92,7 @@ void AMyPlayerController::AttackEnd()
 {
 	if (!bDoNextAttack)
 	{
+		check(ControlledCharacter);
 		ControlledCharacter->SetActionState(EActionState::EAS_Unoccupied);
 		TObjectPtr<UAnimInstance> AnimInstance = ControlledCharacter->GetMesh()->GetAnimInstance();
 		TObjectPtr<UAnimMontage> AttackMontage = ControlledCharacter->GetAttackMontage();
@@ -96,4 +101,17 @@ void AMyPlayerController::AttackEnd()
 		AnimInstance->Montage_Stop(0.5f, AttackMontage);
 	}
 	bDoNextAttack = false;
+}
+
+void AMyPlayerController::SetWeaponCollisionEnable(bool bIsLeftHandWeapon, ECollisionEnabled::Type CollisionEnabled)
+{
+	check(ControlledCharacter);
+	if (bIsLeftHandWeapon)
+	{
+		ControlledCharacter->GetLeftHandWeapon()->GetWeaponBox()->SetCollisionEnabled(CollisionEnabled);
+	}
+	else
+	{
+		ControlledCharacter->GetRightHandWeapon()->GetWeaponBox()->SetCollisionEnabled(CollisionEnabled);
+	}
 }

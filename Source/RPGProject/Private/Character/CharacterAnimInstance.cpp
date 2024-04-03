@@ -10,8 +10,7 @@
 void UCharacterAnimInstance::NativeBeginPlay()
 {
 	Super::NativeBeginPlay();
-	MyPlayerController = Cast<AMyPlayerController>(PlayerCharacter->GetController());
-	ActionState = EActionState::EAS_Unoccupied;
+	MyPlayerController = Cast<AMyPlayerController>(Character->GetController());
 }
 
 
@@ -19,23 +18,19 @@ void UCharacterAnimInstance::NativeInitializeAnimation()
 {
 	Super::NativeInitializeAnimation();
 
-	PlayerCharacter = Cast<APlayerCharacter>(TryGetPawnOwner());
-	if (PlayerCharacter)
+	Character = Cast<ACharacter>(TryGetPawnOwner());
+	if (Character)
 	{
-		PlayerCharacterMovement = PlayerCharacter->GetCharacterMovement();
+		CharacterMovement = Character->GetCharacterMovement();
 	}
 }
 
 void UCharacterAnimInstance::NativeUpdateAnimation(float DeltaTime)
 {
 	Super::NativeUpdateAnimation(DeltaTime);
-	if (PlayerCharacterMovement)
+	if (CharacterMovement)
 	{
-		GroundSpeed = UKismetMathLibrary::VSizeXY(PlayerCharacterMovement->Velocity);
-	}
-	if (PlayerCharacter)
-	{
-		ActionState = PlayerCharacter->GetActionState();
+		GroundSpeed = UKismetMathLibrary::VSizeXY(CharacterMovement->Velocity);
 	}
 }
 
