@@ -36,6 +36,7 @@ void AMyPlayerController::SetupInputComponent()
 	
 	EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AMyPlayerController::Move);
 	EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AMyPlayerController::Look);
+	EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &AMyPlayerController::Jump);
 	EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Started, this, &AMyPlayerController::Attack);
 }
 
@@ -60,6 +61,11 @@ void AMyPlayerController::Look(const FInputActionValue& InputActionValue)
 	const FVector2D InputAxisVector = InputActionValue.Get<FVector2D>();
 	AddPitchInput(-InputAxisVector.Y);
 	AddYawInput(InputAxisVector.X);
+}
+
+void AMyPlayerController::Jump()
+{
+	ControlledCharacter->Jump();
 }
 
 void AMyPlayerController::Attack()
@@ -109,9 +115,11 @@ void AMyPlayerController::SetWeaponCollisionEnable(bool bIsLeftHandWeapon, EColl
 	if (bIsLeftHandWeapon)
 	{
 		ControlledCharacter->GetLeftHandWeapon()->GetWeaponBox()->SetCollisionEnabled(CollisionEnabled);
+		ControlledCharacter->GetLeftHandWeapon()->EmptyIgnoreActors();
 	}
 	else
 	{
 		ControlledCharacter->GetRightHandWeapon()->GetWeaponBox()->SetCollisionEnabled(CollisionEnabled);
+		ControlledCharacter->GetRightHandWeapon()->EmptyIgnoreActors();
 	}
 }

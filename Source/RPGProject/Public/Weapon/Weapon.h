@@ -16,6 +16,7 @@ class RPGPROJECT_API AWeapon : public AActor
 public:
 	AWeapon();
 	TObjectPtr<UBoxComponent> GetWeaponBox() const;
+	void EmptyIgnoreActors();
 
 protected:
 	virtual void BeginPlay() override;
@@ -36,4 +37,6 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<USceneComponent> BoxTraceEnd;
 
+	UPROPERTY()
+	TArray<AActor*> IgnoreActors;
 };

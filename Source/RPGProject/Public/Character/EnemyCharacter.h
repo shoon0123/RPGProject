@@ -4,11 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "Character/CharacterBase.h"
-#include "Interaction/HitInterface.h"
 #include "EnemyCharacter.generated.h"
 
 UCLASS()
-class RPGPROJECT_API AEnemyCharacter : public ACharacterBase, public IHitInterface
+class RPGPROJECT_API AEnemyCharacter : public ACharacterBase
 {
 	GENERATED_BODY()
 	

@@ -2,7 +2,7 @@
 
 
 #include "Character/CharacterAnimInstance.h"
-#include "Character/PlayerCharacter.h"
+#include "Character/CharacterBase.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Player/MyPlayerController.h"
@@ -10,7 +10,7 @@
 void UCharacterAnimInstance::NativeBeginPlay()
 {
 	Super::NativeBeginPlay();
-	MyPlayerController = Cast<AMyPlayerController>(Character->GetController());
+	PlayerController = Cast<APlayerController>(Character->GetController());
 }
 
 
@@ -31,6 +31,7 @@ void UCharacterAnimInstance::NativeUpdateAnimation(float DeltaTime)
 	if (CharacterMovement)
 	{
 		GroundSpeed = UKismetMathLibrary::VSizeXY(CharacterMovement->Velocity);
+		IsFalling = CharacterMovement->IsFalling();
 	}
 }
 

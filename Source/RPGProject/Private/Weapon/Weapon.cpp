@@ -3,6 +3,7 @@
 
 #include "Weapon/Weapon.h"
 #include "Components/BoxComponent.h"
+#include "Interaction/HitInterface.h"
 #include "Kismet/KismetSystemLibrary.h"
 AWeapon::AWeapon()
 {
@@ -29,6 +30,11 @@ TObjectPtr<UBoxComponent> AWeapon::GetWeaponBox() const
 	return TObjectPtr<UBoxComponent>(WeaponBox);
 }
 
+void AWeapon::EmptyIgnoreActors()
+{
+	IgnoreActors.Empty();
+}
+
 void AWeapon::BeginPlay()
 {
 	Super::BeginPlay();
@@ -44,10 +50,12 @@ void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 	TArray<AActor*> ActorsToIgnore;
 	ActorsToIgnore.Add(GetOwner());
 	ActorsToIgnore.Append(GetOwner()->Children);
+	for (AActor* Actor : IgnoreActors)
+	{
+		ActorsToIgnore.AddUnique(Actor);
+	}
 
 	FHitResult BoxHit;
-	
-
 	UKismetSystemLibrary::BoxTraceSingle(
 		this,
 		Start, 
@@ -61,4 +69,14 @@ void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 		BoxHit,
 		true
 	);
+
+	if (BoxHit.GetActor())
+	{
+		IHitInterface* HitInterface = Cast<IHitInterface>(BoxHit.GetActor());
+		if (HitInterface)
+		{
+			HitInterface->GetHit(BoxHit.ImpactPoint, GetOwner());
+		}
+		IgnoreActors.AddUnique(BoxHit.GetActor());
+	}
 }

@@ -22,21 +22,6 @@ APlayerCharacter::APlayerCharacter()
     bUseControllerRotationYaw = false;
 }
 
-UAnimMontage* APlayerCharacter::GetAttackMontage() const
-{
-    return AttackMontage;
-}
-
-EActionState APlayerCharacter::GetActionState() const
-{
-    return ActionState;
-}
-
-void APlayerCharacter::SetActionState(EActionState OtherActionState)
-{
-    ActionState = OtherActionState;
-}
-
 AWeapon* APlayerCharacter::GetLeftHandWeapon() const
 {
     return LeftHandWeapon;

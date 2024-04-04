@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Animation/AnimInstance.h"
+#include "CharacterTypes.h"
 #include "CharacterAnimInstance.generated.h"
 
 class AMyPlayerController;
@@ -25,11 +26,15 @@ public:
 	TObjectPtr<ACharacter> Character;
 
 	UPROPERTY(BlueprintReadOnly)
-	TObjectPtr<AMyPlayerController> MyPlayerController;
+	TObjectPtr<APlayerController> PlayerController;
 
 	UPROPERTY(BlueprintReadOnly, Category = Movement)
 	TObjectPtr<UCharacterMovementComponent> CharacterMovement;
 
 	UPROPERTY(BlueprintReadOnly, Category = Movement)
 	float GroundSpeed;
+
+	UPROPERTY(BlueprintReadOnly, Category = Movement)
+	bool IsFalling;
+
 };
