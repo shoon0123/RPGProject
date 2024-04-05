@@ -42,4 +42,7 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Montage")
 	TObjectPtr<UAnimMontage> HitReactMontage;
+
+	UPROPERTY(EditAnywhere, Category = "Sounds")
+	TObjectPtr<USoundBase> HitSound;
 };

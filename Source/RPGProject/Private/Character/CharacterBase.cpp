@@ -4,6 +4,7 @@
 #include "Character/CharacterBase.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 ACharacterBase::ACharacterBase()
 {
@@ -19,9 +20,6 @@ ACharacterBase::ACharacterBase()
 	//Player
 	//GetMesh()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 	//GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldDynamic, ECollisionResponse::ECR_Overlap);
-
-
-	
 }
 
 EActionState ACharacterBase::GetActionState() const
@@ -44,6 +42,13 @@ void ACharacterBase::GetHit(const FVector& ImpactPoint, AActor* Hitter)
 	DrawDebugSphere(GetWorld(), ImpactPoint, 25.f, 12, FColor::Red, false, 5.f, 0, 0.5f);
 
 	DirectionalHitReact(Hitter->GetActorLocation());
+	
+	check(HitSound);
+	UGameplayStatics::PlaySoundAtLocation(
+		this,
+		HitSound,
+		ImpactPoint
+	);
 }
 
 void ACharacterBase::BeginPlay()
@@ -64,13 +69,15 @@ void ACharacterBase::PlayHitReactMontage(const FName& SectionName)
 void ACharacterBase::DirectionalHitReact(const FVector& HitterLocation)
 {
 	const FVector Forward = GetActorForwardVector();
-	const FVector HitterVector = (HitterLocation - GetActorLocation()).GetSafeNormal();
-	GetCharacterMovement()->AddImpulse(-HitterVector * 100000);
+	const FVector HitterVector = HitterLocation - GetActorLocation();
+	const FVector HitterVectorXY = FVector(HitterVector.X, HitterVector.Y, 0).GetSafeNormal();
 
-	const double CosTheta = FVector::DotProduct(Forward, HitterVector);
+	GetCharacterMovement()->AddImpulse(-HitterVectorXY * 100000);
+
+	const double CosTheta = FVector::DotProduct(Forward, HitterVectorXY);
 	double Theta = FMath::Acos(CosTheta);
 	Theta = FMath::RadiansToDegrees(Theta);
-	const FVector CrossProduct = FVector::CrossProduct(Forward, HitterVector);
+	const FVector CrossProduct = FVector::CrossProduct(Forward, HitterVectorXY);
 	if (CrossProduct.Z < 0)
 	{
 		Theta *= -1.f;

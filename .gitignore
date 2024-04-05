@@ -1,15 +1,17 @@
 #Asset Files
+/Content/StarterContent
 /Content/Assets
-/Content/Maps
-/Content/ParagonAurora
-/Content/ParagonMinions
+/Content/EnvironmentPack2
+/Content/EnvironmentPack3
 /Content/InfinityBladeAdversaries
 /Content/InfinityBladeEffects
 /Content/InfinityBladeGrassLands
 /Content/InfinityBladeIceLands
 /Content/InfinityBladeWarriors
 /Content/InfinityBladeWeapons
-/Content/StarterContent
+/Content/ParagonAurora
+/Content/ParagonMinions
+/Content/Maps
 
 # Visual Studio
 .vs/
