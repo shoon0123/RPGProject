@@ -28,9 +28,8 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
-	virtual void PlayHitReactMontage(const FName& SectionName);
-
 	virtual void DirectionalHitReact(const FVector& HitterLocation);
+	virtual void PlayHitReactMontage(const FName& SectionName);
 
 private:
 	UPROPERTY(VisibleAnywhere, Category = "State")
@@ -45,4 +44,7 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Sounds")
 	TObjectPtr<USoundBase> HitSound;
+
+	UPROPERTY(EditAnywhere, Category = "VisualEffects")
+	TObjectPtr<UParticleSystem> HitParticles;
 };

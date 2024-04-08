@@ -15,7 +15,7 @@ ACharacterBase::ACharacterBase()
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
 	GetCapsuleComponent()->SetGenerateOverlapEvents(true);
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
-	GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
+	GetMesh()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 
 	//Player
 	//GetMesh()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
@@ -39,7 +39,7 @@ UAnimMontage* ACharacterBase::GetAttackMontage() const
 
 void ACharacterBase::GetHit(const FVector& ImpactPoint, AActor* Hitter)
 {
-	DrawDebugSphere(GetWorld(), ImpactPoint, 25.f, 12, FColor::Red, false, 5.f, 0, 0.5f);
+	//DrawDebugSphere(GetWorld(), ImpactPoint, 25.f, 12, FColor::Red, false, 5.f, 0, 0.5f);
 
 	DirectionalHitReact(Hitter->GetActorLocation());
 	
@@ -49,6 +49,25 @@ void ACharacterBase::GetHit(const FVector& ImpactPoint, AActor* Hitter)
 		HitSound,
 		ImpactPoint
 	);
+
+
+	const FVector ImpactPointVector = (ImpactPoint - GetActorLocation()).GetSafeNormal();
+	const double CosTheta = FVector::DotProduct(GetActorForwardVector(), ImpactPointVector);
+
+
+	check(HitParticles);
+
+	
+	UGameplayStatics::SpawnEmitterAttached(
+		HitParticles,
+		GetRootComponent(),
+		FName("Hit"),
+		ImpactPoint,
+		ImpactPointVector.Rotation(),
+		GetActorScale(),
+		EAttachLocation::KeepWorldPosition
+	);
+	
 }
 
 void ACharacterBase::BeginPlay()
@@ -57,21 +76,13 @@ void ACharacterBase::BeginPlay()
 	
 }
 
-void ACharacterBase::PlayHitReactMontage(const FName& SectionName)
-{
-	check(HitReactMontage);
-	TObjectPtr<UAnimInstance> AnimInstance = GetMesh()->GetAnimInstance();
-	check(AnimInstance);
-	AnimInstance->Montage_Play(HitReactMontage);
-	AnimInstance->Montage_JumpToSection(SectionName, HitReactMontage);
-}
 
 void ACharacterBase::DirectionalHitReact(const FVector& HitterLocation)
 {
 	const FVector Forward = GetActorForwardVector();
 	const FVector HitterVector = HitterLocation - GetActorLocation();
 	const FVector HitterVectorXY = FVector(HitterVector.X, HitterVector.Y, 0).GetSafeNormal();
-
+	
 	GetCharacterMovement()->AddImpulse(-HitterVectorXY * 100000);
 
 	const double CosTheta = FVector::DotProduct(Forward, HitterVectorXY);
@@ -99,4 +110,13 @@ void ACharacterBase::DirectionalHitReact(const FVector& HitterLocation)
 	}
 
 	PlayHitReactMontage(Section);
+}
+
+void ACharacterBase::PlayHitReactMontage(const FName& SectionName)
+{
+	check(HitReactMontage);
+	TObjectPtr<UAnimInstance> AnimInstance = GetMesh()->GetAnimInstance();
+	check(AnimInstance);
+	AnimInstance->Montage_Play(HitReactMontage);
+	AnimInstance->Montage_JumpToSection(SectionName, HitReactMontage);
 }

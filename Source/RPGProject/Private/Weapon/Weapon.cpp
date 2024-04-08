@@ -19,10 +19,12 @@ AWeapon::AWeapon()
 	WeaponBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap); 
 	WeaponBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
 
+	FVector A(GetWeaponBox() ->GetUnscaledBoxExtent());
+
 	BoxTraceStart = CreateDefaultSubobject<USceneComponent>(TEXT("Box Trace Start"));
-	BoxTraceStart->SetupAttachment(GetRootComponent());
+	BoxTraceStart->SetupAttachment(GetWeaponBox());
 	BoxTraceEnd = CreateDefaultSubobject<USceneComponent>(TEXT("Box Trace End"));
-	BoxTraceEnd->SetupAttachment(GetRootComponent());
+	BoxTraceEnd->SetupAttachment(GetWeaponBox());
 }
 
 TObjectPtr<UBoxComponent> AWeapon::GetWeaponBox() const
@@ -65,11 +67,10 @@ void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 		ETraceTypeQuery::TraceTypeQuery1,
 		false,
 		ActorsToIgnore,
-		EDrawDebugTrace::ForDuration,
+		EDrawDebugTrace::None,
 		BoxHit,
 		true
 	);
-
 	if (BoxHit.GetActor())
 	{
 		IHitInterface* HitInterface = Cast<IHitInterface>(BoxHit.GetActor());
