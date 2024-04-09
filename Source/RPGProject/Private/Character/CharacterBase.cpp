@@ -5,10 +5,12 @@
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Components/AttributeComponent.h"
+#include "HUD/HealthBarComponent.h"
 
 ACharacterBase::ACharacterBase()
 {
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 
 	GetCapsuleComponent()->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
@@ -17,9 +19,9 @@ ACharacterBase::ACharacterBase()
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 	GetMesh()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 
-	//Player
-	//GetMesh()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
-	//GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldDynamic, ECollisionResponse::ECR_Overlap);
+	Attributes = CreateDefaultSubobject<UAttributeComponent>(TEXT("Attributes"));
+	HealthBarWidget = CreateDefaultSubobject<UHealthBarComponent>(TEXT("HealthBar"));
+	HealthBarWidget->SetupAttachment(GetRootComponent());
 }
 
 EActionState ACharacterBase::GetActionState() const
@@ -68,6 +70,16 @@ void ACharacterBase::GetHit(const FVector& ImpactPoint, AActor* Hitter)
 		EAttachLocation::KeepWorldPosition
 	);
 	
+}
+
+float ACharacterBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	check(Attributes);
+	Attributes->ReceiveDamage(DamageAmount);
+	check(HealthBarWidget);
+	HealthBarWidget->SetHealthPercent(Attributes->GetHealthPercent());
+
+	return DamageAmount;
 }
 
 void ACharacterBase::BeginPlay()

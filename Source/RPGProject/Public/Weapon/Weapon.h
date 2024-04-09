@@ -39,4 +39,7 @@ private:
 
 	UPROPERTY()
 	TArray<AActor*> IgnoreActors;
+
+	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
+	float Damage = 10.f;
 };

@@ -5,6 +5,8 @@
 #include "Components/BoxComponent.h"
 #include "Interaction/HitInterface.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "Kismet/GameplayStatics.h"
+
 AWeapon::AWeapon()
 {
 	Mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Weapon"));
@@ -79,5 +81,14 @@ void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 			HitInterface->GetHit(BoxHit.ImpactPoint, GetOwner());
 		}
 		IgnoreActors.AddUnique(BoxHit.GetActor());
+
+		UGameplayStatics::ApplyDamage(
+			BoxHit.GetActor(),
+			Damage,
+			GetOwner()->GetInstigatorController(),
+			this,
+			UDamageType::StaticClass()
+			);
+
 	}
 }
