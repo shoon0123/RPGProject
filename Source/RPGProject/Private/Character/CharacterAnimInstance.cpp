@@ -18,7 +18,7 @@ void UCharacterAnimInstance::NativeInitializeAnimation()
 {
 	Super::NativeInitializeAnimation();
 
-	Character = Cast<ACharacter>(TryGetPawnOwner());
+	Character = Cast<ACharacterBase>(TryGetPawnOwner());
 	if (Character)
 	{
 		CharacterMovement = Character->GetCharacterMovement();

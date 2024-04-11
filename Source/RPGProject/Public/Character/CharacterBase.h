@@ -19,27 +19,23 @@ class RPGPROJECT_API ACharacterBase : public ACharacter, public IHitInterface
 public:
 	ACharacterBase();
 
-	UFUNCTION()
 	EActionState GetActionState() const;
-
-	UFUNCTION()
 	void SetActionState(EActionState OtherActionState);
-
-	UFUNCTION()
 	UAnimMontage* GetAttackMontage() const;
-
-	UFUNCTION()
 	virtual void GetHit(const FVector& ImpactPoint, AActor* Hitter);
-
-	
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 
 protected:
 	virtual void BeginPlay() override;
 
+	virtual void Die();
 	virtual void DirectionalHitReact(const FVector& HitterLocation);
+	virtual void PlayDeathMontage(const FName& SectionName);
 	virtual void PlayHitReactMontage(const FName& SectionName);
 
+
+	UPROPERTY(BlueprintReadOnly)
+	EDeathPose DeathPose = EDeathPose::EDP_Alive;
 private:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UAttributeComponent> Attributes;
@@ -57,9 +53,13 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Montage")
 	TObjectPtr<UAnimMontage> HitReactMontage;
 
+	UPROPERTY(EditAnywhere, Category = "Montage")
+	TObjectPtr<UAnimMontage> DeathMontage;
+
 	UPROPERTY(EditAnywhere, Category = "Sounds")
 	TObjectPtr<USoundBase> HitSound;
 
 	UPROPERTY(EditAnywhere, Category = "VisualEffects")
 	TObjectPtr<UParticleSystem> HitParticles;
+
 };

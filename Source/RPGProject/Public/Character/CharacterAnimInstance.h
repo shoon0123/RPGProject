@@ -7,6 +7,7 @@
 #include "CharacterTypes.h"
 #include "CharacterAnimInstance.generated.h"
 
+class ACharacterBase;
 class AMyPlayerController;
 class APlayerCharacter;
 class UCharacterMovementComponent;
@@ -23,7 +24,7 @@ public:
 	virtual void NativeBeginPlay() override;
 
 	UPROPERTY(BlueprintReadOnly)
-	TObjectPtr<ACharacter> Character;
+	TObjectPtr<ACharacterBase> Character;
 
 	UPROPERTY(BlueprintReadOnly)
 	TObjectPtr<APlayerController> PlayerController;

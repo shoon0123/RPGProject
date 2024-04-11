@@ -43,7 +43,15 @@ void ACharacterBase::GetHit(const FVector& ImpactPoint, AActor* Hitter)
 {
 	//DrawDebugSphere(GetWorld(), ImpactPoint, 25.f, 12, FColor::Red, false, 5.f, 0, 0.5f);
 
-	DirectionalHitReact(Hitter->GetActorLocation());
+	check(Attributes);
+	if (Attributes->IsAlive())
+	{
+		DirectionalHitReact(Hitter->GetActorLocation());
+	}
+	else
+	{
+		Die();
+	}
 	
 	check(HitSound);
 	UGameplayStatics::PlaySoundAtLocation(
@@ -52,14 +60,10 @@ void ACharacterBase::GetHit(const FVector& ImpactPoint, AActor* Hitter)
 		ImpactPoint
 	);
 
-
 	const FVector ImpactPointVector = (ImpactPoint - GetActorLocation()).GetSafeNormal();
 	const double CosTheta = FVector::DotProduct(GetActorForwardVector(), ImpactPointVector);
 
-
 	check(HitParticles);
-
-	
 	UGameplayStatics::SpawnEmitterAttached(
 		HitParticles,
 		GetRootComponent(),
@@ -88,6 +92,34 @@ void ACharacterBase::BeginPlay()
 	
 }
 
+void ACharacterBase::Die()
+{
+	const int32 Selection = FMath::RandRange(0, 3);
+	FName SectionName = FName();
+	switch (Selection)
+	{
+	case 0:
+		SectionName = FName("Death1");
+		DeathPose = EDeathPose::EDP_Death1;
+		break;
+	case 1:
+		SectionName = FName("Death2");
+		DeathPose = EDeathPose::EDP_Death2;
+		break;
+	case 2:
+		SectionName = FName("Death3");
+		DeathPose = EDeathPose::EDP_Death3;
+		break;
+	case 3:
+		SectionName = FName("Death4");
+		DeathPose = EDeathPose::EDP_Death4;
+		break;
+	default:
+		break;
+	}
+	PlayDeathMontage(SectionName);
+
+}
 
 void ACharacterBase::DirectionalHitReact(const FVector& HitterLocation)
 {
@@ -122,6 +154,15 @@ void ACharacterBase::DirectionalHitReact(const FVector& HitterLocation)
 	}
 
 	PlayHitReactMontage(Section);
+}
+
+void ACharacterBase::PlayDeathMontage(const FName& SectionName)
+{
+	check(HitReactMontage);
+	TObjectPtr<UAnimInstance> AnimInstance = GetMesh()->GetAnimInstance();
+	check(AnimInstance);
+	AnimInstance->Montage_Play(DeathMontage);
+	AnimInstance->Montage_JumpToSection(SectionName, DeathMontage);
 }
 
 void ACharacterBase::PlayHitReactMontage(const FName& SectionName)
