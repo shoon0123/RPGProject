@@ -15,7 +15,7 @@ void AEnemyCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
 	
-	if (!HasAuthority()) return;
+	//if (!HasAuthority()) return;
 	EnemyAIController = Cast<AEnemyAIController>(NewController);
 	EnemyAIController->GetBlackboardComponent()->InitializeBlackboard(*BehaviorTree->BlackboardAsset);
 	EnemyAIController->RunBehaviorTree(BehaviorTree);
