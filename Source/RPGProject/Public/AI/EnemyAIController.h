@@ -16,14 +16,10 @@ UCLASS()
 class RPGPROJECT_API AEnemyAIController : public AAIController
 {
 	GENERATED_BODY()
-	
 public:
 	AEnemyAIController();
 
 protected:
-	UPROPERTY()
-	TObjectPtr<UBlackboardComponent> BlackboardComponent;
-
 	UPROPERTY()
 	TObjectPtr<UBehaviorTreeComponent> BehaviorTreeComponent;
 
