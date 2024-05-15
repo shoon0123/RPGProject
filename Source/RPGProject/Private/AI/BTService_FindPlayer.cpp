@@ -13,13 +13,9 @@ void UBTService_FindPlayer::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* N
 	
 	APawn* OwningPawn = AIOwner->GetPawn();
 
-	//const FName TargetTag = OwningPawn->ActorHasTag(FName("Player")) ? FName("Enemy") : FName("Player");
-
-	const FName TargetTag = FName("Player");
 	TArray<AActor*> ActorWithTag;
 	
-	UGameplayStatics::GetAllActorsWithTag(OwningPawn, TargetTag, ActorWithTag);
-
+	UGameplayStatics::GetAllActorsWithTag(OwningPawn, FName("Player"), ActorWithTag);
 
 	AActor* TargetActor = ActorWithTag.IsEmpty() ? nullptr : ActorWithTag[0];
 	float Distance = OwningPawn->GetDistanceTo(TargetActor);
