@@ -22,8 +22,9 @@ public:
 	EActionState GetActionState() const;
 	void SetActionState(EActionState OtherActionState);
 	UAnimMontage* GetAttackMontage() const;
-	virtual void GetHit(const FVector& ImpactPoint, AActor* Hitter);
+	virtual void GetHit(const FVector& ImpactPoint, AActor* Hitter) override;
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
+	virtual void Destroyed() override;
 
 protected:
 	virtual void BeginPlay() override;
@@ -33,6 +34,7 @@ protected:
 	virtual void PlayDeathMontage(const FName& SectionName);
 	virtual void PlayHitReactMontage(const FName& SectionName);
 
+	virtual void DestroyWeapon() PURE_VIRTUAL(ACharacterBase::DestroyWeapon,);
 
 	UPROPERTY(BlueprintReadOnly)
 	EDeathPose DeathPose = EDeathPose::EDP_Alive;

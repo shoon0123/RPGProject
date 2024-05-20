@@ -8,6 +8,7 @@
 
 class UBehaviorTree;
 class AEnemyAIController;
+class AWeapon;
 
 UCLASS()
 class RPGPROJECT_API AEnemyCharacter : public ACharacterBase
@@ -22,8 +23,17 @@ public:
 protected:
 	UPROPERTY(EditAnywhere, Category = "AI")
 	TObjectPtr<UBehaviorTree> BehaviorTree;
-
 	UPROPERTY()
 	TObjectPtr<AEnemyAIController> EnemyAIController;
 
+	virtual void BeginPlay() override;
+	virtual void DestroyWeapon() override;
+
+private:
+	UPROPERTY(EditAnywhere, Category = "Weapon")
+	TObjectPtr<UBlueprint> WeaponType;
+	UPROPERTY(VisibleAnywhere, Category = "Weapon")
+	TObjectPtr<AWeapon> Weapon;
+
+	void SpawnWeapon();
 };

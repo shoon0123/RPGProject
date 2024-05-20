@@ -21,8 +21,6 @@ AWeapon::AWeapon()
 	WeaponBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap); 
 	WeaponBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
 
-	FVector A(GetWeaponBox() ->GetUnscaledBoxExtent());
-
 	BoxTraceStart = CreateDefaultSubobject<USceneComponent>(TEXT("Box Trace Start"));
 	BoxTraceStart->SetupAttachment(GetWeaponBox());
 	BoxTraceEnd = CreateDefaultSubobject<USceneComponent>(TEXT("Box Trace End"));

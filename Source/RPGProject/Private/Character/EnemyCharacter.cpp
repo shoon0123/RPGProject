@@ -6,11 +6,13 @@
 #include "BehaviorTree/BehaviorTree.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Weapon/weapon.h"
 
 AEnemyCharacter::AEnemyCharacter()
 {
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->RotationRate = FRotator(0.f, 1000.f, 0.f);
+	GetCharacterMovement()->MaxWalkSpeed = 300.f;
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationRoll = false;
 	bUseControllerRotationYaw = false;
@@ -25,4 +27,29 @@ void AEnemyCharacter::PossessedBy(AController* NewController)
 	EnemyAIController->GetBlackboardComponent()->InitializeBlackboard(*BehaviorTree->BlackboardAsset);
 	EnemyAIController->RunBehaviorTree(BehaviorTree);
 	EnemyAIController->GetBlackboardComponent()->SetValueAsBool(FName("HitReacting"), false);
+}
+
+void AEnemyCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+
+	SpawnWeapon();
+}
+
+void AEnemyCharacter::DestroyWeapon()
+{
+	if (Weapon)
+	{
+		Weapon->Destroy();
+	}
+}
+
+void AEnemyCharacter::SpawnWeapon()
+{
+	FName WeaponSocket(TEXT("RightHandSocket"));
+	check(WeaponType);
+	TSubclassOf<class UObject> WeaponClass = WeaponType->GeneratedClass;
+	Weapon = GetWorld()->SpawnActor<AWeapon>(WeaponClass, FVector::ZeroVector, FRotator::ZeroRotator);
+	Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, WeaponSocket);
+	Weapon->SetOwner(this);
 }

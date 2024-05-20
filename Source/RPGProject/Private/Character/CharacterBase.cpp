@@ -86,6 +86,12 @@ float ACharacterBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageE
 	return DamageAmount;
 }
 
+void ACharacterBase::Destroyed()
+{
+	Super::Destroyed();
+	DestroyWeapon();
+}
+
 void ACharacterBase::BeginPlay()
 {
 	Super::BeginPlay();

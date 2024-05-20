@@ -39,6 +39,18 @@ void APlayerCharacter::BeginPlay()
     SpawnWeapons();
 }
 
+void APlayerCharacter::DestroyWeapon()
+{
+    if (LeftHandWeapon)
+    {
+        LeftHandWeapon->Destroy();
+    }
+    if (RightHandWeapon)
+    {
+        RightHandWeapon->Destroy();
+    }
+}
+
 void APlayerCharacter::SetSpringArm()
 {
     SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
