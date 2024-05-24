@@ -25,6 +25,7 @@ protected:
 	virtual void SetupInputComponent() override;
 
 private:
+	UPROPERTY()
 	TObjectPtr<APlayerCharacter> ControlledCharacter;
 
 	bool bDoNextAttack = false;

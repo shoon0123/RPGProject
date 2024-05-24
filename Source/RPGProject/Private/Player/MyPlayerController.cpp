@@ -51,9 +51,11 @@ void AMyPlayerController::Move(const FInputActionValue& InputActionValue)
 
 	const float WalkSpeed = 1 ;
 
-	check(ControlledCharacter);
-	ControlledCharacter->AddMovementInput(ForwardDirection, InputAxisVector.Y * WalkSpeed);
-	ControlledCharacter->AddMovementInput(RightDirection, InputAxisVector.X * WalkSpeed);
+	if (ControlledCharacter)
+	{
+		ControlledCharacter->AddMovementInput(ForwardDirection, InputAxisVector.Y * WalkSpeed);
+		ControlledCharacter->AddMovementInput(RightDirection, InputAxisVector.X * WalkSpeed);
+	}
 }
 
 void AMyPlayerController::Look(const FInputActionValue& InputActionValue)
@@ -65,40 +67,46 @@ void AMyPlayerController::Look(const FInputActionValue& InputActionValue)
 
 void AMyPlayerController::Jump()
 {
-	ControlledCharacter->Jump();
+	if (ControlledCharacter)
+	{
+		ControlledCharacter->Jump();
+	}
 }
 
 void AMyPlayerController::Attack()
 {
-	check(ControlledCharacter);
-	if (ControlledCharacter->GetActionState() == EActionState::EAS_Attacking)
+	if (ControlledCharacter)
 	{
-		bDoNextAttack = true;
-	}
-	else
-	{
-		PlayAttackMontage();
-		ControlledCharacter->SetActionState(EActionState::EAS_Attacking);
+		if (ControlledCharacter->GetActionState() == EActionState::EAS_Attacking)
+		{
+			bDoNextAttack = true;
+		}
+		else
+		{
+			PlayAttackMontage();
+			ControlledCharacter->SetActionState(EActionState::EAS_Attacking);
+		}
 	}
 }
 
 void AMyPlayerController::PlayAttackMontage()
 {
-	check(ControlledCharacter);
-	TObjectPtr<UAnimInstance> AnimInstance = ControlledCharacter->GetMesh()->GetAnimInstance();
-	TObjectPtr<UAnimMontage> AttackMontage = ControlledCharacter->GetAttackMontage();
-	check(AnimInstance);
-	check(AttackMontage);
-	AnimInstance->Montage_Play(AttackMontage);
-	FName SectionName = FName("Attack1");
-	AnimInstance->Montage_JumpToSection(SectionName, AttackMontage);
+	if (ControlledCharacter)
+	{
+		TObjectPtr<UAnimInstance> AnimInstance = ControlledCharacter->GetMesh()->GetAnimInstance();
+		TObjectPtr<UAnimMontage> AttackMontage = ControlledCharacter->GetAttackMontage();
+		check(AnimInstance);
+		check(AttackMontage);
+		AnimInstance->Montage_Play(AttackMontage);
+		FName SectionName = FName("Attack1");
+		AnimInstance->Montage_JumpToSection(SectionName, AttackMontage);
+	}
 }
 
 void AMyPlayerController::AttackEnd()
 {
-	if (!bDoNextAttack)
+	if (!bDoNextAttack && ControlledCharacter)
 	{
-		check(ControlledCharacter);
 		ControlledCharacter->SetActionState(EActionState::EAS_Unoccupied);
 		TObjectPtr<UAnimInstance> AnimInstance = ControlledCharacter->GetMesh()->GetAnimInstance();
 		TObjectPtr<UAnimMontage> AttackMontage = ControlledCharacter->GetAttackMontage();
@@ -111,15 +119,17 @@ void AMyPlayerController::AttackEnd()
 
 void AMyPlayerController::SetWeaponCollisionEnable(bool bIsLeftHandWeapon, ECollisionEnabled::Type CollisionEnabled)
 {
-	check(ControlledCharacter);
-	if (bIsLeftHandWeapon)
+	if (ControlledCharacter)
 	{
-		ControlledCharacter->GetLeftHandWeapon()->GetWeaponBox()->SetCollisionEnabled(CollisionEnabled);
-		ControlledCharacter->GetLeftHandWeapon()->EmptyIgnoreActors();
-	}
-	else
-	{
-		ControlledCharacter->GetRightHandWeapon()->GetWeaponBox()->SetCollisionEnabled(CollisionEnabled);
-		ControlledCharacter->GetRightHandWeapon()->EmptyIgnoreActors();
+		if (bIsLeftHandWeapon)
+		{
+			ControlledCharacter->GetLeftHandWeapon()->GetWeaponBox()->SetCollisionEnabled(CollisionEnabled);
+			ControlledCharacter->GetLeftHandWeapon()->EmptyIgnoreActors();
+		}
+		else
+		{
+			ControlledCharacter->GetRightHandWeapon()->GetWeaponBox()->SetCollisionEnabled(CollisionEnabled);
+			ControlledCharacter->GetRightHandWeapon()->EmptyIgnoreActors();
+		}
 	}
 }

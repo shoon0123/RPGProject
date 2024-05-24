@@ -46,10 +46,13 @@ void ACharacterBase::GetHit(const FVector& ImpactPoint, AActor* Hitter)
 	check(Attributes);
 	if (Attributes->IsAlive())
 	{
+		SetActionState(EActionState::EAS_HitReaction);
 		DirectionalHitReact(Hitter->GetActorLocation());
+		HealthBarWidget->SetVisibility(true);
 	}
 	else
 	{
+		SetActionState(EActionState::EAS_Dead);
 		Die();
 	}
 	
@@ -73,7 +76,8 @@ void ACharacterBase::GetHit(const FVector& ImpactPoint, AActor* Hitter)
 		GetActorScale(),
 		EAttachLocation::KeepWorldPosition
 	);
-	
+
+	check(HealthBarWidget);
 }
 
 float ACharacterBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
@@ -95,7 +99,9 @@ void ACharacterBase::Destroyed()
 void ACharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	check(HealthBarWidget);
+	HealthBarWidget->SetVisibility(false);
 }
 
 void ACharacterBase::Die()
@@ -180,4 +186,9 @@ void ACharacterBase::PlayHitReactMontage(const FName& SectionName)
 	check(AnimInstance);
 	AnimInstance->Montage_Play(HitReactMontage);
 	AnimInstance->Montage_JumpToSection(SectionName, HitReactMontage);
+}
+
+void ACharacterBase::HitReactEnd()
+{
+	SetActionState(EActionState::EAS_Unoccupied);
 }

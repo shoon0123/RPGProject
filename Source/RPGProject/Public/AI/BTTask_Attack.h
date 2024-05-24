@@ -16,4 +16,7 @@ class RPGPROJECT_API UBTTask_Attack : public UBTTask_BlackboardBase
 	
 public:
 	UBTTask_Attack();
+
+protected:
+	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 };

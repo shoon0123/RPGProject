@@ -26,8 +26,15 @@ void AEnemyCharacter::PossessedBy(AController* NewController)
 	EnemyAIController = Cast<AEnemyAIController>(NewController);
 	EnemyAIController->GetBlackboardComponent()->InitializeBlackboard(*BehaviorTree->BlackboardAsset);
 	EnemyAIController->RunBehaviorTree(BehaviorTree);
-	EnemyAIController->GetBlackboardComponent()->SetValueAsBool(FName("HitReacting"), false);
+	EnemyAIController->GetBlackboardComponent()->SetValueAsEnum(FName("ActionState"), (uint8)EActionState::EAS_Unoccupied);
 }
+
+void AEnemyCharacter::SetActionState(EActionState OtherActionState)
+{
+	Super::SetActionState(OtherActionState);
+	EnemyAIController->GetBlackboardComponent()->SetValueAsEnum(FName("ActionState"), (uint8)OtherActionState);
+}
+
 
 void AEnemyCharacter::BeginPlay()
 {

@@ -19,6 +19,9 @@ public:
 	AEnemyCharacter();
 
 	virtual void PossessedBy(AController* NewController) override;
+	virtual void SetActionState(EActionState OtherActionState) override;
+
+
 
 protected:
 	UPROPERTY(EditAnywhere, Category = "AI")
@@ -36,4 +39,6 @@ private:
 	TObjectPtr<AWeapon> Weapon;
 
 	void SpawnWeapon();
+
+
 };

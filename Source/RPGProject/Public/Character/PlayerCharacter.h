@@ -41,7 +41,6 @@ private:
 	TObjectPtr<AWeapon> LeftHandWeapon;
 	UPROPERTY(VisibleAnywhere, Category = "Weapon")
 	TObjectPtr<AWeapon> RightHandWeapon;
-
 	
 	void SetSpringArm();
 	void SetCamera();

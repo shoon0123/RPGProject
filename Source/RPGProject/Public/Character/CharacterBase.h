@@ -19,9 +19,9 @@ class RPGPROJECT_API ACharacterBase : public ACharacter, public IHitInterface
 public:
 	ACharacterBase();
 
-	EActionState GetActionState() const;
-	void SetActionState(EActionState OtherActionState);
-	UAnimMontage* GetAttackMontage() const;
+	virtual EActionState GetActionState() const;
+	virtual void SetActionState(EActionState OtherActionState);
+	virtual UAnimMontage* GetAttackMontage() const;
 	virtual void GetHit(const FVector& ImpactPoint, AActor* Hitter) override;
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 	virtual void Destroyed() override;
@@ -51,10 +51,8 @@ private:
 	// Animation Montages
 	UPROPERTY(EditAnywhere, Category = "Montage")
 	TObjectPtr<UAnimMontage> AttackMontage;
-
 	UPROPERTY(EditAnywhere, Category = "Montage")
 	TObjectPtr<UAnimMontage> HitReactMontage;
-
 	UPROPERTY(EditAnywhere, Category = "Montage")
 	TObjectPtr<UAnimMontage> DeathMontage;
 
@@ -64,4 +62,6 @@ private:
 	UPROPERTY(EditAnywhere, Category = "VisualEffects")
 	TObjectPtr<UParticleSystem> HitParticles;
 
+	UFUNCTION(BlueprintCallable)
+	virtual void HitReactEnd();
 };
