@@ -6,7 +6,9 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/AttributeComponent.h"
+#include "Components/BoxComponent.h"
 #include "HUD/HealthBarComponent.h"
+#include "Weapon/Weapon.h"
 
 ACharacterBase::ACharacterBase()
 {
@@ -191,4 +193,23 @@ void ACharacterBase::PlayHitReactMontage(const FName& SectionName)
 void ACharacterBase::HitReactEnd()
 {
 	SetActionState(EActionState::EAS_Unoccupied);
+}
+
+void ACharacterBase::SetWeaponCollisionEnable(AWeapon* Weapon, ECollisionEnabled::Type CollisionEnabled)
+{
+	if (Weapon)
+	{
+		Weapon->GetWeaponBox()->SetCollisionEnabled(CollisionEnabled);
+		Weapon->EmptyIgnoreActors();
+	}
+}
+
+void ACharacterBase::PlayAttackMontage()
+{
+	check(AttackMontage);
+	TObjectPtr<UAnimInstance> AnimInstance = GetMesh()->GetAnimInstance();
+	check(AnimInstance);
+	AnimInstance->Montage_Play(AttackMontage);
+	FName SectionName = FName("Attack1");
+	AnimInstance->Montage_JumpToSection(SectionName, AttackMontage);
 }

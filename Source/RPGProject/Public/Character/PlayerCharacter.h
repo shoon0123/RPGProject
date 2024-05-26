@@ -17,16 +17,17 @@ class RPGPROJECT_API APlayerCharacter : public ACharacterBase
 	
 public:
 	APlayerCharacter();
-	
-	UFUNCTION()
-	AWeapon* GetLeftHandWeapon() const;
-	UFUNCTION()
-	AWeapon* GetRightHandWeapon() const;
+
+	virtual void Attack() override;
 
 protected:
 	virtual void BeginPlay() override;
 	virtual void DestroyWeapon() override;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Weapon")
+	TObjectPtr<AWeapon> LeftHandWeapon;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Weapon")
+	TObjectPtr<AWeapon> RightHandWeapon;
 private:
 	UPROPERTY(VisibleAnywhere, Category = "Camera")
 	TObjectPtr<USpringArmComponent> SpringArm;
@@ -37,12 +38,12 @@ private:
 	TObjectPtr<UBlueprint> LeftHandWeaponType;
 	UPROPERTY(EditAnywhere, Category = "Weapon")
 	TObjectPtr<UBlueprint> RightHandWeaponType;
-	UPROPERTY(VisibleAnywhere, Category = "Weapon")
-	TObjectPtr<AWeapon> LeftHandWeapon;
-	UPROPERTY(VisibleAnywhere, Category = "Weapon")
-	TObjectPtr<AWeapon> RightHandWeapon;
 	
 	void SetSpringArm();
 	void SetCamera();
 	void SpawnWeapons();
+
+	bool bDoNextAttack = false;
+
+	virtual void AttackEnd() override;
 };

@@ -22,14 +22,17 @@ APlayerCharacter::APlayerCharacter()
     bUseControllerRotationYaw = false;
 }
 
-AWeapon* APlayerCharacter::GetLeftHandWeapon() const
+void APlayerCharacter::Attack()
 {
-    return LeftHandWeapon;
-}
-
-AWeapon* APlayerCharacter::GetRightHandWeapon() const
-{
-    return RightHandWeapon;
+    if (GetActionState() == EActionState::EAS_Attacking)
+    {
+        bDoNextAttack = true;
+    }
+    else if(GetActionState() == EActionState::EAS_Unoccupied)
+    {
+        PlayAttackMontage();
+        SetActionState(EActionState::EAS_Attacking);
+    }
 }
 
 void APlayerCharacter::BeginPlay()
@@ -87,4 +90,17 @@ void APlayerCharacter::SpawnWeapons()
     RightHandWeapon = GetWorld()->SpawnActor<AWeapon>(RightWeaponClass, FVector::ZeroVector, FRotator::ZeroRotator);
     RightHandWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, RightWeaponSocket);
     RightHandWeapon->SetOwner(this);
+}
+
+void APlayerCharacter::AttackEnd()
+{
+    if (!bDoNextAttack)
+    {
+        SetActionState(EActionState::EAS_Unoccupied);
+        TObjectPtr<UAnimInstance> AnimInstance = GetMesh()->GetAnimInstance();
+        check(AnimInstance);
+        check(AttackMontage);
+        AnimInstance->Montage_Stop(0.5f, AttackMontage);
+    }
+    bDoNextAttack = false;
 }

@@ -28,8 +28,6 @@ private:
 	UPROPERTY()
 	TObjectPtr<APlayerCharacter> ControlledCharacter;
 
-	bool bDoNextAttack = false;
-
 	//Input Actions
 	UPROPERTY(EditAnywhere, Category="Input")
 	TObjectPtr<UInputMappingContext> Context;
@@ -47,10 +45,4 @@ private:
 	void Look(const FInputActionValue& InputActionValue);
 	void Jump();
 	void Attack();
-	void PlayAttackMontage();
-
-	UFUNCTION(BlueprintCallable)
-	void AttackEnd();
-	UFUNCTION(BlueprintCallable)
-	void SetWeaponCollisionEnable(bool bIsLeftHandWeapon, ECollisionEnabled::Type CollisionEnabled);
 };

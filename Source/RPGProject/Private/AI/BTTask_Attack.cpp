@@ -15,7 +15,7 @@ EBTNodeResult::Type UBTTask_Attack::ExecuteTask(UBehaviorTreeComponent& OwnerCom
 	Super::ExecuteTask(OwnerComp, NodeMemory);
 
 	TObjectPtr<AEnemyCharacter> Character = Cast<AEnemyCharacter>(OwnerComp.GetAIOwner()->GetPawn());
-	
+	Character->Attack();
 
 	return EBTNodeResult::Succeeded;
 }

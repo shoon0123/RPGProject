@@ -20,8 +20,7 @@ public:
 
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void SetActionState(EActionState OtherActionState) override;
-
-
+	virtual void Attack() override;
 
 protected:
 	UPROPERTY(EditAnywhere, Category = "AI")
@@ -40,5 +39,5 @@ private:
 
 	void SpawnWeapon();
 
-
+	virtual void AttackEnd() override;
 };

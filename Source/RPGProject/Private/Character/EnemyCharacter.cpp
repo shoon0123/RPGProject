@@ -35,6 +35,15 @@ void AEnemyCharacter::SetActionState(EActionState OtherActionState)
 	EnemyAIController->GetBlackboardComponent()->SetValueAsEnum(FName("ActionState"), (uint8)OtherActionState);
 }
 
+void AEnemyCharacter::Attack()
+{
+	if (GetActionState() == EActionState::EAS_Unoccupied)
+	{
+		PlayAttackMontage();
+		SetActionState(EActionState::EAS_Attacking);
+	}
+}
+
 
 void AEnemyCharacter::BeginPlay()
 {
@@ -59,4 +68,9 @@ void AEnemyCharacter::SpawnWeapon()
 	Weapon = GetWorld()->SpawnActor<AWeapon>(WeaponClass, FVector::ZeroVector, FRotator::ZeroRotator);
 	Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, WeaponSocket);
 	Weapon->SetOwner(this);
+}
+
+void AEnemyCharacter::AttackEnd()
+{
+	SetActionState(EActionState::EAS_Unoccupied);
 }

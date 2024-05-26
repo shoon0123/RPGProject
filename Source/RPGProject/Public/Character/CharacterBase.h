@@ -10,6 +10,7 @@
 
 class UAttributeComponent;
 class UHealthBarComponent;
+class AWeapon;
 
 UCLASS(Abstract)
 class RPGPROJECT_API ACharacterBase : public ACharacter, public IHitInterface
@@ -26,6 +27,8 @@ public:
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 	virtual void Destroyed() override;
 
+	virtual void Attack() PURE_VIRTUAL(ACharacterBase::Attack, );
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -34,10 +37,15 @@ protected:
 	virtual void PlayDeathMontage(const FName& SectionName);
 	virtual void PlayHitReactMontage(const FName& SectionName);
 
-	virtual void DestroyWeapon() PURE_VIRTUAL(ACharacterBase::DestroyWeapon,);
+	virtual void DestroyWeapon() PURE_VIRTUAL(ACharacterBase::DestroyWeapon, );
+
+	virtual void PlayAttackMontage();
 
 	UPROPERTY(BlueprintReadOnly)
 	EDeathPose DeathPose = EDeathPose::EDP_Alive;
+
+	UPROPERTY(EditAnywhere, Category = "Montage")
+	TObjectPtr<UAnimMontage> AttackMontage;
 private:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UAttributeComponent> Attributes;
@@ -49,8 +57,6 @@ private:
 	EActionState ActionState = EActionState::EAS_Unoccupied;
 
 	// Animation Montages
-	UPROPERTY(EditAnywhere, Category = "Montage")
-	TObjectPtr<UAnimMontage> AttackMontage;
 	UPROPERTY(EditAnywhere, Category = "Montage")
 	TObjectPtr<UAnimMontage> HitReactMontage;
 	UPROPERTY(EditAnywhere, Category = "Montage")
@@ -64,4 +70,10 @@ private:
 
 	UFUNCTION(BlueprintCallable)
 	virtual void HitReactEnd();
+
+	UFUNCTION(BlueprintCallable)
+	virtual void AttackEnd() PURE_VIRTUAL(ACharacterBase::AttackEnd, );
+	UFUNCTION(BlueprintCallable)
+	virtual void SetWeaponCollisionEnable(AWeapon* Weapon, ECollisionEnabled::Type CollisionEnabled);
+
 };

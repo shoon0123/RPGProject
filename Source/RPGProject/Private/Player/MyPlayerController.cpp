@@ -5,8 +5,6 @@
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
 #include "Character/PlayerCharacter.h"
-#include "Components/BoxComponent.h"
-#include "Weapon/Weapon.h"
 
 AMyPlayerController::AMyPlayerController()
 {
@@ -77,59 +75,6 @@ void AMyPlayerController::Attack()
 {
 	if (ControlledCharacter)
 	{
-		if (ControlledCharacter->GetActionState() == EActionState::EAS_Attacking)
-		{
-			bDoNextAttack = true;
-		}
-		else
-		{
-			PlayAttackMontage();
-			ControlledCharacter->SetActionState(EActionState::EAS_Attacking);
-		}
-	}
-}
-
-void AMyPlayerController::PlayAttackMontage()
-{
-	if (ControlledCharacter)
-	{
-		TObjectPtr<UAnimInstance> AnimInstance = ControlledCharacter->GetMesh()->GetAnimInstance();
-		TObjectPtr<UAnimMontage> AttackMontage = ControlledCharacter->GetAttackMontage();
-		check(AnimInstance);
-		check(AttackMontage);
-		AnimInstance->Montage_Play(AttackMontage);
-		FName SectionName = FName("Attack1");
-		AnimInstance->Montage_JumpToSection(SectionName, AttackMontage);
-	}
-}
-
-void AMyPlayerController::AttackEnd()
-{
-	if (!bDoNextAttack && ControlledCharacter)
-	{
-		ControlledCharacter->SetActionState(EActionState::EAS_Unoccupied);
-		TObjectPtr<UAnimInstance> AnimInstance = ControlledCharacter->GetMesh()->GetAnimInstance();
-		TObjectPtr<UAnimMontage> AttackMontage = ControlledCharacter->GetAttackMontage();
-		check(AnimInstance);
-		check(AttackMontage);
-		AnimInstance->Montage_Stop(0.5f, AttackMontage);
-	}
-	bDoNextAttack = false;
-}
-
-void AMyPlayerController::SetWeaponCollisionEnable(bool bIsLeftHandWeapon, ECollisionEnabled::Type CollisionEnabled)
-{
-	if (ControlledCharacter)
-	{
-		if (bIsLeftHandWeapon)
-		{
-			ControlledCharacter->GetLeftHandWeapon()->GetWeaponBox()->SetCollisionEnabled(CollisionEnabled);
-			ControlledCharacter->GetLeftHandWeapon()->EmptyIgnoreActors();
-		}
-		else
-		{
-			ControlledCharacter->GetRightHandWeapon()->GetWeaponBox()->SetCollisionEnabled(CollisionEnabled);
-			ControlledCharacter->GetRightHandWeapon()->EmptyIgnoreActors();
-		}
+		ControlledCharacter->Attack();
 	}
 }
