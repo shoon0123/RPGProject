@@ -19,7 +19,7 @@ void UBTService_FindPlayer::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* N
 
 	AActor* TargetActor = ActorWithTag.IsEmpty() ? nullptr : ActorWithTag[0];
 	float Distance = OwningPawn->GetDistanceTo(TargetActor);
-	GEngine->AddOnScreenDebugMessage(-1, .5f, FColor::Orange, ActorWithTag[0]->GetName());
+	//GEngine->AddOnScreenDebugMessage(-1, .5f, FColor::Orange, ActorWithTag[0]->GetName());
 
 	UBTFunctionLibrary::SetBlackboardValueAsFloat(this, DistanceToTargetSelector, Distance);
 	UBTFunctionLibrary::SetBlackboardValueAsObject(this, TargetToFollowSelector, TargetActor);

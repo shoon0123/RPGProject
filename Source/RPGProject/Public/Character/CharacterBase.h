@@ -73,7 +73,5 @@ private:
 
 	UFUNCTION(BlueprintCallable)
 	virtual void AttackEnd() PURE_VIRTUAL(ACharacterBase::AttackEnd, );
-	UFUNCTION(BlueprintCallable)
-	virtual void SetWeaponCollisionEnable(AWeapon* Weapon, ECollisionEnabled::Type CollisionEnabled);
 
 };

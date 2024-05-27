@@ -25,9 +25,6 @@ protected:
 	virtual void SetupInputComponent() override;
 
 private:
-	UPROPERTY()
-	TObjectPtr<APlayerCharacter> ControlledCharacter;
-
 	//Input Actions
 	UPROPERTY(EditAnywhere, Category="Input")
 	TObjectPtr<UInputMappingContext> Context;

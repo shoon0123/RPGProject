@@ -72,7 +72,9 @@ void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 		true
 	);
 
-	if (BoxHit.GetActor())
+	const FName TargetTag = GetOwner()->ActorHasTag(FName("Player")) ? FName("Enemy") : FName("Player");
+
+	if (BoxHit.GetActor() && BoxHit.GetActor()->ActorHasTag(TargetTag))
 	{
 		UGameplayStatics::ApplyDamage(
 			BoxHit.GetActor(),
@@ -89,4 +91,10 @@ void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 		}
 		IgnoreActors.AddUnique(BoxHit.GetActor());
 	}
+}
+
+void AWeapon::CollisionEnable(ECollisionEnabled::Type CollisionEnabled)
+{
+	WeaponBox->SetCollisionEnabled(CollisionEnabled);
+	EmptyIgnoreActors();
 }

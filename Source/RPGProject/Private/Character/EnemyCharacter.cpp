@@ -10,9 +10,10 @@
 
 AEnemyCharacter::AEnemyCharacter()
 {
-	GetCharacterMovement()->bOrientRotationToMovement = true;
-	GetCharacterMovement()->RotationRate = FRotator(0.f, 1000.f, 0.f);
-	GetCharacterMovement()->MaxWalkSpeed = 300.f;
+	GetCharacterMovement()->bOrientRotationToMovement = false;
+	GetCharacterMovement()->RotationRate = FRotator(0.f, 500.f, 0.f);
+	GetCharacterMovement()->MaxWalkSpeed = 400.f;
+	GetCharacterMovement()->bUseControllerDesiredRotation = true;
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationRoll = false;
 	bUseControllerRotationYaw = false;

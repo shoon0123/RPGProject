@@ -42,4 +42,8 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
 	float Damage = 10.f;
+
+
+	UFUNCTION(BlueprintCallable)
+	void CollisionEnable(ECollisionEnabled::Type CollisionEnabled);
 };

@@ -195,15 +195,6 @@ void ACharacterBase::HitReactEnd()
 	SetActionState(EActionState::EAS_Unoccupied);
 }
 
-void ACharacterBase::SetWeaponCollisionEnable(AWeapon* Weapon, ECollisionEnabled::Type CollisionEnabled)
-{
-	if (Weapon)
-	{
-		Weapon->GetWeaponBox()->SetCollisionEnabled(CollisionEnabled);
-		Weapon->EmptyIgnoreActors();
-	}
-}
-
 void ACharacterBase::PlayAttackMontage()
 {
 	check(AttackMontage);

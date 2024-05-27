@@ -20,8 +20,6 @@ void AMyPlayerController::BeginPlay()
 	check(Context);
 	Subsystem->AddMappingContext(Context, 0);
 
-	ControlledCharacter = GetPawn<APlayerCharacter>();
-
 	bShowMouseCursor = false;
 	DefaultMouseCursor = EMouseCursor::Default;
 }
@@ -40,6 +38,11 @@ void AMyPlayerController::SetupInputComponent()
 
 void AMyPlayerController::Move(const FInputActionValue& InputActionValue)
 {
+	if (GetPawn<APlayerCharacter>() && GetPawn<APlayerCharacter>()->GetActionState() != EActionState::EAS_Unoccupied)
+	{
+		return;
+	}
+
 	const FVector2D InputAxisVector = InputActionValue.Get<FVector2D>();
 	const FRotator Rotation = GetControlRotation();
 	const FRotator YawRotation(0.f, Rotation.Yaw, 0.f);
@@ -49,10 +52,10 @@ void AMyPlayerController::Move(const FInputActionValue& InputActionValue)
 
 	const float WalkSpeed = 1 ;
 
-	if (ControlledCharacter)
+	if (GetPawn<APlayerCharacter>())
 	{
-		ControlledCharacter->AddMovementInput(ForwardDirection, InputAxisVector.Y * WalkSpeed);
-		ControlledCharacter->AddMovementInput(RightDirection, InputAxisVector.X * WalkSpeed);
+		GetPawn<APlayerCharacter>()->AddMovementInput(ForwardDirection, InputAxisVector.Y * WalkSpeed);
+		GetPawn<APlayerCharacter>()->AddMovementInput(RightDirection, InputAxisVector.X * WalkSpeed);
 	}
 }
 
@@ -65,16 +68,16 @@ void AMyPlayerController::Look(const FInputActionValue& InputActionValue)
 
 void AMyPlayerController::Jump()
 {
-	if (ControlledCharacter)
+	if (GetPawn<APlayerCharacter>())
 	{
-		ControlledCharacter->Jump();
+		GetPawn<APlayerCharacter>()->Jump();
 	}
 }
 
 void AMyPlayerController::Attack()
 {
-	if (ControlledCharacter)
+	if (GetPawn<APlayerCharacter>())
 	{
-		ControlledCharacter->Attack();
+		GetPawn<APlayerCharacter>()->Attack();
 	}
 }

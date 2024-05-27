@@ -28,14 +28,15 @@ protected:
 	UPROPERTY()
 	TObjectPtr<AEnemyAIController> EnemyAIController;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Weapon")
+	TObjectPtr<UBlueprint> WeaponType;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon")
+	TObjectPtr<AWeapon> Weapon;
+
 	virtual void BeginPlay() override;
 	virtual void DestroyWeapon() override;
 
 private:
-	UPROPERTY(EditAnywhere, Category = "Weapon")
-	TObjectPtr<UBlueprint> WeaponType;
-	UPROPERTY(VisibleAnywhere, Category = "Weapon")
-	TObjectPtr<AWeapon> Weapon;
 
 	void SpawnWeapon();
 
