@@ -30,7 +30,7 @@ void APlayerCharacter::Attack()
     }
     else if(GetActionState() == EActionState::EAS_Unoccupied)
     {
-        PlayAttackMontage();
+        PlayMontageSection(AttackMontage, FName("Attack1"));
         SetActionState(EActionState::EAS_Attacking);
     }
 }

@@ -15,7 +15,6 @@ class RPGPROJECT_API AWeapon : public AActor
 	
 public:
 	AWeapon();
-	TObjectPtr<UBoxComponent> GetWeaponBox() const;
 	void EmptyIgnoreActors();
 
 protected:
@@ -46,4 +45,5 @@ private:
 
 	UFUNCTION(BlueprintCallable)
 	void CollisionEnable(ECollisionEnabled::Type CollisionEnabled);
+
 };

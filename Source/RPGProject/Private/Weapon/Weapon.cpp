@@ -14,7 +14,6 @@ AWeapon::AWeapon()
 	Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	SetRootComponent(Mesh);
 
-	
 	WeaponBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Weapon Box"));
 	WeaponBox->SetupAttachment(GetRootComponent());
 	WeaponBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
@@ -22,14 +21,9 @@ AWeapon::AWeapon()
 	WeaponBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
 
 	BoxTraceStart = CreateDefaultSubobject<USceneComponent>(TEXT("Box Trace Start"));
-	BoxTraceStart->SetupAttachment(GetWeaponBox());
+	BoxTraceStart->SetupAttachment(WeaponBox);
 	BoxTraceEnd = CreateDefaultSubobject<USceneComponent>(TEXT("Box Trace End"));
-	BoxTraceEnd->SetupAttachment(GetWeaponBox());
-}
-
-TObjectPtr<UBoxComponent> AWeapon::GetWeaponBox() const
-{
-	return TObjectPtr<UBoxComponent>(WeaponBox);
+	BoxTraceEnd->SetupAttachment(WeaponBox);
 }
 
 void AWeapon::EmptyIgnoreActors()

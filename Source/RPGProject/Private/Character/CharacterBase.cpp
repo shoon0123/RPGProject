@@ -15,11 +15,7 @@ ACharacterBase::ACharacterBase()
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 
-	GetCapsuleComponent()->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
-	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
-	GetCapsuleComponent()->SetGenerateOverlapEvents(true);
-	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
-	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	SetUpCollision();
 
 	Attributes = CreateDefaultSubobject<UAttributeComponent>(TEXT("Attributes"));
 	HealthBarWidget = CreateDefaultSubobject<UHealthBarComponent>(TEXT("HealthBar"));
@@ -43,13 +39,11 @@ UAnimMontage* ACharacterBase::GetAttackMontage() const
 
 void ACharacterBase::GetHit(const FVector& ImpactPoint, AActor* Hitter)
 {
-	//DrawDebugSphere(GetWorld(), ImpactPoint, 25.f, 12, FColor::Red, false, 5.f, 0, 0.5f);
-
 	check(Attributes);
 	if (Attributes->IsAlive())
 	{
 		SetActionState(EActionState::EAS_HitReaction);
-		DirectionalHitReact(Hitter->GetActorLocation());
+		DirectionalHitReact(Hitter);
 		HealthBarWidget->SetVisibility(true);
 	}
 	else
@@ -58,6 +52,7 @@ void ACharacterBase::GetHit(const FVector& ImpactPoint, AActor* Hitter)
 		Die();
 	}
 	
+
 	check(HitSound);
 	UGameplayStatics::PlaySoundAtLocation(
 		this,
@@ -131,24 +126,24 @@ void ACharacterBase::Die()
 	default:
 		break;
 	}
-	PlayDeathMontage(SectionName);
+	PlayMontageSection(DeathMontage, SectionName);
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	SetLifeSpan(5.f);
 	HealthBarWidget->SetVisibility(false);
 }
 
-void ACharacterBase::DirectionalHitReact(const FVector& HitterLocation)
+void ACharacterBase::DirectionalHitReact(const AActor* Hitter)
 {
-	const FVector Forward = GetActorForwardVector();
-	const FVector HitterVector = HitterLocation - GetActorLocation();
+	const FVector HitterVector = Hitter->GetActorLocation() - GetActorLocation();
 	const FVector HitterVectorXY = FVector(HitterVector.X, HitterVector.Y, 0).GetSafeNormal();
 	
 	GetCharacterMovement()->AddImpulse(-HitterVectorXY * 100000);
 
-	const double CosTheta = FVector::DotProduct(Forward, HitterVectorXY);
+	const double CosTheta = FVector::DotProduct(GetActorForwardVector(), HitterVectorXY);
 	double Theta = FMath::Acos(CosTheta);
 	Theta = FMath::RadiansToDegrees(Theta);
-	const FVector CrossProduct = FVector::CrossProduct(Forward, HitterVectorXY);
+	const FVector CrossProduct = FVector::CrossProduct(GetActorForwardVector(), HitterVectorXY);
+
 	if (CrossProduct.Z < 0)
 	{
 		Theta *= -1.f;
@@ -169,25 +164,16 @@ void ACharacterBase::DirectionalHitReact(const FVector& HitterLocation)
 		Section = FName("Right");
 	}
 
-	PlayHitReactMontage(Section);
+	PlayMontageSection(HitReactMontage, Section);
 }
 
-void ACharacterBase::PlayDeathMontage(const FName& SectionName)
+void ACharacterBase::PlayMontageSection(UAnimMontage* Montage, const FName& SectionName)
 {
-	check(HitReactMontage);
+	check(Montage);
 	TObjectPtr<UAnimInstance> AnimInstance = GetMesh()->GetAnimInstance();
 	check(AnimInstance);
-	AnimInstance->Montage_Play(DeathMontage);
-	AnimInstance->Montage_JumpToSection(SectionName, DeathMontage);
-}
-
-void ACharacterBase::PlayHitReactMontage(const FName& SectionName)
-{
-	check(HitReactMontage);
-	TObjectPtr<UAnimInstance> AnimInstance = GetMesh()->GetAnimInstance();
-	check(AnimInstance);
-	AnimInstance->Montage_Play(HitReactMontage);
-	AnimInstance->Montage_JumpToSection(SectionName, HitReactMontage);
+	AnimInstance->Montage_Play(Montage);
+	AnimInstance->Montage_JumpToSection(SectionName, Montage);
 }
 
 void ACharacterBase::HitReactEnd()
@@ -195,12 +181,11 @@ void ACharacterBase::HitReactEnd()
 	SetActionState(EActionState::EAS_Unoccupied);
 }
 
-void ACharacterBase::PlayAttackMontage()
+void ACharacterBase::SetUpCollision()
 {
-	check(AttackMontage);
-	TObjectPtr<UAnimInstance> AnimInstance = GetMesh()->GetAnimInstance();
-	check(AnimInstance);
-	AnimInstance->Montage_Play(AttackMontage);
-	FName SectionName = FName("Attack1");
-	AnimInstance->Montage_JumpToSection(SectionName, AttackMontage);
+	GetCapsuleComponent()->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
+	GetCapsuleComponent()->SetGenerateOverlapEvents(true);
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
