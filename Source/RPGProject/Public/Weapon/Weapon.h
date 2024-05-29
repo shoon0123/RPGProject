@@ -15,6 +15,7 @@ class RPGPROJECT_API AWeapon : public AActor
 	
 public:
 	AWeapon();
+
 	void EmptyIgnoreActors();
 
 protected:
@@ -41,7 +42,6 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
 	float Damage = 10.f;
-
 
 	UFUNCTION(BlueprintCallable)
 	void CollisionEnable(ECollisionEnabled::Type CollisionEnabled);

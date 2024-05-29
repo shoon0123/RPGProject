@@ -5,6 +5,7 @@
 #include "AIController.h"
 #include "BehaviorTree/BTFunctionLibrary.h"
 #include "Kismet/GameplayStatics.h"
+#include "Character/EnemyCharacter.h"
 
 void UBTService_FindPlayer::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
@@ -19,6 +20,7 @@ void UBTService_FindPlayer::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* N
 
 	AActor* TargetActor = ActorWithTag.IsEmpty() ? nullptr : ActorWithTag[0];
 	float Distance = OwningPawn->GetDistanceTo(TargetActor);
+	Cast<AEnemyCharacter>(OwningPawn)->SetCombatTarget(TargetActor);
 	//GEngine->AddOnScreenDebugMessage(-1, .5f, FColor::Orange, ActorWithTag[0]->GetName());
 
 	UBTFunctionLibrary::SetBlackboardValueAsFloat(this, DistanceToTargetSelector, Distance);

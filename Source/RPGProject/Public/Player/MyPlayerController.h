@@ -22,24 +22,32 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+
 	virtual void SetupInputComponent() override;
 
 private:
 	//Input Actions
 	UPROPERTY(EditAnywhere, Category="Input")
 	TObjectPtr<UInputMappingContext> Context;
+
 	UPROPERTY(EditAnywhere, Category="Input")
 	TObjectPtr<UInputAction> MoveAction;
+
 	UPROPERTY(EditAnywhere, Category = "Input")
 	TObjectPtr<UInputAction> LookAction;
+
 	UPROPERTY(EditAnywhere, Category = "Input")
 	TObjectPtr<UInputAction> JumpAction;
+
 	UPROPERTY(EditAnywhere, Category = "Input")
 	TObjectPtr<UInputAction> AttackAction;
 
 
 	void Move(const FInputActionValue& InputActionValue);
+
 	void Look(const FInputActionValue& InputActionValue);
+
 	void Jump();
+
 	void Attack();
 };
