@@ -17,6 +17,8 @@ ACharacterBase::ACharacterBase()
 
 	SetUpCollision();
 
+	GetCharacterMovement()->FallingLateralFriction = 2.0f;
+
 	Attributes = CreateDefaultSubobject<UAttributeComponent>(TEXT("Attributes"));
 	HealthBarWidget = CreateDefaultSubobject<UHealthBarComponent>(TEXT("HealthBar"));
 	HealthBarWidget->SetupAttachment(GetRootComponent());
