@@ -50,12 +50,11 @@ void AMyPlayerController::Move(const FInputActionValue& InputActionValue)
 	const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 	const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 
-	const float WalkSpeed = 1 ;
 
 	if (GetPawn<APlayerCharacter>())
 	{
-		GetPawn<APlayerCharacter>()->AddMovementInput(ForwardDirection, InputAxisVector.Y * WalkSpeed);
-		GetPawn<APlayerCharacter>()->AddMovementInput(RightDirection, InputAxisVector.X * WalkSpeed);
+		GetPawn<APlayerCharacter>()->AddMovementInput(ForwardDirection, InputAxisVector.Y);
+		GetPawn<APlayerCharacter>()->AddMovementInput(RightDirection, InputAxisVector.X);
 	}
 }
 

@@ -58,9 +58,8 @@ void APlayerCharacter::SetSpringArm()
 {
     SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
     SpringArm->SetupAttachment(GetRootComponent());
-    SpringArm->AddLocalOffset(FVector3d(0.f, 0.f, 100.f));
-    SpringArm->AddLocalRotation(FRotator(-30.f, 0.f, 0.f));
-    SpringArm->TargetArmLength = 500.0f;
+    SpringArm->AddLocalOffset(FVector3d(0.f, 0.f, 70.f));
+    SpringArm->TargetArmLength = 400.0f;
     SpringArm->bUsePawnControlRotation = true;
     SpringArm->bEnableCameraLag = true;
     SpringArm->bInheritPitch = true;

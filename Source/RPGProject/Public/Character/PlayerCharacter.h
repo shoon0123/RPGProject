@@ -26,21 +26,27 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Weapon")
 	TObjectPtr<AWeapon> LeftHandWeapon;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Weapon")
 	TObjectPtr<AWeapon> RightHandWeapon;
+
 private:
 	UPROPERTY(VisibleAnywhere, Category = "Camera")
 	TObjectPtr<USpringArmComponent> SpringArm;
+
 	UPROPERTY(VisibleAnywhere, Category = "Camera")
 	TObjectPtr<UCameraComponent> Camera;
 
 	UPROPERTY(EditAnywhere, Category = "Weapon")
 	TObjectPtr<UBlueprint> LeftHandWeaponType;
+
 	UPROPERTY(EditAnywhere, Category = "Weapon")
 	TObjectPtr<UBlueprint> RightHandWeaponType;
 	
 	void SetSpringArm();
+
 	void SetCamera();
+	
 	void SpawnWeapons();
 
 	bool bDoNextAttack = false;

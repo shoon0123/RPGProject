@@ -72,7 +72,7 @@ void ACharacterBase::GetHit(const FVector& ImpactPoint, AActor* Hitter)
 		FName("Hit"),
 		ImpactPoint,
 		ImpactPointVector.Rotation(),
-		GetActorScale(),
+		GetActorScale() * 2,
 		EAttachLocation::KeepWorldPosition
 	);
 
