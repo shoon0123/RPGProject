@@ -23,6 +23,7 @@ public:
 	virtual void NativeUpdateAnimation(float DeltaTime) override;
 	virtual void NativeBeginPlay() override;
 
+protected:
 	UPROPERTY(BlueprintReadOnly)
 	TObjectPtr<ACharacterBase> Character;
 
@@ -37,5 +38,8 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, Category = Movement)
 	bool IsFalling;
+
+	UPROPERTY(BlueprintReadOnly, Category = Movement)
+	float Angle;
 
 };

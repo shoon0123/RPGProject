@@ -14,10 +14,13 @@ class RPGPROJECT_API UAttributeComponent : public UActorComponent
 
 public:	
 	UAttributeComponent();
+
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	
 	void ReceiveDamage(float Damage);
+
 	float GetHealthPercent();
+
 	bool IsAlive();
 
 protected:
@@ -29,6 +32,4 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Actor Attributes")
 	float MaxHealth = 100;
-
-
 };

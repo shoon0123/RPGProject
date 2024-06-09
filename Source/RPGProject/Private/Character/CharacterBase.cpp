@@ -17,6 +17,8 @@ ACharacterBase::ACharacterBase()
 
 	SetUpCollision();
 
+	GetCharacterMovement()->bConstrainToPlane = true;
+	GetCharacterMovement()->bSnapToPlaneAtStart = true;
 	GetCharacterMovement()->FallingLateralFriction = 2.0f;
 
 	Attributes = CreateDefaultSubobject<UAttributeComponent>(TEXT("Attributes"));

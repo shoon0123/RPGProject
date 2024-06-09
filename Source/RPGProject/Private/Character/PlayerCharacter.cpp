@@ -3,6 +3,7 @@
 
 #include "Character/PlayerCharacter.h"
 #include "Camera/CameraComponent.h"
+#include "Components/TargetingComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Weapon/Weapon.h"
@@ -11,11 +12,11 @@ APlayerCharacter::APlayerCharacter()
 {
     SetSpringArm();
     SetCamera();
+    SetTargetingComponent();
 
     GetCharacterMovement()->bOrientRotationToMovement = true;
     GetCharacterMovement()->RotationRate = FRotator(0.f, 1000.f, 0.f);
-    GetCharacterMovement()->bConstrainToPlane = true;
-    GetCharacterMovement()->bSnapToPlaneAtStart = true;
+    GetCharacterMovement()->MaxWalkSpeed = 500.f;
 
     bUseControllerRotationPitch = false;
     bUseControllerRotationRoll = false;
@@ -24,6 +25,10 @@ APlayerCharacter::APlayerCharacter()
 
 void APlayerCharacter::Attack()
 {
+    if (GetCharacterMovement()->IsFalling())
+    {
+        return;
+    }
     if (GetActionState() == EActionState::EAS_Attacking)
     {
         bDoNextAttack = true;
@@ -71,6 +76,12 @@ void APlayerCharacter::SetCamera()
 {
     Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
     Camera->SetupAttachment(SpringArm);
+}
+
+void APlayerCharacter::SetTargetingComponent()
+{
+    Targeting = CreateDefaultSubobject<UTargetingComponent>(TEXT("Targeting"));
+    Targeting->SetupAttachment(GetRootComponent());
 }
 
 void APlayerCharacter::SpawnWeapons()

@@ -42,6 +42,10 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Input")
 	TObjectPtr<UInputAction> AttackAction;
 
+	UPROPERTY(EditAnywhere, Category = "Input")
+	TObjectPtr<UInputAction> LockonAction;
+
+	bool bIsLockingOn = false;
 
 	void Move(const FInputActionValue& InputActionValue);
 
@@ -50,4 +54,6 @@ private:
 	void Jump();
 
 	void Attack();
+
+	void LockOn();
 };

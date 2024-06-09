@@ -38,6 +38,10 @@ void AEnemyCharacter::SetActionState(EActionState OtherActionState)
 
 void AEnemyCharacter::Attack()
 {
+	if (GetCharacterMovement()->IsFalling())
+	{
+		return;
+	}
 	if (GetActionState() == EActionState::EAS_Unoccupied)
 	{
 		const int32 Selection = FMath::RandRange(0, 3);

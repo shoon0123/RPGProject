@@ -9,21 +9,9 @@
 
 AWeapon::AWeapon()
 {
-	Mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Weapon"));
-	Mesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
-	Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	SetRootComponent(Mesh);
-
-	WeaponBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Weapon Box"));
-	WeaponBox->SetupAttachment(GetRootComponent());
-	WeaponBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	WeaponBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap); 
-	WeaponBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
-
-	BoxTraceStart = CreateDefaultSubobject<USceneComponent>(TEXT("Box Trace Start"));
-	BoxTraceStart->SetupAttachment(WeaponBox);
-	BoxTraceEnd = CreateDefaultSubobject<USceneComponent>(TEXT("Box Trace End"));
-	BoxTraceEnd->SetupAttachment(WeaponBox);
+	SetMesh();
+	SetWeaponBox();
+	SetBoxTraceStartEnd();
 }
 
 void AWeapon::EmptyIgnoreActors()
@@ -91,4 +79,29 @@ void AWeapon::CollisionEnable(ECollisionEnabled::Type CollisionEnabled)
 {
 	WeaponBox->SetCollisionEnabled(CollisionEnabled);
 	EmptyIgnoreActors();
+}
+
+void AWeapon::SetMesh()
+{
+	Mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Weapon"));
+	Mesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+	Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	SetRootComponent(Mesh);
+}
+
+void AWeapon::SetWeaponBox()
+{
+	WeaponBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Weapon Box"));
+	WeaponBox->SetupAttachment(GetRootComponent());
+	WeaponBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	WeaponBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
+	WeaponBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
+}
+
+void AWeapon::SetBoxTraceStartEnd()
+{
+	BoxTraceStart = CreateDefaultSubobject<USceneComponent>(TEXT("Box Trace Start"));
+	BoxTraceStart->SetupAttachment(WeaponBox);
+	BoxTraceEnd = CreateDefaultSubobject<USceneComponent>(TEXT("Box Trace End"));
+	BoxTraceEnd->SetupAttachment(WeaponBox);
 }

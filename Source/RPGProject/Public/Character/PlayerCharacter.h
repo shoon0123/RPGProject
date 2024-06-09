@@ -9,6 +9,7 @@
 class AWeapon;
 class USpringArmComponent;
 class UCameraComponent;
+class UTargetingComponent;
 
 UCLASS()
 class RPGPROJECT_API APlayerCharacter : public ACharacterBase
@@ -42,10 +43,15 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Weapon")
 	TObjectPtr<UBlueprint> RightHandWeaponType;
+
+	UPROPERTY(EditAnywhere, Category = "Targeting")
+	TObjectPtr<UTargetingComponent> Targeting;
 	
 	void SetSpringArm();
 
 	void SetCamera();
+
+	void SetTargetingComponent();
 	
 	void SpawnWeapons();
 

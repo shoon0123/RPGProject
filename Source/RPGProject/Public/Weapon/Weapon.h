@@ -46,4 +46,10 @@ private:
 	UFUNCTION(BlueprintCallable)
 	void CollisionEnable(ECollisionEnabled::Type CollisionEnabled);
 
+	void SetMesh();
+
+	void SetWeaponBox();
+
+	void SetBoxTraceStartEnd();
+
 };

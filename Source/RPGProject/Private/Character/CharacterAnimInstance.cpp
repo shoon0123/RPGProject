@@ -32,6 +32,7 @@ void UCharacterAnimInstance::NativeUpdateAnimation(float DeltaTime)
 	{
 		GroundSpeed = UKismetMathLibrary::VSizeXY(CharacterMovement->Velocity);
 		IsFalling = CharacterMovement->IsFalling();
+		Angle = UKismetMathLibrary::InverseTransformDirection(Character->GetActorTransform(), CharacterMovement->Velocity).Rotation().Yaw;
 	}
 }
 
