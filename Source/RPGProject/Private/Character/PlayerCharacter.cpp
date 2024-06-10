@@ -40,6 +40,16 @@ void APlayerCharacter::Attack()
     }
 }
 
+TObjectPtr<UTargetingComponent> APlayerCharacter::GetTargetingComponent()
+{
+    return TargetingComponent;
+}
+
+FVector APlayerCharacter::GetCameraLocation() const
+{
+    return Camera->GetComponentLocation();
+}
+
 void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay(); 
@@ -80,8 +90,8 @@ void APlayerCharacter::SetCamera()
 
 void APlayerCharacter::SetTargetingComponent()
 {
-    Targeting = CreateDefaultSubobject<UTargetingComponent>(TEXT("Targeting"));
-    Targeting->SetupAttachment(GetRootComponent());
+    TargetingComponent = CreateDefaultSubobject<UTargetingComponent>(TEXT("Targeting"));
+    TargetingComponent->SetupAttachment(GetRootComponent());
 }
 
 void APlayerCharacter::SpawnWeapons()

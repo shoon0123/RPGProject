@@ -6,6 +6,7 @@
 #include "EnhancedInputComponent.h"
 #include "Character/PlayerCharacter.h"
 #include "Character/EnemyCharacter.h"
+#include "Components/TargetingComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 AMyPlayerController::AMyPlayerController()
@@ -63,6 +64,10 @@ void AMyPlayerController::Move(const FInputActionValue& InputActionValue)
 
 void AMyPlayerController::Look(const FInputActionValue& InputActionValue)
 {
+	if (bIsLockingOn)
+	{
+		return;
+	}
 	const FVector2D InputAxisVector = InputActionValue.Get<FVector2D>();
 	AddPitchInput(-InputAxisVector.Y);
 	AddYawInput(InputAxisVector.X);
@@ -86,72 +91,33 @@ void AMyPlayerController::Attack()
 
 void AMyPlayerController::LockOn()
 {
-	if (bIsLockingOn)
+	if (TObjectPtr<AActor> Target = GetPawn<APlayerCharacter>()->GetTargetingComponent()->FindTarget())
 	{
-		if (GetPawn<ACharacter>())
+		DrawDebugSphere(GetWorld(), Target->GetActorLocation(), 100.f, 20, FColor::Blue, false, 1.f);
+
+		if (bIsLockingOn)
 		{
-			GetPawn<ACharacter>()->GetCharacterMovement()->bOrientRotationToMovement = true;
-			GetPawn<ACharacter>()->GetCharacterMovement()->bUseControllerDesiredRotation = false;
-			bIsLockingOn = false;
-		}
-	}
-	else
-	{
-		if (GetPawn<APlayerCharacter>())
-		{
-			GetPawn<APlayerCharacter>()->GetCharacterMovement()->bOrientRotationToMovement = false;
-			GetPawn<APlayerCharacter>()->GetCharacterMovement()->bUseControllerDesiredRotation = true;
-			bIsLockingOn = true;
-		}
-	}
-	
-	const FVector PlayerLocation = GetPawn<AActor>()->GetActorLocation();
-
-	TArray<FHitResult> HitResults;
-	TArray<AActor*> TargetableActors;
-
-	bool bIsHit = GetWorld()->SweepMultiByChannel(HitResults, PlayerLocation, PlayerLocation, FQuat::Identity,
-		ECollisionChannel::ECC_GameTraceChannel1, FCollisionShape::MakeSphere(2000.f));
-	if (bIsHit)
-	{
-		for (const FHitResult& Hit : HitResults)
-		{
-			DrawDebugSphere(GetWorld(), Hit.GetActor()->GetActorLocation(),
-				100.f, 20, FColor::Red, false, 1.f);
-		}
-	}
-
-
-
-
-	/**
-	if (bIsHit)
-	{
-		for (FHitResult Hit : HitResults)
-		{
-			if (Hit.Actor.IsValid() == true)
+			if (GetPawn<ACharacter>())
 			{
-				AEnemyCharacter* HitedAI = Cast<AEnemyCharacter>(Hit.Actor);
-				if (IsValid(HitedAI) == true && HitedAI->IsDead() == false)
-				{
-					if (bInScreenPosition)
-					{
-						TTuple<FVector2D, bool> ActorScreenPosition = GetScreenPositionOfActor(HitedAI);
-						if (IsInViewport(ActorScreenPosition.Get<0>()) == true && ActorScreenPosition.Get<1>() == true)
-						{
-							// 중복되지 않게 TargetableActors Array에 추가합니다.
-							TargetableActors.AddUnique(Cast<AActor>(Hit.Actor));
-						}
-					}
-					else
-					{
-						// 중복되지 않게 TargetableActors Array에 추가합니다.
-						TargetableActors.AddUnique(Cast<AActor>(Hit.Actor));
-					}
-				}
+				GetPawn<APlayerCharacter>()->GetTargetingComponent()->SetTarget(nullptr);
+
+				GetPawn<ACharacter>()->GetCharacterMovement()->bOrientRotationToMovement = true;
+				GetPawn<ACharacter>()->GetCharacterMovement()->bUseControllerDesiredRotation = false;
+				bIsLockingOn = false;
 			}
 		}
+		else
+		{
+			if (GetPawn<APlayerCharacter>())
+			{
+				GetPawn<APlayerCharacter>()->GetTargetingComponent()->SetTarget(Target);
+
+				GetPawn<APlayerCharacter>()->GetCharacterMovement()->bOrientRotationToMovement = false;
+				GetPawn<APlayerCharacter>()->GetCharacterMovement()->bUseControllerDesiredRotation = true;
+				bIsLockingOn = true;
+			}
+		}
+
 	}
-	*/
 
 }

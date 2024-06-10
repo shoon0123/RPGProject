@@ -2,6 +2,9 @@
 
 
 #include "Components/TargetingComponent.h"
+#include "Character/PlayerCharacter.h"
+#include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetMathLibrary.h"
 
 UTargetingComponent::UTargetingComponent()
 {
@@ -14,6 +17,40 @@ void UTargetingComponent::SetTargetableDistance(float Distance)
 {
 	TargetableDistance = Distance;
 	SetSphereRadius(Distance);
+}
+
+TObjectPtr<AActor> UTargetingComponent::FindTarget()
+{
+	TObjectPtr<AActor> TargetActor;
+
+	if (TObjectPtr<APlayerController> PlayerController = Cast<APlayerController>(Cast<APawn>(GetOwner())->GetController()))
+	{
+		FVector2D ScreenPosition;
+		const FVector2D ViewportSize = GEngine->GameViewport->Viewport->GetSizeXY();
+		long MinimumDistance = LONG_MAX;
+
+		for (TObjectPtr<AActor> TargetableActor : TargetableActors)
+		{
+			ScreenPosition = FVector2D::ZeroVector;
+			if (UGameplayStatics::ProjectWorldToScreen(PlayerController, TargetableActor->GetActorLocation(), ScreenPosition))
+			{
+				const double Distance = FVector2D::Distance(ScreenPosition, ViewportSize * 0.5f);
+				if (Distance < MinimumDistance)
+				{
+					MinimumDistance = Distance;
+					TargetActor = TargetableActor;
+				}
+			}
+		}
+	}
+	
+
+	return TargetActor;
+}
+
+void UTargetingComponent::SetTarget(TObjectPtr<AActor> Actor)
+{
+	Target = Actor;
 }
 
 void UTargetingComponent::BeginPlay()
@@ -31,9 +68,29 @@ void UTargetingComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	for (TObjectPtr<AActor> Target : TargetableActors)
+	for (TObjectPtr<AActor> TargetableActor : TargetableActors)
 	{
-		DrawDebugSphere(GetWorld(), Target->GetActorLocation(), 30.f, 20, FColor::Red, false);
+		DrawDebugSphere(GetWorld(), TargetableActor->GetActorLocation(), 30.f, 20, FColor::Red, false);
+	}
+
+	if (IsValid(Target))
+	{
+		if (TObjectPtr<AController> Controller = Cast<APawn>(GetOwner())->GetController())
+		{
+			const FRotator PlayerControllerRotator = Controller->GetControlRotation();
+			const FVector CameraLocation = Cast<APlayerCharacter>(GetOwner())->GetCameraLocation();
+			const FVector TargetLocation = Target->GetActorLocation();
+			
+			
+			// 2개의 위치 벡터를 입력하여 2번 째 인자의 위치 벡터를 바라보는 방향정보를 반환합니다.
+			const FRotator LookAtTarget = UKismetMathLibrary::FindLookAtRotation(CameraLocation, TargetLocation);
+			// 1번 째 인자에서 2번 째 인자로 회전 보간합니다.
+			const FRotator RInterpToRotator = FMath::RInterpTo(PlayerControllerRotator, LookAtTarget,
+				GetWorld()->GetDeltaSeconds(), InterpSpeed);
+
+
+			Controller->SetControlRotation(RInterpToRotator);
+		}
 	}
 }
 
@@ -53,6 +110,7 @@ void UTargetingComponent::AddTargetableActor(TObjectPtr<AActor> Actor)
 	{
 		TargetableActors.Add(Actor);
 	}
+
 }
 
 void UTargetingComponent::RemoveTargetableActor(TObjectPtr<AActor> Actor)
@@ -77,9 +135,9 @@ void UTargetingComponent::InitializeTargetableActors()
 	}
 }
 
-bool UTargetingComponent::IsTargetable(TObjectPtr<AActor> Target)
+bool UTargetingComponent::IsTargetable(TObjectPtr<AActor> Actor)
 {
-	return Target->ActorHasTag(FName("Enemy"));
+	return Actor->ActorHasTag(FName("Enemy"));
 }
 
 void UTargetingComponent::SetCollision()

@@ -21,7 +21,7 @@ public:
 
 	TObjectPtr<AActor> FindTarget();
 
-	float GetScreenPosition();
+	void SetTarget(TObjectPtr<AActor> Actor);
 
 protected:
 	virtual void BeginPlay() override;
@@ -38,8 +38,14 @@ private:
 	UPROPERTY(EditAnywhere)
 	float TargetableDistance = 3000.f;
 
+	UPROPERTY(EditAnywhere)
+	float InterpSpeed = 10.f;
+
 	UPROPERTY(VisibleInstanceOnly)
 	TSet<TObjectPtr<AActor>> TargetableActors;
+
+	UPROPERTY(VisibleInstanceOnly)
+	TObjectPtr<AActor> Target;
 
 	void AddTargetableActor(TObjectPtr<AActor> Actor);
 
@@ -47,7 +53,7 @@ private:
 
 	void InitializeTargetableActors();
 
-	bool IsTargetable(TObjectPtr<AActor> Target);
+	bool IsTargetable(TObjectPtr<AActor> Actor);
 
 	void SetCollision();
 };

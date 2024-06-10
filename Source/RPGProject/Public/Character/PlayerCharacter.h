@@ -21,8 +21,13 @@ public:
 
 	virtual void Attack() override;
 
+	TObjectPtr<UTargetingComponent> GetTargetingComponent();
+
+	FVector GetCameraLocation() const;
+
 protected:
 	virtual void BeginPlay() override;
+
 	virtual void DestroyWeapon() override;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Weapon")
@@ -45,7 +50,7 @@ private:
 	TObjectPtr<UBlueprint> RightHandWeaponType;
 
 	UPROPERTY(EditAnywhere, Category = "Targeting")
-	TObjectPtr<UTargetingComponent> Targeting;
+	TObjectPtr<UTargetingComponent> TargetingComponent;
 	
 	void SetSpringArm();
 
