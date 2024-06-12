@@ -6,9 +6,9 @@
 #include "Components/SphereComponent.h"
 #include "TargetingComponent.generated.h"
 
-/**
- * 
- */
+class APlayerCharacter;
+class APlayerController;
+
 UCLASS()
 class RPGPROJECT_API UTargetingComponent : public USphereComponent
 {
@@ -17,13 +17,16 @@ class RPGPROJECT_API UTargetingComponent : public USphereComponent
 public:
 	UTargetingComponent();
 
-	void SetTargetableDistance(float Distance);
+	void ExecuteLockOn();
 
-	TObjectPtr<AActor> FindTarget();
+	void CancelLockOn();
 
-	void SetTarget(TObjectPtr<AActor> Actor);
+	bool IsLockOn();
 
 protected:
+	UPROPERTY()
+	TObjectPtr<APlayerCharacter> PlayerCharacter;
+
 	virtual void BeginPlay() override;
 
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
@@ -47,13 +50,24 @@ private:
 	UPROPERTY(VisibleInstanceOnly)
 	TObjectPtr<AActor> Target;
 
+	bool bIsLockOn = false;
+
 	void AddTargetableActor(TObjectPtr<AActor> Actor);
 
-	void RemoveTargetableActor(TObjectPtr<AActor> Actor);
+	TObjectPtr<AActor> FindTarget();
 
 	void InitializeTargetableActors();
 
 	bool IsTargetable(TObjectPtr<AActor> Actor);
 
-	void SetCollision();
+	void RemoveTargetableActor(TObjectPtr<AActor> Actor);
+
+	void SetupCollision();
+
+	void SetTarget(TObjectPtr<AActor> Actor);
+
+	void SetTargetableDistance(float Distance);
+
+	void UpdateCamera();
+
 };

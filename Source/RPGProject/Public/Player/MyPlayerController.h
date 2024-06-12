@@ -17,8 +17,11 @@ UCLASS()
 class RPGPROJECT_API AMyPlayerController : public APlayerController
 {
 	GENERATED_BODY()
+
 public:
 	AMyPlayerController();
+
+	void SetLockOnState(bool State);
 
 protected:
 	virtual void BeginPlay() override;
@@ -45,7 +48,7 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Input")
 	TObjectPtr<UInputAction> LockonAction;
 
-	bool bIsLockingOn = false;
+	bool bIsLockOn = false;
 
 	void Move(const FInputActionValue& InputActionValue);
 

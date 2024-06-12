@@ -14,12 +14,17 @@ AMyPlayerController::AMyPlayerController()
 	bReplicates = true;
 }
 
+void AMyPlayerController::SetLockOnState(bool State)
+{
+	bIsLockOn = State;
+}
+
 void AMyPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 	//ULocalPlayer의 라이프타임과 동일하며 레벨 이동에 따라 이동된다.
 	TObjectPtr<UEnhancedInputLocalPlayerSubsystem> Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer());
-	check(Subsystem);
+
 	check(Context);
 	Subsystem->AddMappingContext(Context, 0);
 
@@ -42,29 +47,27 @@ void AMyPlayerController::SetupInputComponent()
 
 void AMyPlayerController::Move(const FInputActionValue& InputActionValue)
 {
-	if (GetPawn<APlayerCharacter>() && GetPawn<APlayerCharacter>()->GetActionState() != EActionState::EAS_Unoccupied)
+	if (TObjectPtr<APlayerCharacter> PlayerCharacter = GetPawn<APlayerCharacter>())
 	{
-		return;
-	}
+		if (PlayerCharacter->GetActionState() != EActionState::EAS_Unoccupied)
+		{
+			return;
+		}
+		const FVector2D InputAxisVector = InputActionValue.Get<FVector2D>();
+		const FRotator Rotation = GetControlRotation();
+		const FRotator YawRotation(0.f, Rotation.Yaw, 0.f);
 
-	const FVector2D InputAxisVector = InputActionValue.Get<FVector2D>();
-	const FRotator Rotation = GetControlRotation();
-	const FRotator YawRotation(0.f, Rotation.Yaw, 0.f);
-
-	const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-	const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-
-
-	if (GetPawn<APawn>())
-	{
-		GetPawn<APawn>()->AddMovementInput(ForwardDirection, InputAxisVector.Y);
-		GetPawn<APawn>()->AddMovementInput(RightDirection, InputAxisVector.X);
+		const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+		const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+	
+		PlayerCharacter->AddMovementInput(ForwardDirection, InputAxisVector.Y);
+		PlayerCharacter->AddMovementInput(RightDirection, InputAxisVector.X);
 	}
 }
 
 void AMyPlayerController::Look(const FInputActionValue& InputActionValue)
 {
-	if (bIsLockingOn)
+	if (bIsLockOn)
 	{
 		return;
 	}
@@ -91,33 +94,18 @@ void AMyPlayerController::Attack()
 
 void AMyPlayerController::LockOn()
 {
-	if (TObjectPtr<AActor> Target = GetPawn<APlayerCharacter>()->GetTargetingComponent()->FindTarget())
+	if (TObjectPtr<APlayerCharacter> PlayerCharacter = GetPawn<APlayerCharacter>())
 	{
-		DrawDebugSphere(GetWorld(), Target->GetActorLocation(), 100.f, 20, FColor::Blue, false, 1.f);
-
-		if (bIsLockingOn)
+		if (TObjectPtr<UTargetingComponent> TargetingComponent = PlayerCharacter->GetTargetingComponent())
 		{
-			if (GetPawn<ACharacter>())
+			if (bIsLockOn)
 			{
-				GetPawn<APlayerCharacter>()->GetTargetingComponent()->SetTarget(nullptr);
-
-				GetPawn<ACharacter>()->GetCharacterMovement()->bOrientRotationToMovement = true;
-				GetPawn<ACharacter>()->GetCharacterMovement()->bUseControllerDesiredRotation = false;
-				bIsLockingOn = false;
+				TargetingComponent->CancelLockOn();
+			}
+			else
+			{
+				TargetingComponent->ExecuteLockOn();
 			}
 		}
-		else
-		{
-			if (GetPawn<APlayerCharacter>())
-			{
-				GetPawn<APlayerCharacter>()->GetTargetingComponent()->SetTarget(Target);
-
-				GetPawn<APlayerCharacter>()->GetCharacterMovement()->bOrientRotationToMovement = false;
-				GetPawn<APlayerCharacter>()->GetCharacterMovement()->bUseControllerDesiredRotation = true;
-				bIsLockingOn = true;
-			}
-		}
-
 	}
-
 }

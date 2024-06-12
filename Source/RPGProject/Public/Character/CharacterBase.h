@@ -80,5 +80,5 @@ private:
 	UFUNCTION(BlueprintCallable)
 	virtual void AttackEnd() PURE_VIRTUAL(ACharacterBase::AttackEnd, );
 
-	virtual void SetUpCollision();
+	virtual void SetupCollision();
 };

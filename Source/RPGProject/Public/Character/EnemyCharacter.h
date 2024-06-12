@@ -47,7 +47,6 @@ protected:
 	virtual void DestroyWeapon() override;
 
 private:
-
 	void SpawnWeapon();
 
 	virtual void AttackEnd() override;

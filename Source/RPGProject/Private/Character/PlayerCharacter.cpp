@@ -10,9 +10,9 @@
 
 APlayerCharacter::APlayerCharacter()
 {
-    SetSpringArm();
-    SetCamera();
-    SetTargetingComponent();
+    SetupSpringArm();
+    SetupCamera();
+    SetupTargetingComponent();
 
     GetCharacterMovement()->bOrientRotationToMovement = true;
     GetCharacterMovement()->RotationRate = FRotator(0.f, 1000.f, 0.f);
@@ -45,9 +45,9 @@ TObjectPtr<UTargetingComponent> APlayerCharacter::GetTargetingComponent()
     return TargetingComponent;
 }
 
-FVector APlayerCharacter::GetCameraLocation() const
+FVector APlayerCharacter::GetSpringArmLocation() const
 {
-    return Camera->GetComponentLocation();
+    return SpringArm->GetComponentLocation();
 }
 
 void APlayerCharacter::BeginPlay()
@@ -69,11 +69,11 @@ void APlayerCharacter::DestroyWeapon()
     }
 }
 
-void APlayerCharacter::SetSpringArm()
+void APlayerCharacter::SetupSpringArm()
 {
     SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
     SpringArm->SetupAttachment(GetRootComponent());
-    SpringArm->AddLocalOffset(FVector3d(0.f, 0.f, 70.f));
+    SpringArm->AddLocalOffset(FVector3d(0.f, 0.f, 90.f));
     SpringArm->TargetArmLength = 400.0f;
     SpringArm->bUsePawnControlRotation = true;
     SpringArm->bEnableCameraLag = true;
@@ -82,13 +82,13 @@ void APlayerCharacter::SetSpringArm()
     SpringArm->bInheritRoll = false;
 }
 
-void APlayerCharacter::SetCamera()
+void APlayerCharacter::SetupCamera()
 {
     Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
     Camera->SetupAttachment(SpringArm);
 }
 
-void APlayerCharacter::SetTargetingComponent()
+void APlayerCharacter::SetupTargetingComponent()
 {
     TargetingComponent = CreateDefaultSubobject<UTargetingComponent>(TEXT("Targeting"));
     TargetingComponent->SetupAttachment(GetRootComponent());

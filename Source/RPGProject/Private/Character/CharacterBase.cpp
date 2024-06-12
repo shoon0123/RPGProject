@@ -15,7 +15,7 @@ ACharacterBase::ACharacterBase()
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 
-	SetUpCollision();
+	SetupCollision();
 
 	GetCharacterMovement()->bConstrainToPlane = true;
 	GetCharacterMovement()->bSnapToPlaneAtStart = true;
@@ -185,7 +185,7 @@ void ACharacterBase::HitReactEnd()
 	SetActionState(EActionState::EAS_Unoccupied);
 }
 
-void ACharacterBase::SetUpCollision()
+void ACharacterBase::SetupCollision()
 {
 	GetCapsuleComponent()->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);

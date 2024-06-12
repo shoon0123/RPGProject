@@ -23,7 +23,7 @@ public:
 
 	TObjectPtr<UTargetingComponent> GetTargetingComponent();
 
-	FVector GetCameraLocation() const;
+	FVector GetSpringArmLocation() const;
 
 protected:
 	virtual void BeginPlay() override;
@@ -51,16 +51,16 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Targeting")
 	TObjectPtr<UTargetingComponent> TargetingComponent;
-	
-	void SetSpringArm();
-
-	void SetCamera();
-
-	void SetTargetingComponent();
-	
-	void SpawnWeapons();
 
 	bool bDoNextAttack = false;
 
 	virtual void AttackEnd() override;
+
+	void SetupSpringArm();
+
+	void SetupCamera();
+
+	void SetupTargetingComponent();
+	
+	void SpawnWeapons();
 };
