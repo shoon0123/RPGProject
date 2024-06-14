@@ -67,13 +67,22 @@ void AMyPlayerController::Move(const FInputActionValue& InputActionValue)
 
 void AMyPlayerController::Look(const FInputActionValue& InputActionValue)
 {
+	const FVector2D InputAxisVector = InputActionValue.Get<FVector2D>();
 	if (bIsLockOn)
 	{
-		return;
+		if (TObjectPtr<APlayerCharacter> PlayerCharacter = GetPawn<APlayerCharacter>())
+		{
+			if (TObjectPtr<UTargetingComponent> TargetingComponent = PlayerCharacter->GetTargetingComponent())
+			{
+				TargetingComponent->ChangeLockOnTarget(InputAxisVector);
+			}
+		}
 	}
-	const FVector2D InputAxisVector = InputActionValue.Get<FVector2D>();
-	AddPitchInput(-InputAxisVector.Y);
-	AddYawInput(InputAxisVector.X);
+	else
+	{
+		AddPitchInput(-InputAxisVector.Y);
+		AddYawInput(InputAxisVector.X);
+	}
 }
 
 void AMyPlayerController::Jump()

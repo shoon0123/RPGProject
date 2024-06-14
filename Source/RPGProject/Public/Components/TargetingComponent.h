@@ -21,6 +21,8 @@ public:
 
 	void CancelLockOn();
 
+	void ChangeLockOnTarget(const FVector2D InputVector);
+
 	bool IsLockOn();
 
 protected:
@@ -44,13 +46,22 @@ private:
 	UPROPERTY(EditAnywhere)
 	float InterpSpeed = 10.f;
 
+	UPROPERTY(EditAnywhere)
+	float ChangeTargetSensitivity = 2.f;
+
+	UPROPERTY(EditAnywhere)
+	float ChangeTargetCooldown = 0.5f;
+
 	UPROPERTY(VisibleInstanceOnly)
 	TSet<TObjectPtr<AActor>> TargetableActors;
 
 	UPROPERTY(VisibleInstanceOnly)
 	TObjectPtr<AActor> Target;
 
+	UPROPERTY(VisibleInstanceOnly)
 	bool bIsLockOn = false;
+
+	float LastTimeSetTarget = 0.f;
 
 	void AddTargetableActor(TObjectPtr<AActor> Actor);
 

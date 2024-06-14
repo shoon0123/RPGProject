@@ -49,6 +49,101 @@ void UTargetingComponent::CancelLockOn()
 	}
 }
 
+void UTargetingComponent::ChangeLockOnTarget(const FVector2D InputVector)
+{
+	TObjectPtr<APlayerController> PlayerController = Cast<APlayerController>(PlayerCharacter->GetController());
+	const float TimeSinceLastChangeTarget = GetWorld()->GetRealTimeSeconds() - LastTimeSetTarget;
+
+	
+	GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Blue, FString::SanitizeFloat(TimeSinceLastChangeTarget));
+	GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, FString::SanitizeFloat(LastTimeSetTarget));
+
+	if (InputVector.Length() > ChangeTargetSensitivity && TimeSinceLastChangeTarget > ChangeTargetCooldown && PlayerController)
+	{
+		TObjectPtr<AActor> TargetActor = nullptr;
+		FVector2D ScreenPosition = FVector2D::ZeroVector;
+		const FVector2D ViewportSize = GEngine->GameViewport->Viewport->GetSizeXY();
+		long MinimumDistance = LONG_MAX;
+		 
+		if (FMath::Abs(InputVector.X) >= FMath::Abs(InputVector.Y))
+		{
+			if (InputVector.X > 0)
+			{
+				for (TObjectPtr<AActor> TargetableActor : TargetableActors)
+				{
+					if (TargetableActor != Target && UGameplayStatics::ProjectWorldToScreen(PlayerController, TargetableActor->GetActorLocation(), ScreenPosition))
+					{
+						const double Distance = ScreenPosition.X - ViewportSize.X * 0.5;
+
+						if (Distance > 0 && Distance < MinimumDistance)
+						{
+							MinimumDistance = Distance;
+							TargetActor = TargetableActor;
+						}
+					}
+				}
+			}
+			else
+			{
+				for (TObjectPtr<AActor> TargetableActor : TargetableActors)
+				{
+					if (TargetableActor != Target && UGameplayStatics::ProjectWorldToScreen(PlayerController, TargetableActor->GetActorLocation(), ScreenPosition))
+					{
+						const double Distance = ViewportSize.X * 0.5 - ScreenPosition.X;
+
+						if (Distance > 0 && Distance < MinimumDistance)
+						{
+							MinimumDistance = Distance;
+							TargetActor = TargetableActor;
+						}
+					}
+				}
+			}
+		}
+		else
+		{
+			if (InputVector.Y < 0)
+			{
+				for (TObjectPtr<AActor> TargetableActor : TargetableActors)
+				{
+					if (TargetableActor != Target && UGameplayStatics::ProjectWorldToScreen(PlayerController, TargetableActor->GetActorLocation(), ScreenPosition))
+					{
+						const double Distance = ScreenPosition.Y - ViewportSize.Y * 0.5;
+
+						if (Distance > 0 && Distance < MinimumDistance)
+						{
+							MinimumDistance = Distance;
+							TargetActor = TargetableActor;
+						}
+					}
+				}
+			}
+			else
+			{
+				for (TObjectPtr<AActor> TargetableActor : TargetableActors)
+				{
+					if (TargetableActor != Target && UGameplayStatics::ProjectWorldToScreen(PlayerController, TargetableActor->GetActorLocation(), ScreenPosition))
+					{
+						const double Distance = ViewportSize.Y * 0.5 - ScreenPosition.Y;
+
+						if (Distance > 0 && Distance < MinimumDistance)
+						{
+							MinimumDistance = Distance;
+							TargetActor = TargetableActor;
+						}
+					}
+				}
+			}
+		}
+
+		if (IsValid(TargetActor))
+		{
+			SetTarget(TargetActor);
+		}
+	}
+}
+
+
 bool UTargetingComponent::IsLockOn()
 {
 	return bIsLockOn;
@@ -66,13 +161,12 @@ TObjectPtr<AActor> UTargetingComponent::FindTarget()
 
 	if (TObjectPtr<APlayerController> PlayerController = Cast<APlayerController>(PlayerCharacter->GetController()))
 	{
-		FVector2D ScreenPosition;
+		FVector2D ScreenPosition = FVector2D::ZeroVector;
 		const FVector2D ViewportSize = GEngine->GameViewport->Viewport->GetSizeXY();
 		long MinimumDistance = LONG_MAX;
 
 		for (TObjectPtr<AActor> TargetableActor : TargetableActors)
 		{
-			ScreenPosition = FVector2D::ZeroVector;
 			if (UGameplayStatics::ProjectWorldToScreen(PlayerController, TargetableActor->GetActorLocation(), ScreenPosition))
 			{
 				const double Distance = FVector2D::Distance(ScreenPosition, ViewportSize * 0.5f);
@@ -91,6 +185,7 @@ TObjectPtr<AActor> UTargetingComponent::FindTarget()
 void UTargetingComponent::SetTarget(TObjectPtr<AActor> Actor)
 {
 	Target = Actor;
+	LastTimeSetTarget = GetWorld()->GetRealTimeSeconds();
 }
 
 void UTargetingComponent::BeginPlay()
