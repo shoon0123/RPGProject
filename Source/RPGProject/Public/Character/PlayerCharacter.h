@@ -21,9 +21,15 @@ public:
 
 	virtual void Attack() override;
 
+	void Dodge();
+
 	TObjectPtr<UTargetingComponent> GetTargetingComponent();
 
 	FVector GetSpringArmLocation() const;
+
+	void EnableRun();
+
+	void DisableRun();
 
 protected:
 	virtual void BeginPlay() override;
@@ -35,6 +41,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Weapon")
 	TObjectPtr<AWeapon> RightHandWeapon;
+
+	UPROPERTY(EditAnywhere, Category = "Dodge")
+	TObjectPtr<UBlendSpace> DodgeBlendSpace;
 
 private:
 	UPROPERTY(VisibleAnywhere, Category = "Camera")
@@ -52,9 +61,24 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Targeting")
 	TObjectPtr<UTargetingComponent> TargetingComponent;
 
+	UPROPERTY(EditAnywhere, Category = "Movement")
+	float WalkingSpeed = 500.f;
+
+	UPROPERTY(EditAnywhere, Category = "Movement")
+	float RunningSpeed = 1000.f;
+
+	UPROPERTY(EditAnywhere, Category = "Movement")
+	float DodgingSpeed = 2000.f;
+
+	UPROPERTY(EditAnywhere, Category = "Montage")
+	TObjectPtr<UAnimMontage> DodgeMontage;
+
 	bool bDoNextAttack = false;
 
 	virtual void AttackEnd() override;
+
+	UFUNCTION(BlueprintCallable)
+	void DodgeEnd();
 
 	void SetupSpringArm();
 

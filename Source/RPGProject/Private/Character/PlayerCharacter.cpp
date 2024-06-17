@@ -16,7 +16,7 @@ APlayerCharacter::APlayerCharacter()
 
     GetCharacterMovement()->bOrientRotationToMovement = true;
     GetCharacterMovement()->RotationRate = FRotator(0.f, 1000.f, 0.f);
-    GetCharacterMovement()->MaxWalkSpeed = 500.f;
+    GetCharacterMovement()->MaxWalkSpeed = WalkingSpeed;
 
     bUseControllerRotationPitch = false;
     bUseControllerRotationRoll = false;
@@ -40,6 +40,17 @@ void APlayerCharacter::Attack()
     }
 }
 
+void APlayerCharacter::Dodge()
+{
+    if (GetActionState() == EActionState::EAS_Unoccupied)
+    {
+        SetActionState(EActionState::EAS_Dodge);
+        GetCharacterMovement()->MaxWalkSpeed = DodgingSpeed;
+        AddMovementInput(GetCharacterMovement()->Velocity, DodgingSpeed);
+
+    }
+}
+
 TObjectPtr<UTargetingComponent> APlayerCharacter::GetTargetingComponent()
 {
     return TargetingComponent;
@@ -48,6 +59,16 @@ TObjectPtr<UTargetingComponent> APlayerCharacter::GetTargetingComponent()
 FVector APlayerCharacter::GetSpringArmLocation() const
 {
     return SpringArm->GetComponentLocation();
+}
+
+void APlayerCharacter::EnableRun()
+{
+    GetCharacterMovement()->MaxWalkSpeed = RunningSpeed;
+}
+
+void APlayerCharacter::DisableRun()
+{
+    GetCharacterMovement()->MaxWalkSpeed = WalkingSpeed;
 }
 
 void APlayerCharacter::BeginPlay()
@@ -123,4 +144,10 @@ void APlayerCharacter::AttackEnd()
         AnimInstance->Montage_Stop(0.5f, AttackMontage);
     }
     bDoNextAttack = false;
+}
+
+void APlayerCharacter::DodgeEnd()
+{
+    SetActionState(EActionState::EAS_Unoccupied);
+    EnableRun();
 }

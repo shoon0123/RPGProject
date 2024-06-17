@@ -54,10 +54,6 @@ void UTargetingComponent::ChangeLockOnTarget(const FVector2D InputVector)
 	TObjectPtr<APlayerController> PlayerController = Cast<APlayerController>(PlayerCharacter->GetController());
 	const float TimeSinceLastChangeTarget = GetWorld()->GetRealTimeSeconds() - LastTimeSetTarget;
 
-	
-	GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Blue, FString::SanitizeFloat(TimeSinceLastChangeTarget));
-	GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, FString::SanitizeFloat(LastTimeSetTarget));
-
 	if (InputVector.Length() > ChangeTargetSensitivity && TimeSinceLastChangeTarget > ChangeTargetCooldown && PlayerController)
 	{
 		TObjectPtr<AActor> TargetActor = nullptr;
@@ -233,7 +229,6 @@ void UTargetingComponent::AddTargetableActor(TObjectPtr<AActor> Actor)
 	{
 		TargetableActors.Add(Actor);
 	}
-
 }
 
 void UTargetingComponent::RemoveTargetableActor(TObjectPtr<AActor> Actor)
@@ -283,7 +278,6 @@ void UTargetingComponent::UpdateCamera()
 			const FRotator LookAtTarget = UKismetMathLibrary::FindLookAtRotation(CameraLocation, TargetLocation);
 			const FRotator RInterpToRotator = FMath::RInterpTo(PlayerControllerRotator, LookAtTarget,
 				GetWorld()->GetDeltaSeconds(), InterpSpeed);
-
 
 			PlayerController->SetControlRotation(RInterpToRotator);
 		}

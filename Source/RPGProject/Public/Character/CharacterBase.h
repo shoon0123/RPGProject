@@ -61,7 +61,6 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = "State")
 	EActionState ActionState = EActionState::EAS_Unoccupied;
 
-
 	UPROPERTY(EditAnywhere, Category = "Montage")
 	TObjectPtr<UAnimMontage> HitReactMontage;
 	
