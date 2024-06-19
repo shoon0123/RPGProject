@@ -43,8 +43,8 @@ void AMyPlayerController::SetupInputComponent()
 	EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &AMyPlayerController::Jump);
 	EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Started, this, &AMyPlayerController::Attack);
 	EnhancedInputComponent->BindAction(LockonAction, ETriggerEvent::Started, this, &AMyPlayerController::LockOn);
-	EnhancedInputComponent->BindAction(DodgeAction, ETriggerEvent::Started, this, &AMyPlayerController::Dodge);
-	EnhancedInputComponent->BindAction(DodgeAction, ETriggerEvent::Completed, this, &AMyPlayerController::DisableRun);
+	EnhancedInputComponent->BindAction(DodgeAction, ETriggerEvent::Started, this, &AMyPlayerController::EnableRun);
+	EnhancedInputComponent->BindAction(DodgeAction, ETriggerEvent::Completed, this, &AMyPlayerController::Dodge);
 }
 
 void AMyPlayerController::Move(const FInputActionValue& InputActionValue)
@@ -129,10 +129,10 @@ void AMyPlayerController::Dodge()
 	}
 }
 
-void AMyPlayerController::DisableRun()
+void AMyPlayerController::EnableRun()
 {
 	if (TObjectPtr<APlayerCharacter> PlayerCharacter = GetPawn<APlayerCharacter>())
 	{
-		PlayerCharacter->DisableRun();
+		PlayerCharacter->EnableRun();
 	}
 }

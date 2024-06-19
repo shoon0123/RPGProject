@@ -68,7 +68,7 @@ private:
 	float RunningSpeed = 1000.f;
 
 	UPROPERTY(EditAnywhere, Category = "Movement")
-	float DodgingSpeed = 2000.f;
+	float DodgingSpeed = 4000.f;
 
 	UPROPERTY(EditAnywhere, Category = "Montage")
 	TObjectPtr<UAnimMontage> DodgeMontage;

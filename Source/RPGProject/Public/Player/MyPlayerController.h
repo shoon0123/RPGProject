@@ -65,5 +65,5 @@ private:
 
 	void Dodge();
 
-	void DisableRun();
+	void EnableRun();
 };

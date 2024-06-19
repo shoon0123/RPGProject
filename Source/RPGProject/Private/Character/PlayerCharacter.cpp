@@ -42,12 +42,19 @@ void APlayerCharacter::Attack()
 
 void APlayerCharacter::Dodge()
 {
-    if (GetActionState() == EActionState::EAS_Unoccupied)
+    if (GetActionState() == EActionState::EAS_Unoccupied && !GetCharacterMovement()->IsFalling())
     {
         SetActionState(EActionState::EAS_Dodge);
-        GetCharacterMovement()->MaxWalkSpeed = DodgingSpeed;
-        AddMovementInput(GetCharacterMovement()->Velocity, DodgingSpeed);
+        PlayMontageSection(DodgeMontage, FName("Dodge"));
 
+        if (GetCharacterMovement()->Velocity.IsZero())
+        {
+            LaunchCharacter(GetActorForwardVector() * DodgingSpeed, true, true);
+        }
+        else
+        {
+            LaunchCharacter(GetCharacterMovement()->Velocity.GetSafeNormal2D() * DodgingSpeed, true, true);
+        }
     }
 }
 
@@ -149,5 +156,5 @@ void APlayerCharacter::AttackEnd()
 void APlayerCharacter::DodgeEnd()
 {
     SetActionState(EActionState::EAS_Unoccupied);
-    EnableRun();
+    DisableRun();
 }
