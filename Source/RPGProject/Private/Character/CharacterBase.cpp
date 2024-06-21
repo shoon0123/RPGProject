@@ -55,7 +55,6 @@ void ACharacterBase::GetHit(const FVector& ImpactPoint, AActor* Hitter)
 		SetActionState(EActionState::EAS_Dead);
 		Die();
 	}
-	
 
 	check(HitSound);
 	UGameplayStatics::PlaySoundAtLocation(
@@ -77,8 +76,6 @@ void ACharacterBase::GetHit(const FVector& ImpactPoint, AActor* Hitter)
 		GetActorScale() * 2,
 		EAttachLocation::KeepWorldPosition
 	);
-
-	check(HealthBarWidget);
 }
 
 float ACharacterBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)

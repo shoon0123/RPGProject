@@ -33,37 +33,44 @@ private:
 	UPROPERTY(EditAnywhere, Category="Input")
 	TObjectPtr<UInputMappingContext> Context;
 
-	UPROPERTY(EditAnywhere, Category="Input")
-	TObjectPtr<UInputAction> MoveAction;
+	UPROPERTY(EditAnywhere, Category = "Input")
+	TObjectPtr<UInputAction> AttackAction;
 
 	UPROPERTY(EditAnywhere, Category = "Input")
-	TObjectPtr<UInputAction> LookAction;
+	TObjectPtr<UInputAction> BlockAction;
+
+	UPROPERTY(EditAnywhere, Category = "Input")
+	TObjectPtr<UInputAction> DodgeAction;
 
 	UPROPERTY(EditAnywhere, Category = "Input")
 	TObjectPtr<UInputAction> JumpAction;
 
 	UPROPERTY(EditAnywhere, Category = "Input")
-	TObjectPtr<UInputAction> AttackAction;
-
-	UPROPERTY(EditAnywhere, Category = "Input")
 	TObjectPtr<UInputAction> LockonAction;
 
 	UPROPERTY(EditAnywhere, Category = "Input")
-	TObjectPtr<UInputAction> DodgeAction;
+	TObjectPtr<UInputAction> LookAction;
+
+	UPROPERTY(EditAnywhere, Category="Input")
+	TObjectPtr<UInputAction> MoveAction;
 
 	bool bIsLockOn = false;
 
-	void Move(const FInputActionValue& InputActionValue);
-
-	void Look(const FInputActionValue& InputActionValue);
-
-	void Jump();
-
 	void Attack();
 
-	void LockOn();
+	void Block();
+
+	void BlockCancel();
 
 	void Dodge();
 
 	void EnableRun();
+
+	void Jump();
+
+	void LockOn();
+
+	void Look(const FInputActionValue& InputActionValue);
+
+	void Move(const FInputActionValue& InputActionValue);
 };

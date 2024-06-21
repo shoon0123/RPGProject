@@ -2,6 +2,7 @@
 
 
 #include "Weapon/Weapon.h"
+#include "Character/CharacterBase.h"
 #include "Components/BoxComponent.h"
 #include "Interaction/HitInterface.h"
 #include "Kismet/KismetSystemLibrary.h"
@@ -58,6 +59,7 @@ void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 
 	if (BoxHit.GetActor() && BoxHit.GetActor()->ActorHasTag(TargetTag))
 	{
+
 		UGameplayStatics::ApplyDamage(
 			BoxHit.GetActor(),
 			Damage,

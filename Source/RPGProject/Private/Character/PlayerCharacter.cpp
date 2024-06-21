@@ -40,6 +40,24 @@ void APlayerCharacter::Attack()
     }
 }
 
+void APlayerCharacter::Block()
+{
+    if (GetActionState() == EActionState::EAS_Unoccupied && !GetCharacterMovement()->IsFalling())
+    {
+        SetActionState(EActionState::EAS_Block);
+        PlayMontageSection(BlockMontage, FName("Start"));
+    }
+}
+
+void APlayerCharacter::BlockCancel()
+{
+    if (GetActionState() == EActionState::EAS_Block)
+    {
+        SetActionState(EActionState::EAS_Unoccupied);
+        PlayMontageSection(BlockMontage, FName("End"));
+    }
+}
+
 void APlayerCharacter::Dodge()
 {
     if (GetActionState() == EActionState::EAS_Unoccupied && !GetCharacterMovement()->IsFalling())

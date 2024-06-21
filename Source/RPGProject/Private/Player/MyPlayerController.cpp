@@ -37,33 +37,81 @@ void AMyPlayerController::SetupInputComponent()
 	Super::SetupInputComponent();
 
 	TObjectPtr<UEnhancedInputComponent> EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(InputComponent);
-	
-	EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AMyPlayerController::Move);
-	EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AMyPlayerController::Look);
-	EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &AMyPlayerController::Jump);
+
 	EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Started, this, &AMyPlayerController::Attack);
-	EnhancedInputComponent->BindAction(LockonAction, ETriggerEvent::Started, this, &AMyPlayerController::LockOn);
-	EnhancedInputComponent->BindAction(DodgeAction, ETriggerEvent::Started, this, &AMyPlayerController::EnableRun);
+	EnhancedInputComponent->BindAction(BlockAction, ETriggerEvent::Triggered, this, &AMyPlayerController::Block);
+	EnhancedInputComponent->BindAction(BlockAction, ETriggerEvent::Completed, this, &AMyPlayerController::BlockCancel);
 	EnhancedInputComponent->BindAction(DodgeAction, ETriggerEvent::Completed, this, &AMyPlayerController::Dodge);
+	EnhancedInputComponent->BindAction(DodgeAction, ETriggerEvent::Started, this, &AMyPlayerController::EnableRun);
+	EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &AMyPlayerController::Jump);
+	EnhancedInputComponent->BindAction(LockonAction, ETriggerEvent::Started, this, &AMyPlayerController::LockOn);
+	EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AMyPlayerController::Look);
+	EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AMyPlayerController::Move);
 }
 
-void AMyPlayerController::Move(const FInputActionValue& InputActionValue)
+void AMyPlayerController::Attack()
 {
 	if (TObjectPtr<APlayerCharacter> PlayerCharacter = GetPawn<APlayerCharacter>())
 	{
-		if (PlayerCharacter->GetActionState() != EActionState::EAS_Unoccupied)
-		{
-			return;
-		}
-		const FVector2D InputAxisVector = InputActionValue.Get<FVector2D>();
-		const FRotator Rotation = GetControlRotation();
-		const FRotator YawRotation(0.f, Rotation.Yaw, 0.f);
+		PlayerCharacter->Attack();
+	}
+}
 
-		const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-		const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-	
-		PlayerCharacter->AddMovementInput(ForwardDirection, InputAxisVector.Y);
-		PlayerCharacter->AddMovementInput(RightDirection, InputAxisVector.X);
+void AMyPlayerController::Block()
+{
+	if (TObjectPtr<APlayerCharacter> PlayerCharacter = GetPawn<APlayerCharacter>())
+	{
+		PlayerCharacter->Block();
+	}
+}
+
+void AMyPlayerController::BlockCancel()
+{
+	if (TObjectPtr<APlayerCharacter> PlayerCharacter = GetPawn<APlayerCharacter>())
+	{
+		PlayerCharacter->BlockCancel();
+	}
+}
+
+void AMyPlayerController::Dodge()
+{
+	if (TObjectPtr<APlayerCharacter> PlayerCharacter = GetPawn<APlayerCharacter>())
+	{
+		PlayerCharacter->Dodge();
+	}
+}
+
+void AMyPlayerController::EnableRun()
+{
+	if (TObjectPtr<APlayerCharacter> PlayerCharacter = GetPawn<APlayerCharacter>())
+	{
+		PlayerCharacter->EnableRun();
+	}
+}
+
+void AMyPlayerController::Jump()
+{
+	if (GetPawn<ACharacter>())
+	{
+		GetPawn<ACharacter>()->Jump();
+	}
+}
+
+void AMyPlayerController::LockOn()
+{
+	if (TObjectPtr<APlayerCharacter> PlayerCharacter = GetPawn<APlayerCharacter>())
+	{
+		if (TObjectPtr<UTargetingComponent> TargetingComponent = PlayerCharacter->GetTargetingComponent())
+		{
+			if (bIsLockOn)
+			{
+				TargetingComponent->CancelLockOn();
+			}
+			else
+			{
+				TargetingComponent->ExecuteLockOn();
+			}
+		}
 	}
 }
 
@@ -87,52 +135,22 @@ void AMyPlayerController::Look(const FInputActionValue& InputActionValue)
 	}
 }
 
-void AMyPlayerController::Jump()
-{
-	if (GetPawn<ACharacter>())
-	{
-		GetPawn<ACharacter>()->Jump();
-	}
-}
-
-void AMyPlayerController::Attack()
-{
-	if (GetPawn<APlayerCharacter>())
-	{
-		GetPawn<APlayerCharacter>()->Attack();
-	}
-}
-
-void AMyPlayerController::LockOn()
+void AMyPlayerController::Move(const FInputActionValue& InputActionValue)
 {
 	if (TObjectPtr<APlayerCharacter> PlayerCharacter = GetPawn<APlayerCharacter>())
 	{
-		if (TObjectPtr<UTargetingComponent> TargetingComponent = PlayerCharacter->GetTargetingComponent())
+		if (PlayerCharacter->GetActionState() != EActionState::EAS_Unoccupied)
 		{
-			if (bIsLockOn)
-			{
-				TargetingComponent->CancelLockOn();
-			}
-			else
-			{
-				TargetingComponent->ExecuteLockOn();
-			}
+			return;
 		}
-	}
-}
+		const FVector2D InputAxisVector = InputActionValue.Get<FVector2D>();
+		const FRotator Rotation = GetControlRotation();
+		const FRotator YawRotation(0.f, Rotation.Yaw, 0.f);
 
-void AMyPlayerController::Dodge()
-{
-	if (TObjectPtr<APlayerCharacter> PlayerCharacter = GetPawn<APlayerCharacter>())
-	{
-		PlayerCharacter->Dodge();
-	}
-}
-
-void AMyPlayerController::EnableRun()
-{
-	if (TObjectPtr<APlayerCharacter> PlayerCharacter = GetPawn<APlayerCharacter>())
-	{
-		PlayerCharacter->EnableRun();
+		const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+		const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+	
+		PlayerCharacter->AddMovementInput(ForwardDirection, InputAxisVector.Y);
+		PlayerCharacter->AddMovementInput(RightDirection, InputAxisVector.X);
 	}
 }

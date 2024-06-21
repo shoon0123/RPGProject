@@ -21,6 +21,10 @@ public:
 
 	virtual void Attack() override;
 
+	void Block();
+
+	void BlockCancel();
+
 	void Dodge();
 
 	TObjectPtr<UTargetingComponent> GetTargetingComponent();
@@ -69,6 +73,9 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Movement")
 	float DodgingSpeed = 4000.f;
+
+	UPROPERTY(EditAnywhere, Category = "Montage")
+	TObjectPtr<UAnimMontage> BlockMontage;
 
 	UPROPERTY(EditAnywhere, Category = "Montage")
 	TObjectPtr<UAnimMontage> DodgeMontage;
