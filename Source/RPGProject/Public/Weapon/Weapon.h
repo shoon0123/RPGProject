@@ -43,13 +43,19 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
 	float Damage = 10.f;
 
+	void BoxTrace(FHitResult& BoxHit);
+
 	UFUNCTION(BlueprintCallable)
 	void CollisionEnable(ECollisionEnabled::Type CollisionEnabled);
 
-	void SetMesh();
+	void ExecuteGetHit(FHitResult& BoxHit);
 
-	void SetWeaponBox();
+	FName GetTargetTag();
 
-	void SetBoxTraceStartEnd();
+	void SetupMesh();
+
+	void SetupWeaponBox();
+
+	void SetupBoxTraceStartEnd();
 
 };

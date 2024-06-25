@@ -43,25 +43,18 @@ UAnimMontage* ACharacterBase::GetAttackMontage() const
 
 void ACharacterBase::GetHit(const FVector& ImpactPoint, AActor* Hitter)
 {
-	check(Attributes);
 	if (Attributes->IsAlive())
 	{
-		SetActionState(EActionState::EAS_HitReaction);
 		DirectionalHitReact(Hitter);
 		HealthBarWidget->SetVisibility(true);
 	}
 	else
 	{
-		SetActionState(EActionState::EAS_Dead);
 		Die();
 	}
 
 	check(HitSound);
-	UGameplayStatics::PlaySoundAtLocation(
-		this,
-		HitSound,
-		ImpactPoint
-	);
+	UGameplayStatics::PlaySoundAtLocation(this, HitSound, ImpactPoint);
 
 	const FVector ImpactPointVector = (ImpactPoint - GetActorLocation()).GetSafeNormal();
 	const double CosTheta = FVector::DotProduct(GetActorForwardVector(), ImpactPointVector);
@@ -104,6 +97,7 @@ void ACharacterBase::BeginPlay()
 
 void ACharacterBase::Die()
 {
+	SetActionState(EActionState::EAS_Dead);
 	const int32 Selection = FMath::RandRange(0, 3);
 	FName SectionName = FName();
 	switch (Selection)
@@ -135,6 +129,8 @@ void ACharacterBase::Die()
 
 void ACharacterBase::DirectionalHitReact(const AActor* Hitter)
 {
+	SetActionState(EActionState::EAS_HitReaction);
+
 	const FVector HitterVector = Hitter->GetActorLocation() - GetActorLocation();
 	const FVector HitterVectorXY = FVector(HitterVector.X, HitterVector.Y, 0).GetSafeNormal();
 	

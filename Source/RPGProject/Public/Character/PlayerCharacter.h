@@ -27,13 +27,13 @@ public:
 
 	void Dodge();
 
-	TObjectPtr<UTargetingComponent> GetTargetingComponent();
-
-	FVector GetSpringArmLocation() const;
-
 	void EnableRun();
 
 	void DisableRun();
+
+	TObjectPtr<UTargetingComponent> GetTargetingComponent() const;
+
+	FVector GetSpringArmLocation() const;
 
 protected:
 	virtual void BeginPlay() override;

@@ -20,19 +20,20 @@ class RPGPROJECT_API ACharacterBase : public ACharacter, public IHitInterface
 public:
 	ACharacterBase();
 
-	virtual EActionState GetActionState() const;
-
-	virtual void SetActionState(EActionState OtherActionState);
-
-	virtual UAnimMontage* GetAttackMontage() const;
-
-	virtual void GetHit(const FVector& ImpactPoint, AActor* Hitter) override;
-
-	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
+	virtual void Attack() PURE_VIRTUAL(ACharacterBase::Attack, );
 
 	virtual void Destroyed() override;
 
-	virtual void Attack() PURE_VIRTUAL(ACharacterBase::Attack, );
+	virtual UAnimMontage* GetAttackMontage() const;
+
+	virtual EActionState GetActionState() const;
+
+	virtual void GetHit(const FVector& ImpactPoint, AActor* Hitter) override;
+
+	virtual void SetActionState(EActionState OtherActionState);
+
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
+
 
 protected:
 	virtual void BeginPlay() override;
@@ -41,9 +42,11 @@ protected:
 	
 	virtual void DirectionalHitReact(const AActor* Hitter);
 
+	virtual void DestroyWeapon() PURE_VIRTUAL(ACharacterBase::DestroyWeapon, );
+
 	virtual void PlayMontageSection(UAnimMontage* Montage, const FName& SectionName);
 
-	virtual void DestroyWeapon() PURE_VIRTUAL(ACharacterBase::DestroyWeapon, );
+	virtual void SpawnHitParticles();
 
 	UPROPERTY(BlueprintReadOnly)
 	EDeathPose DeathPose = EDeathPose::EDP_Alive;
@@ -74,10 +77,10 @@ private:
 	TObjectPtr<UParticleSystem> HitParticles;
 
 	UFUNCTION(BlueprintCallable)
-	virtual void HitReactEnd();
+	virtual void AttackEnd() PURE_VIRTUAL(ACharacterBase::AttackEnd, );
 
 	UFUNCTION(BlueprintCallable)
-	virtual void AttackEnd() PURE_VIRTUAL(ACharacterBase::AttackEnd, );
+	virtual void HitReactEnd();
 
 	virtual void SetupCollision();
 };

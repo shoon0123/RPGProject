@@ -29,6 +29,7 @@ void APlayerCharacter::Attack()
     {
         return;
     }
+
     if (GetActionState() == EActionState::EAS_Attacking)
     {
         bDoNextAttack = true;
@@ -76,7 +77,7 @@ void APlayerCharacter::Dodge()
     }
 }
 
-TObjectPtr<UTargetingComponent> APlayerCharacter::GetTargetingComponent()
+TObjectPtr<UTargetingComponent> APlayerCharacter::GetTargetingComponent() const
 {
     return TargetingComponent;
 }

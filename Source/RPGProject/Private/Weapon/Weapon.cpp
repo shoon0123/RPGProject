@@ -10,9 +10,9 @@
 
 AWeapon::AWeapon()
 {
-	SetMesh();
-	SetWeaponBox();
-	SetBoxTraceStartEnd();
+	SetupMesh();
+	SetupWeaponBox();
+	SetupBoxTraceStartEnd();
 }
 
 void AWeapon::EmptyIgnoreActors()
@@ -29,6 +29,23 @@ void AWeapon::BeginPlay()
 
 void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	FHitResult BoxHit;
+	BoxTrace(BoxHit);
+
+	TObjectPtr<ACharacterBase> HittedCharacter = Cast<ACharacterBase>(BoxHit.GetActor());
+	const FName TargetTag = GetTargetTag();
+	if (HittedCharacter && HittedCharacter->ActorHasTag(TargetTag))
+	{
+		ExecuteGetHit(BoxHit);
+		if (HittedCharacter->GetActionState() != EActionState::EAS_Block)
+		{
+			UGameplayStatics::ApplyDamage(HittedCharacter, Damage, GetOwner()->GetInstigatorController(), this, UDamageType::StaticClass());
+		}
+	}
+}
+
+void AWeapon::BoxTrace(FHitResult& BoxHit)
+{
 	const FVector Start = BoxTraceStart->GetComponentLocation();
 	const FVector End = BoxTraceEnd->GetComponentLocation();
 
@@ -40,10 +57,9 @@ void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 		ActorsToIgnore.AddUnique(Actor);
 	}
 
-	FHitResult BoxHit;
 	UKismetSystemLibrary::BoxTraceSingle(
 		this,
-		Start, 
+		Start,
 		End,
 		FVector(5.f, 5.f, 5.f),
 		BoxTraceStart->GetComponentRotation(),
@@ -55,26 +71,7 @@ void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 		true
 	);
 
-	const FName TargetTag = GetOwner()->ActorHasTag(FName("Player")) ? FName("Enemy") : FName("Player");
-
-	if (BoxHit.GetActor() && BoxHit.GetActor()->ActorHasTag(TargetTag))
-	{
-
-		UGameplayStatics::ApplyDamage(
-			BoxHit.GetActor(),
-			Damage,
-			GetOwner()->GetInstigatorController(),
-			this,
-			UDamageType::StaticClass()
-		);
-
-		IHitInterface* HitInterface = Cast<IHitInterface>(BoxHit.GetActor());
-		if (HitInterface)
-		{
-			HitInterface->GetHit(BoxHit.ImpactPoint, GetOwner());
-		}
-		IgnoreActors.AddUnique(BoxHit.GetActor());
-	}
+	IgnoreActors.AddUnique(BoxHit.GetActor());
 }
 
 void AWeapon::CollisionEnable(ECollisionEnabled::Type CollisionEnabled)
@@ -83,7 +80,21 @@ void AWeapon::CollisionEnable(ECollisionEnabled::Type CollisionEnabled)
 	EmptyIgnoreActors();
 }
 
-void AWeapon::SetMesh()
+void AWeapon::ExecuteGetHit(FHitResult& BoxHit)
+{
+	IHitInterface* HitInterface = Cast<IHitInterface>(BoxHit.GetActor());
+	if (HitInterface)
+	{
+		HitInterface->GetHit(BoxHit.ImpactPoint, GetOwner());
+	}
+}
+
+FName AWeapon::GetTargetTag()
+{
+	return GetOwner()->ActorHasTag(FName("Player")) ? FName("Enemy") : FName("Player");
+}
+
+void AWeapon::SetupMesh()
 {
 	Mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Weapon"));
 	Mesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
@@ -91,7 +102,7 @@ void AWeapon::SetMesh()
 	SetRootComponent(Mesh);
 }
 
-void AWeapon::SetWeaponBox()
+void AWeapon::SetupWeaponBox()
 {
 	WeaponBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Weapon Box"));
 	WeaponBox->SetupAttachment(GetRootComponent());
@@ -100,7 +111,7 @@ void AWeapon::SetWeaponBox()
 	WeaponBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
 }
 
-void AWeapon::SetBoxTraceStartEnd()
+void AWeapon::SetupBoxTraceStartEnd()
 {
 	BoxTraceStart = CreateDefaultSubobject<USceneComponent>(TEXT("Box Trace Start"));
 	BoxTraceStart->SetupAttachment(WeaponBox);
