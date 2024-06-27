@@ -25,11 +25,11 @@ public:
 
 	void BlockCancel();
 
+	void DisableRun();
+
 	void Dodge();
 
 	void EnableRun();
-
-	void DisableRun();
 
 	TObjectPtr<UTargetingComponent> GetTargetingComponent() const;
 
@@ -37,6 +37,8 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+
+	virtual void AttackEnd() override;
 
 	virtual void DestroyWeapon() override;
 
@@ -75,14 +77,9 @@ private:
 	float DodgingSpeed = 4000.f;
 
 	UPROPERTY(EditAnywhere, Category = "Montage")
-	TObjectPtr<UAnimMontage> BlockMontage;
-
-	UPROPERTY(EditAnywhere, Category = "Montage")
 	TObjectPtr<UAnimMontage> DodgeMontage;
 
 	bool bDoNextAttack = false;
-
-	virtual void AttackEnd() override;
 
 	UFUNCTION(BlueprintCallable)
 	void DodgeEnd();

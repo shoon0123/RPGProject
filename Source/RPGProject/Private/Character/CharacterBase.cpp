@@ -12,7 +12,6 @@
 
 ACharacterBase::ACharacterBase()
 {
-	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 
 	SetupCollision();
@@ -43,32 +42,31 @@ UAnimMontage* ACharacterBase::GetAttackMontage() const
 
 void ACharacterBase::GetHit(const FVector& ImpactPoint, AActor* Hitter)
 {
-	if (Attributes->IsAlive())
+	if (GetActionState() == EActionState::EAS_Block && BlockMontage)
 	{
-		DirectionalHitReact(Hitter);
-		HealthBarWidget->SetVisibility(true);
+		// ToDo..
+		// 
+		// Play Block Montage
+		PlayMontageSection(BlockMontage, FName("React"));
+		// Play Block Sound
+		
+		// Spawn Block Particles
 	}
 	else
 	{
-		Die();
+		PlayHitSound(ImpactPoint);
+		SpawnHitParticles(ImpactPoint);
+
+		if (IsAlive())
+		{
+			DirectionalHitReact(Hitter);
+			HealthBarWidget->SetVisibility(true);
+		}
+		else
+		{
+			Die();
+		}
 	}
-
-	check(HitSound);
-	UGameplayStatics::PlaySoundAtLocation(this, HitSound, ImpactPoint);
-
-	const FVector ImpactPointVector = (ImpactPoint - GetActorLocation()).GetSafeNormal();
-	const double CosTheta = FVector::DotProduct(GetActorForwardVector(), ImpactPointVector);
-
-	check(HitParticles);
-	UGameplayStatics::SpawnEmitterAttached(
-		HitParticles,
-		GetRootComponent(),
-		FName("Hit"),
-		ImpactPoint,
-		ImpactPointVector.Rotation(),
-		GetActorScale() * 2,
-		EAttachLocation::KeepWorldPosition
-	);
 }
 
 float ACharacterBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
@@ -133,8 +131,6 @@ void ACharacterBase::DirectionalHitReact(const AActor* Hitter)
 
 	const FVector HitterVector = Hitter->GetActorLocation() - GetActorLocation();
 	const FVector HitterVectorXY = FVector(HitterVector.X, HitterVector.Y, 0).GetSafeNormal();
-	
-	GetCharacterMovement()->AddImpulse(-HitterVectorXY * 100000);
 
 	const double CosTheta = FVector::DotProduct(GetActorForwardVector(), HitterVectorXY);
 	double Theta = FMath::Acos(CosTheta);
@@ -167,15 +163,27 @@ void ACharacterBase::DirectionalHitReact(const AActor* Hitter)
 void ACharacterBase::PlayMontageSection(UAnimMontage* Montage, const FName& SectionName)
 {
 	check(Montage);
-	TObjectPtr<UAnimInstance> AnimInstance = GetMesh()->GetAnimInstance();
-	check(AnimInstance);
-	AnimInstance->Montage_Play(Montage);
-	AnimInstance->Montage_JumpToSection(SectionName, Montage);
+	if (TObjectPtr<UAnimInstance> AnimInstance = GetMesh()->GetAnimInstance())
+	{
+		AnimInstance->Montage_Play(Montage);
+		AnimInstance->Montage_JumpToSection(SectionName, Montage);
+	}
 }
 
 void ACharacterBase::HitReactEnd()
 {
 	SetActionState(EActionState::EAS_Unoccupied);
+}
+
+bool ACharacterBase::IsAlive()
+{
+	return Attributes && Attributes->IsAlive();
+}
+
+void ACharacterBase::PlayHitSound(const FVector& ImpactPoint)
+{
+	check(HitSound);
+	UGameplayStatics::PlaySoundAtLocation(this, HitSound, ImpactPoint);
 }
 
 void ACharacterBase::SetupCollision()
@@ -185,4 +193,19 @@ void ACharacterBase::SetupCollision()
 	GetCapsuleComponent()->SetGenerateOverlapEvents(true);
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+}
+
+void ACharacterBase::SpawnHitParticles(const FVector& ImpactPoint)
+{
+	const FVector ImpactPointNormalVector = (ImpactPoint - GetActorLocation()).GetSafeNormal();
+	check(HitParticles);
+	UGameplayStatics::SpawnEmitterAttached(
+		HitParticles,
+		GetRootComponent(),
+		FName("Hit"),
+		ImpactPoint,
+		ImpactPointNormalVector.Rotation(),
+		GetActorScale() * 2,
+		EAttachLocation::KeepWorldPosition
+	);
 }

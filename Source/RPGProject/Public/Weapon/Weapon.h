@@ -43,6 +43,11 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
 	float Damage = 10.f;
 
+	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
+	float Impulse = 100000.f;
+
+	void AddImpulse(ACharacter* HittedCharacter);
+
 	void BoxTrace(FHitResult& BoxHit);
 
 	UFUNCTION(BlueprintCallable)

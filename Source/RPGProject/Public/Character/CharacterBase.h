@@ -34,9 +34,11 @@ public:
 
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 
-
 protected:
 	virtual void BeginPlay() override;
+
+	UFUNCTION(BlueprintCallable)
+	virtual void AttackEnd() PURE_VIRTUAL(ACharacterBase::AttackEnd, );
 
 	virtual void Die();
 	
@@ -44,15 +46,27 @@ protected:
 
 	virtual void DestroyWeapon() PURE_VIRTUAL(ACharacterBase::DestroyWeapon, );
 
+	UFUNCTION(BlueprintCallable)
+	virtual void HitReactEnd();
+
+	virtual bool IsAlive();
+
+	virtual void PlayHitSound(const FVector& ImpactPoint);
+
 	virtual void PlayMontageSection(UAnimMontage* Montage, const FName& SectionName);
 
-	virtual void SpawnHitParticles();
+	virtual void SetupCollision();
+
+	virtual void SpawnHitParticles(const FVector& ImpactPoint);
 
 	UPROPERTY(BlueprintReadOnly)
 	EDeathPose DeathPose = EDeathPose::EDP_Alive;
 
 	UPROPERTY(EditAnywhere, Category = "Montage")
 	TObjectPtr<UAnimMontage> AttackMontage;
+
+	UPROPERTY(EditAnywhere, Category = "Montage")
+	TObjectPtr<UAnimMontage> BlockMontage;
 
 private:
 	UPROPERTY(VisibleAnywhere)
@@ -75,12 +89,4 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "VisualEffects")
 	TObjectPtr<UParticleSystem> HitParticles;
-
-	UFUNCTION(BlueprintCallable)
-	virtual void AttackEnd() PURE_VIRTUAL(ACharacterBase::AttackEnd, );
-
-	UFUNCTION(BlueprintCallable)
-	virtual void HitReactEnd();
-
-	virtual void SetupCollision();
 };

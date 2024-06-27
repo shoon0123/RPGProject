@@ -44,10 +44,10 @@ protected:
 
 	virtual void BeginPlay() override;
 
+	virtual void AttackEnd() override;
+
 	virtual void DestroyWeapon() override;
 
 private:
 	void SpawnWeapon();
-
-	virtual void AttackEnd() override;
 };

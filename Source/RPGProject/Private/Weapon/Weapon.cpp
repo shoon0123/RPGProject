@@ -4,6 +4,7 @@
 #include "Weapon/Weapon.h"
 #include "Character/CharacterBase.h"
 #include "Components/BoxComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Interaction/HitInterface.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/GameplayStatics.h"
@@ -37,10 +38,20 @@ void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 	if (HittedCharacter && HittedCharacter->ActorHasTag(TargetTag))
 	{
 		ExecuteGetHit(BoxHit);
+		AddImpulse(HittedCharacter);
 		if (HittedCharacter->GetActionState() != EActionState::EAS_Block)
 		{
 			UGameplayStatics::ApplyDamage(HittedCharacter, Damage, GetOwner()->GetInstigatorController(), this, UDamageType::StaticClass());
 		}
+	}
+}
+
+void AWeapon::AddImpulse(ACharacter* HittedCharacter)
+{
+	if (GetOwner())
+	{
+		const FVector HitVector = HittedCharacter->GetActorLocation() - GetOwner()->GetActorLocation();
+		HittedCharacter->GetCharacterMovement()->AddImpulse(HitVector.GetSafeNormal2D() * Impulse);
 	}
 }
 
@@ -70,7 +81,6 @@ void AWeapon::BoxTrace(FHitResult& BoxHit)
 		BoxHit,
 		true
 	);
-
 	IgnoreActors.AddUnique(BoxHit.GetActor());
 }
 
