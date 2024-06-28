@@ -44,13 +44,9 @@ void ACharacterBase::GetHit(const FVector& ImpactPoint, AActor* Hitter)
 {
 	if (GetActionState() == EActionState::EAS_Block && BlockMontage)
 	{
-		// ToDo..
-		// 
-		// Play Block Montage
 		PlayMontageSection(BlockMontage, FName("React"));
-		// Play Block Sound
-		
-		// Spawn Block Particles
+		PlayBlockSound(ImpactPoint);
+		SpawnBlockParticles(ImpactPoint);
 	}
 	else
 	{
@@ -180,6 +176,12 @@ bool ACharacterBase::IsAlive()
 	return Attributes && Attributes->IsAlive();
 }
 
+void ACharacterBase::PlayBlockSound(const FVector& ImpactPoint)
+{
+	check(BlockSound);
+	UGameplayStatics::PlaySoundAtLocation(this, BlockSound, ImpactPoint);
+}
+
 void ACharacterBase::PlayHitSound(const FVector& ImpactPoint)
 {
 	check(HitSound);
@@ -193,6 +195,21 @@ void ACharacterBase::SetupCollision()
 	GetCapsuleComponent()->SetGenerateOverlapEvents(true);
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+}
+
+void ACharacterBase::SpawnBlockParticles(const FVector& ImpactPoint)
+{
+	const FVector ImpactPointNormalVector = (ImpactPoint - GetActorLocation()).GetSafeNormal();
+	check(BlockParticles);
+	UGameplayStatics::SpawnEmitterAttached(
+		BlockParticles,
+		GetRootComponent(),
+		FName("Block"),
+		ImpactPoint,
+		ImpactPointNormalVector.Rotation(),
+		GetActorScale() * 0.5,
+		EAttachLocation::KeepWorldPosition
+	);
 }
 
 void ACharacterBase::SpawnHitParticles(const FVector& ImpactPoint)

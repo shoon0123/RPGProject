@@ -68,13 +68,13 @@ private:
 	TObjectPtr<UTargetingComponent> TargetingComponent;
 
 	UPROPERTY(EditAnywhere, Category = "Movement")
+	float DodgingSpeed = 4000.f;
+
+	UPROPERTY(EditAnywhere, Category = "Movement")
 	float WalkingSpeed = 500.f;
 
 	UPROPERTY(EditAnywhere, Category = "Movement")
 	float RunningSpeed = 1000.f;
-
-	UPROPERTY(EditAnywhere, Category = "Movement")
-	float DodgingSpeed = 4000.f;
 
 	UPROPERTY(EditAnywhere, Category = "Montage")
 	TObjectPtr<UAnimMontage> DodgeMontage;
