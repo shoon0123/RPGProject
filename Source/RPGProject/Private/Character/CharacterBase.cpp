@@ -4,10 +4,10 @@
 #include "Character/CharacterBase.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "Kismet/GameplayStatics.h"
 #include "Components/AttributeComponent.h"
 #include "Components/BoxComponent.h"
 #include "HUD/HealthBarComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "Weapon/Weapon.h"
 
 ACharacterBase::ACharacterBase()
@@ -42,26 +42,16 @@ UAnimMontage* ACharacterBase::GetAttackMontage() const
 
 void ACharacterBase::GetHit(const FVector& ImpactPoint, AActor* Hitter)
 {
-	if (GetActionState() == EActionState::EAS_Block && BlockMontage)
+	PlayHitSound(ImpactPoint);
+	SpawnHitParticles(ImpactPoint);
+	if (IsAlive())
 	{
-		PlayMontageSection(BlockMontage, FName("React"));
-		PlayBlockSound(ImpactPoint);
-		SpawnBlockParticles(ImpactPoint);
+		DirectionalHitReact(Hitter);
+		HealthBarWidget->SetVisibility(true);
 	}
 	else
 	{
-		PlayHitSound(ImpactPoint);
-		SpawnHitParticles(ImpactPoint);
-
-		if (IsAlive())
-		{
-			DirectionalHitReact(Hitter);
-			HealthBarWidget->SetVisibility(true);
-		}
-		else
-		{
-			Die();
-		}
+		Die();
 	}
 }
 
@@ -176,12 +166,6 @@ bool ACharacterBase::IsAlive()
 	return Attributes && Attributes->IsAlive();
 }
 
-void ACharacterBase::PlayBlockSound(const FVector& ImpactPoint)
-{
-	check(BlockSound);
-	UGameplayStatics::PlaySoundAtLocation(this, BlockSound, ImpactPoint);
-}
-
 void ACharacterBase::PlayHitSound(const FVector& ImpactPoint)
 {
 	check(HitSound);
@@ -195,21 +179,6 @@ void ACharacterBase::SetupCollision()
 	GetCapsuleComponent()->SetGenerateOverlapEvents(true);
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-}
-
-void ACharacterBase::SpawnBlockParticles(const FVector& ImpactPoint)
-{
-	const FVector ImpactPointNormalVector = (ImpactPoint - GetActorLocation()).GetSafeNormal();
-	check(BlockParticles);
-	UGameplayStatics::SpawnEmitterAttached(
-		BlockParticles,
-		GetRootComponent(),
-		FName("Block"),
-		ImpactPoint,
-		ImpactPointNormalVector.Rotation(),
-		GetActorScale() * 0.5,
-		EAttachLocation::KeepWorldPosition
-	);
 }
 
 void ACharacterBase::SpawnHitParticles(const FVector& ImpactPoint)

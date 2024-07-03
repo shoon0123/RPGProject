@@ -31,6 +31,8 @@ public:
 
 	void EnableRun();
 
+	virtual void GetHit(const FVector& ImpactPoint, AActor* Hitter) override;
+
 	TObjectPtr<UTargetingComponent> GetTargetingComponent() const;
 
 	FVector GetSpringArmLocation() const;
@@ -77,12 +79,34 @@ private:
 	float RunningSpeed = 1000.f;
 
 	UPROPERTY(EditAnywhere, Category = "Montage")
+	TObjectPtr<UAnimMontage> BlockMontage;
+
+	UPROPERTY(EditAnywhere, Category = "Montage")
 	TObjectPtr<UAnimMontage> DodgeMontage;
+
+	UPROPERTY(EditAnywhere, Category = "Sounds")
+	TObjectPtr<USoundBase> BlockSound;
+
+	UPROPERTY(EditAnywhere, Category = "Sounds")
+	TObjectPtr<USoundBase> ParryingSound;
+
+	UPROPERTY(EditAnywhere, Category = "VisualEffects")
+	TObjectPtr<UParticleSystem> BlockParticles;
 
 	bool bDoNextAttack = false;
 
 	UFUNCTION(BlueprintCallable)
 	void DodgeEnd();
+
+	UFUNCTION(BlueprintCallable)
+	void DisableParrying();
+
+	UFUNCTION(BlueprintCallable)
+	void EnableParrying();
+
+	void PlayBlockSound(const FVector& ImpactPoint);
+
+	void PlayParryingSound(const FVector& ImpactPoint);
 
 	void SetupSpringArm();
 
@@ -91,4 +115,8 @@ private:
 	void SetupTargetingComponent();
 	
 	void SpawnWeapons();
+
+	void SpawnBlockParticles(const FVector& ImpactPoint);
+
+	void SpawnParryingParticles(const FVector& ImpactPoint);
 };

@@ -6,6 +6,7 @@
 #include "Components/TargetingComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "Weapon/Weapon.h"
 
 APlayerCharacter::APlayerCharacter()
@@ -52,11 +53,16 @@ void APlayerCharacter::Block()
 
 void APlayerCharacter::BlockCancel()
 {
-    if (GetActionState() == EActionState::EAS_Block)
+    if (GetActionState() == EActionState::EAS_Block || GetActionState() == EActionState::EAS_Parrying)
     {
         SetActionState(EActionState::EAS_Unoccupied);
         PlayMontageSection(BlockMontage, FName("End"));
     }
+}
+
+void APlayerCharacter::DisableParrying()
+{
+    SetActionState(EActionState::EAS_Block);
 }
 
 void APlayerCharacter::Dodge()
@@ -77,6 +83,11 @@ void APlayerCharacter::Dodge()
     }
 }
 
+void APlayerCharacter::EnableParrying()
+{
+    SetActionState(EActionState::EAS_Parrying);
+}
+
 TObjectPtr<UTargetingComponent> APlayerCharacter::GetTargetingComponent() const
 {
     return TargetingComponent;
@@ -90,6 +101,27 @@ FVector APlayerCharacter::GetSpringArmLocation() const
 void APlayerCharacter::EnableRun()
 {
     GetCharacterMovement()->MaxWalkSpeed = RunningSpeed;
+}
+
+void APlayerCharacter::GetHit(const FVector& ImpactPoint, AActor* Hitter)
+{
+    if (GetActionState() == EActionState::EAS_Block)
+    {
+        PlayMontageSection(BlockMontage, FName("React"));
+        PlayBlockSound(ImpactPoint);
+        SpawnBlockParticles(ImpactPoint);
+    }
+    else if (GetActionState() == EActionState::EAS_Parrying)
+    {
+        PlayMontageSection(BlockMontage, FName("Parrying"));
+        PlayParryingSound(ImpactPoint);
+        SpawnParryingParticles(ImpactPoint);
+        DisableParrying();
+    }
+    else
+    {
+        Super::GetHit(ImpactPoint, Hitter);
+    }
 }
 
 void APlayerCharacter::DisableRun()
@@ -114,6 +146,48 @@ void APlayerCharacter::DestroyWeapon()
     {
         RightHandWeapon->Destroy();
     }
+}
+
+void APlayerCharacter::PlayBlockSound(const FVector& ImpactPoint)
+{
+    check(BlockSound);
+    UGameplayStatics::PlaySoundAtLocation(this, BlockSound, ImpactPoint);
+}
+
+void APlayerCharacter::PlayParryingSound(const FVector& ImpactPoint)
+{
+    check(ParryingSound);
+    UGameplayStatics::PlaySoundAtLocation(this, ParryingSound, ImpactPoint);
+}
+
+void APlayerCharacter::SpawnBlockParticles(const FVector& ImpactPoint)
+{
+    const FVector ImpactPointNormalVector = (ImpactPoint - GetActorLocation()).GetSafeNormal();
+    check(BlockParticles);
+    UGameplayStatics::SpawnEmitterAttached(
+        BlockParticles,
+        GetRootComponent(),
+        FName("Block"),
+        ImpactPoint,
+        ImpactPointNormalVector.Rotation(),
+        GetActorScale() * 0.5,
+        EAttachLocation::KeepWorldPosition
+    );
+}
+
+void APlayerCharacter::SpawnParryingParticles(const FVector& ImpactPoint)
+{
+    const FVector ImpactPointNormalVector = (ImpactPoint - GetActorLocation()).GetSafeNormal();
+    check(BlockParticles);
+    UGameplayStatics::SpawnEmitterAttached(
+        BlockParticles,
+        GetRootComponent(),
+        FName("Block"),
+        ImpactPoint,
+        ImpactPointNormalVector.Rotation(),
+        GetActorScale()*2,
+        EAttachLocation::KeepWorldPosition
+    );
 }
 
 void APlayerCharacter::SetupSpringArm()

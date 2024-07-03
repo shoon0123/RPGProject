@@ -51,15 +51,11 @@ protected:
 
 	virtual bool IsAlive();
 
-	virtual void PlayBlockSound(const FVector& ImpactPoint);
-
 	virtual void PlayHitSound(const FVector& ImpactPoint);
 
 	virtual void PlayMontageSection(UAnimMontage* Montage, const FName& SectionName);
 
 	virtual void SetupCollision();
-
-	virtual void SpawnBlockParticles(const FVector& ImpactPoint);
 
 	virtual void SpawnHitParticles(const FVector& ImpactPoint);
 
@@ -68,15 +64,6 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "Montage")
 	TObjectPtr<UAnimMontage> AttackMontage;
-
-	UPROPERTY(EditAnywhere, Category = "Montage")
-	TObjectPtr<UAnimMontage> BlockMontage;
-
-	UPROPERTY(EditAnywhere, Category = "Sounds")
-	TObjectPtr<USoundBase> BlockSound;
-
-	UPROPERTY(EditAnywhere, Category = "Sounds")
-	TObjectPtr<USoundBase> ParryingSound;
 
 private:
 	UPROPERTY(VisibleAnywhere)
@@ -96,9 +83,6 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Sounds")
 	TObjectPtr<USoundBase> HitSound;
-
-	UPROPERTY(EditAnywhere, Category = "VisualEffects")
-	TObjectPtr<UParticleSystem> BlockParticles;
 
 	UPROPERTY(EditAnywhere, Category = "VisualEffects")
 	TObjectPtr<UParticleSystem> HitParticles;
