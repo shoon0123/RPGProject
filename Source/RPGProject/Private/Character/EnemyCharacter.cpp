@@ -11,7 +11,7 @@
 AEnemyCharacter::AEnemyCharacter()
 {
 	GetCharacterMovement()->bOrientRotationToMovement = false;
-	GetCharacterMovement()->RotationRate = FRotator(0.f, 500.f, 0.f);
+	GetCharacterMovement()->RotationRate = FRotator(0.f, 300.f, 0.f);
 	GetCharacterMovement()->MaxWalkSpeed = 400.f;
 	GetCharacterMovement()->bUseControllerDesiredRotation = true;
 	bUseControllerRotationPitch = false;
@@ -93,6 +93,7 @@ void AEnemyCharacter::SpawnWeapon()
 	Weapon = GetWorld()->SpawnActor<AWeapon>(WeaponClass, FVector::ZeroVector, FRotator::ZeroRotator);
 	Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, WeaponSocket);
 	Weapon->SetOwner(this);
+	Weapons.Add(Weapon);
 }
 
 void AEnemyCharacter::AttackEnd()

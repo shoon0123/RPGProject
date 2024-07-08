@@ -16,6 +16,12 @@ AWeapon::AWeapon()
 	SetupBoxTraceStartEnd();
 }
 
+void AWeapon::CollisionEnable(ECollisionEnabled::Type CollisionEnabled)
+{
+	WeaponBox->SetCollisionEnabled(CollisionEnabled);
+	EmptyIgnoreActors();
+}
+
 void AWeapon::EmptyIgnoreActors()
 {
 	IgnoreActors.Empty();
@@ -82,12 +88,6 @@ void AWeapon::BoxTrace(FHitResult& BoxHit)
 		true
 	);
 	IgnoreActors.AddUnique(BoxHit.GetActor());
-}
-
-void AWeapon::CollisionEnable(ECollisionEnabled::Type CollisionEnabled)
-{
-	WeaponBox->SetCollisionEnabled(CollisionEnabled);
-	EmptyIgnoreActors();
 }
 
 void AWeapon::ExecuteGetHit(FHitResult& BoxHit)

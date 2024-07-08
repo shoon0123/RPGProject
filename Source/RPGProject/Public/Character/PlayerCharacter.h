@@ -76,7 +76,7 @@ private:
 	float WalkingSpeed = 500.f;
 
 	UPROPERTY(EditAnywhere, Category = "Movement")
-	float RunningSpeed = 1000.f;
+	float RunningSpeed = 800.f;
 
 	UPROPERTY(EditAnywhere, Category = "Montage")
 	TObjectPtr<UAnimMontage> BlockMontage;
@@ -95,6 +95,8 @@ private:
 
 	bool bDoNextAttack = false;
 
+	bool bParryingLeft = true;
+
 	UFUNCTION(BlueprintCallable)
 	void DodgeEnd();
 
@@ -103,6 +105,10 @@ private:
 
 	UFUNCTION(BlueprintCallable)
 	void EnableParrying();
+
+	void ExecuteBlock(const FVector& ImpactPoint);
+
+	void ExecuteParrying(const FVector& ImpactPoint);
 
 	void PlayBlockSound(const FVector& ImpactPoint);
 

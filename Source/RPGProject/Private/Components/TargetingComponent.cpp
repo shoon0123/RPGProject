@@ -202,7 +202,7 @@ void UTargetingComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 
 	for (TObjectPtr<AActor> TargetableActor : TargetableActors)
 	{
-		DrawDebugSphere(GetWorld(), TargetableActor->GetActorLocation(), 30.f, 20, FColor::Red, false);
+		//DrawDebugSphere(GetWorld(), TargetableActor->GetActorLocation(), 30.f, 20, FColor::Red, false);
 	}
 
 	UpdateCamera();

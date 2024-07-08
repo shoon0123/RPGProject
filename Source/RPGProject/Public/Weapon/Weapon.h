@@ -16,6 +16,9 @@ class RPGPROJECT_API AWeapon : public AActor
 public:
 	AWeapon();
 
+	UFUNCTION(BlueprintCallable)
+	void CollisionEnable(ECollisionEnabled::Type CollisionEnabled);
+
 	void EmptyIgnoreActors();
 
 protected:
@@ -49,9 +52,6 @@ private:
 	void AddImpulse(ACharacter* HittedCharacter);
 
 	void BoxTrace(FHitResult& BoxHit);
-
-	UFUNCTION(BlueprintCallable)
-	void CollisionEnable(ECollisionEnabled::Type CollisionEnabled);
 
 	void ExecuteGetHit(FHitResult& BoxHit);
 

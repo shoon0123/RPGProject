@@ -44,6 +44,7 @@ void ACharacterBase::GetHit(const FVector& ImpactPoint, AActor* Hitter)
 {
 	PlayHitSound(ImpactPoint);
 	SpawnHitParticles(ImpactPoint);
+	SetWeaponsCollisionDisable();
 	if (IsAlive())
 	{
 		DirectionalHitReact(Hitter);
@@ -179,6 +180,14 @@ void ACharacterBase::SetupCollision()
 	GetCapsuleComponent()->SetGenerateOverlapEvents(true);
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+}
+
+void ACharacterBase::SetWeaponsCollisionDisable()
+{
+	for (TObjectPtr<AWeapon> Weapon : Weapons)
+	{
+		Weapon->CollisionEnable(ECollisionEnabled::NoCollision);
+	}
 }
 
 void ACharacterBase::SpawnHitParticles(const FVector& ImpactPoint)

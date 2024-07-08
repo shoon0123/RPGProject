@@ -57,10 +57,15 @@ protected:
 
 	virtual void SetupCollision();
 
+	virtual void SetWeaponsCollisionDisable();
+
 	virtual void SpawnHitParticles(const FVector& ImpactPoint);
 
 	UPROPERTY(BlueprintReadOnly)
 	EDeathPose DeathPose = EDeathPose::EDP_Alive;
+
+	UPROPERTY(VisibleInstanceOnly)
+	TSet<TObjectPtr<AWeapon>> Weapons;
 
 	UPROPERTY(EditAnywhere, Category = "Montage")
 	TObjectPtr<UAnimMontage> AttackMontage;

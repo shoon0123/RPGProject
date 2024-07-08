@@ -47,6 +47,7 @@ void APlayerCharacter::Block()
     if (GetActionState() == EActionState::EAS_Unoccupied && !GetCharacterMovement()->IsFalling())
     {
         SetActionState(EActionState::EAS_Block);
+        DisableRun();
         PlayMontageSection(BlockMontage, FName("Start"));
     }
 }
@@ -88,6 +89,30 @@ void APlayerCharacter::EnableParrying()
     SetActionState(EActionState::EAS_Parrying);
 }
 
+void APlayerCharacter::ExecuteBlock(const FVector& ImpactPoint)
+{
+    PlayMontageSection(BlockMontage, FName("React"));
+    PlayBlockSound(ImpactPoint);
+    SpawnBlockParticles(ImpactPoint);
+}
+
+void APlayerCharacter::ExecuteParrying(const FVector& ImpactPoint)
+{
+    if (bParryingLeft)
+    {
+        PlayMontageSection(BlockMontage, FName("ParryingLeft"));
+    }
+    else
+    {
+        PlayMontageSection(BlockMontage, FName("ParryingRight"));
+    }
+    bParryingLeft = !bParryingLeft;
+
+    PlayParryingSound(ImpactPoint);
+    SpawnParryingParticles(ImpactPoint);
+    DisableParrying();
+}
+
 TObjectPtr<UTargetingComponent> APlayerCharacter::GetTargetingComponent() const
 {
     return TargetingComponent;
@@ -107,16 +132,11 @@ void APlayerCharacter::GetHit(const FVector& ImpactPoint, AActor* Hitter)
 {
     if (GetActionState() == EActionState::EAS_Block)
     {
-        PlayMontageSection(BlockMontage, FName("React"));
-        PlayBlockSound(ImpactPoint);
-        SpawnBlockParticles(ImpactPoint);
+        ExecuteBlock(ImpactPoint);
     }
     else if (GetActionState() == EActionState::EAS_Parrying)
     {
-        PlayMontageSection(BlockMontage, FName("Parrying"));
-        PlayParryingSound(ImpactPoint);
-        SpawnParryingParticles(ImpactPoint);
-        DisableParrying();
+        ExecuteParrying(ImpactPoint);
     }
     else
     {
@@ -194,7 +214,7 @@ void APlayerCharacter::SetupSpringArm()
 {
     SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
     SpringArm->SetupAttachment(GetRootComponent());
-    SpringArm->AddLocalOffset(FVector3d(0.f, 0.f, 90.f));
+    SpringArm->AddLocalOffset(FVector3d(0.f, 0.f, 100.f));
     SpringArm->TargetArmLength = 400.0f;
     SpringArm->bUsePawnControlRotation = true;
     SpringArm->bEnableCameraLag = true;
@@ -226,11 +246,13 @@ void APlayerCharacter::SpawnWeapons()
     LeftHandWeapon = GetWorld()->SpawnActor<AWeapon>(LeftWeaponClass, FVector::ZeroVector, FRotator::ZeroRotator);
     LeftHandWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, LeftWeaponSocket);
     LeftHandWeapon->SetOwner(this);
+    Weapons.Add(LeftHandWeapon);
 
     TSubclassOf<class UObject> RightWeaponClass = RightHandWeaponType->GeneratedClass;
     RightHandWeapon = GetWorld()->SpawnActor<AWeapon>(RightWeaponClass, FVector::ZeroVector, FRotator::ZeroRotator);
     RightHandWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, RightWeaponSocket);
     RightHandWeapon->SetOwner(this);
+    Weapons.Add(RightHandWeapon);
 }
 
 void APlayerCharacter::AttackEnd()
