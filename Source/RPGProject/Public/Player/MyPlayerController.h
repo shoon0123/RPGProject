@@ -9,6 +9,7 @@
 class APlayerCharacter;
 class UInputMappingContext;
 class UInputAction;
+class UPlayerOverlay;
 struct FInputActionValue;
 /**
  * 

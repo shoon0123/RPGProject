@@ -14,10 +14,13 @@ class RPGPROJECT_API UPlayerOverlay : public UUserWidget
 	GENERATED_BODY()
 	
 public:
+	void SetPlayerHealthPercent(float Percent);
+
+	void SetEnemyHealthPercent(float Percent);
 
 private:
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UProgressBar> PlayerHealthBar; 
+	TObjectPtr<UProgressBar> PlayerHealthBar;
 	
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UProgressBar> EnemyHealthBar;
