@@ -6,7 +6,7 @@
 #include "GameFramework/HUD.h"
 #include "PlayerHUD.generated.h"
 
-class UPlayerOverlay;
+class UCombatOverlay;
 
 UCLASS()
 class RPGPROJECT_API APlayerHUD : public AHUD
@@ -14,15 +14,15 @@ class RPGPROJECT_API APlayerHUD : public AHUD
 	GENERATED_BODY()
 
 public:
-	TObjectPtr<UPlayerOverlay> GetPlayerOverlay() const;
+	TObjectPtr<UCombatOverlay> GetCombatOverlay() const;
 	
 protected:
 	virtual void BeginPlay() override;
 
 private:
 	UPROPERTY(EditDefaultsOnly, Category = Slash)
-	TSubclassOf<UPlayerOverlay> PlayerOverlayClass;
+	TSubclassOf<UCombatOverlay> CombatOverlayClass;
 	
 	UPROPERTY()
-	TObjectPtr<UPlayerOverlay> PlayerOverlay;
+	TObjectPtr<UCombatOverlay> CombatOverlay;
 };

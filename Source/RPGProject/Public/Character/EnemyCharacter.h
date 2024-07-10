@@ -18,11 +18,13 @@ class RPGPROJECT_API AEnemyCharacter : public ACharacterBase
 public:
 	AEnemyCharacter();
 
+	virtual void Attack() override;
+
+	virtual void GetHit(const FVector& ImpactPoint, AActor* Hitter) override;
+
 	virtual void PossessedBy(AController* NewController) override;
 
 	virtual void SetActionState(EActionState OtherActionState) override;
-
-	virtual void Attack() override;
 
 	void SetCombatTarget(AActor* Target);
 
@@ -48,6 +50,11 @@ protected:
 
 	virtual void DestroyWeapon() override;
 
+	virtual void UpdateHealthBar() override;
+
 private:
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UHealthBarComponent> HealthBarWidget;
+
 	void SpawnWeapon();
 };

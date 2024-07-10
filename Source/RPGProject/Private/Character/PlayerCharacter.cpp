@@ -3,9 +3,12 @@
 
 #include "Character/PlayerCharacter.h"
 #include "Camera/CameraComponent.h"
+#include "Components/AttributeComponent.h"
 #include "Components/TargetingComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "HUD/PlayerHUD.h"
+#include "HUD/CombatOverlay.h"
 #include "Kismet/GameplayStatics.h"
 #include "Weapon/Weapon.h"
 
@@ -165,6 +168,20 @@ void APlayerCharacter::DestroyWeapon()
     if (RightHandWeapon)
     {
         RightHandWeapon->Destroy();
+    }
+}
+
+void APlayerCharacter::UpdateHealthBar()
+{
+    if (TObjectPtr<APlayerController> PlayerController = Cast<APlayerController>(GetController()))
+    {
+        if (TObjectPtr<APlayerHUD> PlayerHUD = Cast<APlayerHUD>(PlayerController->GetHUD()))
+        {
+            if (TObjectPtr<UCombatOverlay> CombatOverlay = PlayerHUD->GetCombatOverlay())
+            {
+                CombatOverlay->SetPlayerHealthPercent(Attributes->GetHealthPercent());
+            }
+        }
     }
 }
 

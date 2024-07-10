@@ -2,11 +2,11 @@
 
 
 #include "HUD/PlayerHUD.h"
-#include "HUD/PlayerOverlay.h"
+#include "HUD/CombatOverlay.h"
 
-TObjectPtr<UPlayerOverlay> APlayerHUD::GetPlayerOverlay() const
+TObjectPtr<UCombatOverlay> APlayerHUD::GetCombatOverlay() const
 {
-	return PlayerOverlay;
+	return CombatOverlay;
 }
 
 void APlayerHUD::BeginPlay()
@@ -16,12 +16,12 @@ void APlayerHUD::BeginPlay()
 	if (UWorld* World = GetWorld())
 	{
 		TObjectPtr<APlayerController> Controller = World->GetFirstPlayerController();
-		if (Controller && PlayerOverlayClass)
+		if (Controller && CombatOverlayClass)
 		{
-			PlayerOverlay = CreateWidget<UPlayerOverlay>(Controller, PlayerOverlayClass);
-			PlayerOverlay->SetPlayerHealthPercent(.1f);
-			PlayerOverlay->SetEnemyHealthPercent(.1f);
-			PlayerOverlay->AddToViewport();
+			CombatOverlay = CreateWidget<UCombatOverlay>(Controller, CombatOverlayClass);
+			CombatOverlay->SetPlayerHealthPercent(1.f);
+			CombatOverlay->SetEnemyHealthPercent(1.f);
+			CombatOverlay->AddToViewport();
 		}
 	}
 }

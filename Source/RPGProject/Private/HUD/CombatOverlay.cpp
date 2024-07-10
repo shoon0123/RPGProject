@@ -1,10 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "HUD/PlayerOverlay.h"
-#include"Components/ProgressBar.h"
+#include "HUD/CombatOverlay.h"
+#include "Components/ProgressBar.h"
 
-void UPlayerOverlay::SetPlayerHealthPercent(float Percent)
+void UCombatOverlay::SetPlayerHealthPercent(float Percent)
 {
 	if (PlayerHealthBar)
 	{
@@ -12,7 +12,7 @@ void UPlayerOverlay::SetPlayerHealthPercent(float Percent)
 	}
 }
 
-void UPlayerOverlay::SetEnemyHealthPercent(float Percent)
+void UCombatOverlay::SetEnemyHealthPercent(float Percent)
 {
 	if (EnemyHealthBar)
 	{

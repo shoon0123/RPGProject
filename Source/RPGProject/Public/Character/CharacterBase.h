@@ -61,6 +61,11 @@ protected:
 
 	virtual void SpawnHitParticles(const FVector& ImpactPoint);
 
+	virtual void UpdateHealthBar() PURE_VIRTUAL(ACharacterBase::UpdateHealthBar, );
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UAttributeComponent> Attributes;
+
 	UPROPERTY(BlueprintReadOnly)
 	EDeathPose DeathPose = EDeathPose::EDP_Alive;
 
@@ -71,12 +76,6 @@ protected:
 	TObjectPtr<UAnimMontage> AttackMontage;
 
 private:
-	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<UAttributeComponent> Attributes;
-
-	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<UHealthBarComponent> HealthBarWidget;
-
 	UPROPERTY(VisibleAnywhere, Category = "State")
 	EActionState ActionState = EActionState::EAS_Unoccupied;
 

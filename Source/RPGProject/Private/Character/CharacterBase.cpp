@@ -6,7 +6,6 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/AttributeComponent.h"
 #include "Components/BoxComponent.h"
-#include "HUD/HealthBarComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Weapon/Weapon.h"
 
@@ -21,8 +20,6 @@ ACharacterBase::ACharacterBase()
 	GetCharacterMovement()->FallingLateralFriction = 2.0f;
 
 	Attributes = CreateDefaultSubobject<UAttributeComponent>(TEXT("Attributes"));
-	HealthBarWidget = CreateDefaultSubobject<UHealthBarComponent>(TEXT("HealthBar"));
-	HealthBarWidget->SetupAttachment(GetRootComponent());
 }
 
 EActionState ACharacterBase::GetActionState() const
@@ -45,10 +42,10 @@ void ACharacterBase::GetHit(const FVector& ImpactPoint, AActor* Hitter)
 	PlayHitSound(ImpactPoint);
 	SpawnHitParticles(ImpactPoint);
 	SetWeaponsCollisionDisable();
+	UpdateHealthBar();
 	if (IsAlive())
 	{
 		DirectionalHitReact(Hitter);
-		HealthBarWidget->SetVisibility(true);
 	}
 	else
 	{
@@ -60,8 +57,6 @@ float ACharacterBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageE
 {
 	check(Attributes);
 	Attributes->ReceiveDamage(DamageAmount);
-	check(HealthBarWidget);
-	HealthBarWidget->SetHealthPercent(Attributes->GetHealthPercent());
 
 	return DamageAmount;
 }
@@ -75,9 +70,6 @@ void ACharacterBase::Destroyed()
 void ACharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
-
-	check(HealthBarWidget);
-	HealthBarWidget->SetVisibility(false);
 }
 
 void ACharacterBase::Die()
@@ -109,7 +101,7 @@ void ACharacterBase::Die()
 	PlayMontageSection(DeathMontage, SectionName);
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	SetLifeSpan(5.f);
-	HealthBarWidget->SetVisibility(false);
+	//HealthBarWidget->SetVisibility(false);
 }
 
 void ACharacterBase::DirectionalHitReact(const AActor* Hitter)

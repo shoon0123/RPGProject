@@ -5,7 +5,9 @@
 #include "AI/EnemyAIController.h"
 #include "BehaviorTree/BehaviorTree.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "Components/AttributeComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "HUD/HealthBarComponent.h"
 #include "Weapon/weapon.h"
 
 AEnemyCharacter::AEnemyCharacter()
@@ -17,6 +19,10 @@ AEnemyCharacter::AEnemyCharacter()
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationRoll = false;
 	bUseControllerRotationYaw = false;
+
+	HealthBarWidget = CreateDefaultSubobject<UHealthBarComponent>(TEXT("HealthBar"));
+	HealthBarWidget->SetupAttachment(GetRootComponent());
+
 }
 
 void AEnemyCharacter::PossessedBy(AController* NewController)
@@ -65,6 +71,16 @@ void AEnemyCharacter::Attack()
 	}
 }
 
+void AEnemyCharacter::GetHit(const FVector& ImpactPoint, AActor* Hitter)
+{
+	Super::GetHit(ImpactPoint, Hitter);
+
+	if (IsAlive())
+	{
+		HealthBarWidget->SetVisibility(true);
+	}
+}
+
 void AEnemyCharacter::SetCombatTarget(AActor* Target)
 {
 	CombatTarget = Target;
@@ -75,6 +91,10 @@ void AEnemyCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	SpawnWeapon();
+	if (HealthBarWidget) 
+	{
+		HealthBarWidget->SetVisibility(false);
+	}
 }
 
 void AEnemyCharacter::DestroyWeapon()
@@ -82,6 +102,14 @@ void AEnemyCharacter::DestroyWeapon()
 	if (Weapon)
 	{
 		Weapon->Destroy();
+	}
+}
+
+void AEnemyCharacter::UpdateHealthBar()
+{
+	if (HealthBarWidget)
+	{
+		HealthBarWidget->SetHealthPercent(Attributes->GetHealthPercent());
 	}
 }
 

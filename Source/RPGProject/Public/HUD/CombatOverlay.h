@@ -4,12 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "PlayerOverlay.generated.h"
+#include "CombatOverlay.generated.h"
 
 class UProgressBar;
 
 UCLASS()
-class RPGPROJECT_API UPlayerOverlay : public UUserWidget
+class RPGPROJECT_API UCombatOverlay : public UUserWidget
 {
 	GENERATED_BODY()
 	

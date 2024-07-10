@@ -44,6 +44,8 @@ protected:
 
 	virtual void DestroyWeapon() override;
 
+	virtual void UpdateHealthBar() override;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Weapon")
 	TObjectPtr<AWeapon> LeftHandWeapon;
 
