@@ -63,4 +63,5 @@ private:
 
 	void SetupBoxTraceStartEnd();
 
+	INT16 i = 0;
 };

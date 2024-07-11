@@ -18,8 +18,8 @@ AWeapon::AWeapon()
 
 void AWeapon::CollisionEnable(ECollisionEnabled::Type CollisionEnabled)
 {
-	WeaponBox->SetCollisionEnabled(CollisionEnabled);
 	EmptyIgnoreActors();
+	WeaponBox->SetCollisionEnabled(CollisionEnabled);
 }
 
 void AWeapon::EmptyIgnoreActors()
@@ -74,6 +74,12 @@ void AWeapon::BoxTrace(FHitResult& BoxHit)
 		ActorsToIgnore.AddUnique(Actor);
 	}
 
+	for (AActor* Actor : ActorsToIgnore)
+	{
+		if (Actor)
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, Actor->GetName());
+	}
+
 	UKismetSystemLibrary::BoxTraceSingle(
 		this,
 		Start,
@@ -83,11 +89,18 @@ void AWeapon::BoxTrace(FHitResult& BoxHit)
 		ETraceTypeQuery::TraceTypeQuery1,
 		false,
 		ActorsToIgnore,
-		EDrawDebugTrace::None,
+		EDrawDebugTrace::ForDuration,
 		BoxHit,
 		true
 	);
 	IgnoreActors.AddUnique(BoxHit.GetActor());
+
+
+		if (BoxHit.GetActor())
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::White, BoxHit.GetActor()->GetName());
+		}
+
 }
 
 void AWeapon::ExecuteGetHit(FHitResult& BoxHit)
