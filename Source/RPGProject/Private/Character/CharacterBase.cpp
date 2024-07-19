@@ -27,6 +27,29 @@ EActionState ACharacterBase::GetActionState() const
 	return ActionState;
 }
 
+void ACharacterBase::DestroyWeapons()
+{
+	for (TObjectPtr<AWeapon> Weapon : Weapons)
+	{
+		Weapon->Destroy();
+	}
+}
+
+double ACharacterBase::GetAngleXYFromForwardVector(FVector Vector) const
+{
+	const FVector VectorXY = FVector(Vector.X, Vector.Y, 0);
+	const double CosTheta = FVector::DotProduct(GetActorForwardVector(), VectorXY);
+	double Angle = FMath::RadiansToDegrees(FMath::Acos(CosTheta));
+	const FVector CrossProduct = FVector::CrossProduct(GetActorForwardVector(), VectorXY);
+
+	if (CrossProduct.Z < 0)
+	{
+		Angle *= -1.f;
+	}
+
+	return Angle;
+}
+
 void ACharacterBase::SetActionState(EActionState OtherActionState)
 {
 	ActionState = OtherActionState;
@@ -64,12 +87,14 @@ float ACharacterBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageE
 void ACharacterBase::Destroyed()
 {
 	Super::Destroyed();
-	DestroyWeapon();
+	DestroyWeapons();
 }
 
 void ACharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
+
+	SpawnWeapons();
 }
 
 void ACharacterBase::Die()
@@ -100,8 +125,7 @@ void ACharacterBase::Die()
 	}
 	PlayMontageSection(DeathMontage, SectionName);
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	SetLifeSpan(5.f);
-	//HealthBarWidget->SetVisibility(false);
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 void ACharacterBase::DirectionalHitReact(const AActor* Hitter)
@@ -109,29 +133,20 @@ void ACharacterBase::DirectionalHitReact(const AActor* Hitter)
 	SetActionState(EActionState::EAS_HitReaction);
 
 	const FVector HitterVector = Hitter->GetActorLocation() - GetActorLocation();
-	const FVector HitterVectorXY = FVector(HitterVector.X, HitterVector.Y, 0).GetSafeNormal();
-
-	const double CosTheta = FVector::DotProduct(GetActorForwardVector(), HitterVectorXY);
-	double Theta = FMath::Acos(CosTheta);
-	Theta = FMath::RadiansToDegrees(Theta);
-	const FVector CrossProduct = FVector::CrossProduct(GetActorForwardVector(), HitterVectorXY);
-
-	if (CrossProduct.Z < 0)
-	{
-		Theta *= -1.f;
-	}
+	
+	double Angle = GetAngleXYFromForwardVector(HitterVector);
 
 	FName Section("Back");
 
-	if (Theta >= -45.f && Theta < 45.f)
+	if (Angle >= -45.f && Angle < 45.f)
 	{
 		Section = FName("Front");
 	}
-	else if (Theta >= -135.f && Theta < -45.f)
+	else if (Angle >= -135.f && Angle < -45.f)
 	{
 		Section = FName("Left");
 	}
-	else if (Theta >= 45.f && Theta < 135.f)
+	else if (Angle >= 45.f && Angle < 135.f)
 	{
 		Section = FName("Right");
 	}
@@ -167,11 +182,20 @@ void ACharacterBase::PlayHitSound(const FVector& ImpactPoint)
 
 void ACharacterBase::SetupCollision()
 {
-	GetCapsuleComponent()->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
-	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
-	GetCapsuleComponent()->SetGenerateOverlapEvents(true);
-	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
-	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	//GetCapsuleComponent()->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
+	//GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
+	//GetCapsuleComponent()->SetGenerateOverlapEvents(true);
+	//GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
+
+	//GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	GetMesh()->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
+	GetMesh()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+	GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
+	GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldDynamic, ECollisionResponse::ECR_Overlap);
+	GetMesh()->SetGenerateOverlapEvents(true);
+
+	//GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 void ACharacterBase::SetWeaponsCollisionDisable()
@@ -195,4 +219,19 @@ void ACharacterBase::SpawnHitParticles(const FVector& ImpactPoint)
 		GetActorScale() * 2,
 		EAttachLocation::KeepWorldPosition
 	);
+}
+
+void ACharacterBase::SpawnWeapons()
+{
+	for (const TObjectPtr<UBlueprint> WeaponType : WeaponTypes)
+	{
+		const FName Socket = *WeaponTypeSocketMap.Find(WeaponType);
+		TSubclassOf<class UObject> WeaponClass = WeaponType->GeneratedClass;
+
+		TObjectPtr<AWeapon> Weapon = GetWorld()->SpawnActor<AWeapon>(WeaponClass, FVector::ZeroVector, FRotator::ZeroRotator);
+		
+		Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, Socket);
+		Weapon->SetOwner(this);
+		Weapons.Add(Weapon);
+	}
 }

@@ -20,13 +20,13 @@ public:
 
 	virtual void Attack() override;
 
-	virtual void GetHit(const FVector& ImpactPoint, AActor* Hitter) override;
+	virtual float GetDetectionRange() const;
 
 	virtual void PossessedBy(AController* NewController) override;
 
 	virtual void SetActionState(EActionState OtherActionState) override;
 
-	void SetCombatTarget(AActor* Target);
+	virtual void SetCombatTarget(ACharacter* Target);
 
 protected:
 	UPROPERTY(EditAnywhere, Category = "AI")
@@ -42,19 +42,16 @@ protected:
 	TObjectPtr<AWeapon> Weapon;
 
 	UPROPERTY(BlueprintReadOnly)
-	TObjectPtr<AActor> CombatTarget;
+	TObjectPtr<ACharacter> CombatTarget;
+
+	UPROPERTY(EditAnywhere)
+	float DetectionRange = 1500.f;
 
 	virtual void BeginPlay() override;
 
 	virtual void AttackEnd() override;
 
-	virtual void DestroyWeapon() override;
-
-	virtual void UpdateHealthBar() override;
+	virtual void Die() override;
 
 private:
-	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<UHealthBarComponent> HealthBarWidget;
-
-	void SpawnWeapon();
 };

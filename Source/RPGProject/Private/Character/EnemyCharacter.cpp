@@ -7,7 +7,6 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Components/AttributeComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "HUD/HealthBarComponent.h"
 #include "Weapon/weapon.h"
 
 AEnemyCharacter::AEnemyCharacter()
@@ -19,10 +18,6 @@ AEnemyCharacter::AEnemyCharacter()
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationRoll = false;
 	bUseControllerRotationYaw = false;
-
-	HealthBarWidget = CreateDefaultSubobject<UHealthBarComponent>(TEXT("HealthBar"));
-	HealthBarWidget->SetupAttachment(GetRootComponent());
-
 }
 
 void AEnemyCharacter::PossessedBy(AController* NewController)
@@ -33,7 +28,7 @@ void AEnemyCharacter::PossessedBy(AController* NewController)
 	EnemyAIController = Cast<AEnemyAIController>(NewController);
 	EnemyAIController->GetBlackboardComponent()->InitializeBlackboard(*BehaviorTree->BlackboardAsset);
 	EnemyAIController->RunBehaviorTree(BehaviorTree);
-	EnemyAIController->GetBlackboardComponent()->SetValueAsEnum(FName("ActionState"), (uint8)EActionState::EAS_Unoccupied);
+	EnemyAIController->GetBlackboardComponent()->SetValueAsFloat(FName("DetectionRange"), DetectionRange);
 }
 
 void AEnemyCharacter::SetActionState(EActionState OtherActionState)
@@ -71,17 +66,12 @@ void AEnemyCharacter::Attack()
 	}
 }
 
-void AEnemyCharacter::GetHit(const FVector& ImpactPoint, AActor* Hitter)
+float AEnemyCharacter::GetDetectionRange() const
 {
-	Super::GetHit(ImpactPoint, Hitter);
-
-	if (IsAlive())
-	{
-		HealthBarWidget->SetVisibility(true);
-	}
+	return DetectionRange;
 }
 
-void AEnemyCharacter::SetCombatTarget(AActor* Target)
+void AEnemyCharacter::SetCombatTarget(ACharacter* Target)
 {
 	CombatTarget = Target;
 }
@@ -89,39 +79,12 @@ void AEnemyCharacter::SetCombatTarget(AActor* Target)
 void AEnemyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-
-	SpawnWeapon();
-	if (HealthBarWidget) 
-	{
-		HealthBarWidget->SetVisibility(false);
-	}
 }
 
-void AEnemyCharacter::DestroyWeapon()
+void AEnemyCharacter::Die()
 {
-	if (Weapon)
-	{
-		Weapon->Destroy();
-	}
-}
-
-void AEnemyCharacter::UpdateHealthBar()
-{
-	if (HealthBarWidget)
-	{
-		HealthBarWidget->SetHealthPercent(Attributes->GetHealthPercent());
-	}
-}
-
-void AEnemyCharacter::SpawnWeapon()
-{
-	FName WeaponSocket(TEXT("RightHandSocket"));
-	check(WeaponType);
-	TSubclassOf<class UObject> WeaponClass = WeaponType->GeneratedClass;
-	Weapon = GetWorld()->SpawnActor<AWeapon>(WeaponClass, FVector::ZeroVector, FRotator::ZeroRotator);
-	Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, WeaponSocket);
-	Weapon->SetOwner(this);
-	Weapons.Add(Weapon);
+	Super::Die();
+	SetLifeSpan(10.f);
 }
 
 void AEnemyCharacter::AttackEnd()

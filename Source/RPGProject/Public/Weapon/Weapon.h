@@ -62,6 +62,4 @@ private:
 	void SetupWeaponBox();
 
 	void SetupBoxTraceStartEnd();
-
-	INT16 i = 0;
 };

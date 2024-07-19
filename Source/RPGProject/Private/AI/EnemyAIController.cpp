@@ -4,6 +4,7 @@
 #include "AI/EnemyAIController.h"
 #include "BehaviorTree/BehaviorTreeComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "Character/CharacterTypes.h"
 
 AEnemyAIController::AEnemyAIController()
 {
@@ -11,4 +12,6 @@ AEnemyAIController::AEnemyAIController()
 	check(Blackboard);
 	BehaviorTreeComponent = CreateDefaultSubobject<UBehaviorTreeComponent>("BehaviorTreeComponent");
 	check(BehaviorTreeComponent);
+	GetBlackboardComponent()->SetValueAsEnum(FName("ActionState"), (uint8)EActionState::EAS_Unoccupied);
+	GetBlackboardComponent()->SetValueAsEnum(FName("TargetState"), (uint8)EActionState::EAS_Unoccupied);
 }

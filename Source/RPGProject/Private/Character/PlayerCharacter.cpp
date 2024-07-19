@@ -133,11 +133,13 @@ void APlayerCharacter::EnableRun()
 
 void APlayerCharacter::GetHit(const FVector& ImpactPoint, AActor* Hitter)
 {
-    if (GetActionState() == EActionState::EAS_Block)
+    const double Angle = GetAngleXYFromForwardVector(Hitter->GetActorLocation() - GetActorLocation());
+    const bool bIsForward = -90.f < Angle && Angle < 90.f;
+    if (GetActionState() == EActionState::EAS_Block && bIsForward)
     {
         ExecuteBlock(ImpactPoint);
     }
-    else if (GetActionState() == EActionState::EAS_Parrying)
+    else if (GetActionState() == EActionState::EAS_Parrying && bIsForward)
     {
         ExecuteParrying(ImpactPoint);
     }
@@ -145,6 +147,19 @@ void APlayerCharacter::GetHit(const FVector& ImpactPoint, AActor* Hitter)
     {
         Super::GetHit(ImpactPoint, Hitter);
     }
+}
+
+TObjectPtr<UCombatOverlay> APlayerCharacter::GetCombatOverlay() const
+{
+    TObjectPtr<UCombatOverlay> CombatOverlay = nullptr;
+    if (TObjectPtr<APlayerController> PlayerController = Cast<APlayerController>(GetController()))
+    {
+        if (TObjectPtr<APlayerHUD> PlayerHUD = Cast<APlayerHUD>(PlayerController->GetHUD()))
+        {
+            CombatOverlay = PlayerHUD->GetCombatOverlay();
+        }
+    }
+    return CombatOverlay;
 }
 
 void APlayerCharacter::DisableRun()
@@ -156,19 +171,14 @@ void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay(); 
 
-    SpawnWeapons();
+    SetupHUD();
 }
 
-void APlayerCharacter::DestroyWeapon()
+void APlayerCharacter::Die()
 {
-    if (LeftHandWeapon)
-    {
-        LeftHandWeapon->Destroy();
-    }
-    if (RightHandWeapon)
-    {
-        RightHandWeapon->Destroy();
-    }
+    Super::Die();
+
+    GetTargetingComponent()->CancelLockOn();
 }
 
 void APlayerCharacter::UpdateHealthBar()
@@ -246,30 +256,24 @@ void APlayerCharacter::SetupCamera()
     Camera->SetupAttachment(SpringArm);
 }
 
+void APlayerCharacter::SetupHUD()
+{
+    if (TObjectPtr<APlayerController> PlayerController = Cast<APlayerController>(GetController()))
+    {
+        if (TObjectPtr<APlayerHUD> PlayerHUD = Cast<APlayerHUD>(PlayerController->GetHUD()))
+        {
+            if (TObjectPtr<UCombatOverlay> CombatOverlay = PlayerHUD->GetCombatOverlay())
+            {
+                CombatOverlay->SetEnemyWidgetVisibility(ESlateVisibility::Hidden);
+            }
+        }
+    }
+}
+
 void APlayerCharacter::SetupTargetingComponent()
 {
     TargetingComponent = CreateDefaultSubobject<UTargetingComponent>(TEXT("Targeting"));
     TargetingComponent->SetupAttachment(GetRootComponent());
-}
-
-void APlayerCharacter::SpawnWeapons()
-{
-    check(LeftHandWeaponType);
-    check(RightHandWeaponType);
-    FName LeftWeaponSocket(TEXT("hand_lSocket"));
-    FName RightWeaponSocket(TEXT("hand_rSocket"));
-
-    TSubclassOf<class UObject> LeftWeaponClass = LeftHandWeaponType->GeneratedClass;
-    LeftHandWeapon = GetWorld()->SpawnActor<AWeapon>(LeftWeaponClass, FVector::ZeroVector, FRotator::ZeroRotator);
-    LeftHandWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, LeftWeaponSocket);
-    LeftHandWeapon->SetOwner(this);
-    Weapons.Add(LeftHandWeapon);
-
-    TSubclassOf<class UObject> RightWeaponClass = RightHandWeaponType->GeneratedClass;
-    RightHandWeapon = GetWorld()->SpawnActor<AWeapon>(RightWeaponClass, FVector::ZeroVector, FRotator::ZeroRotator);
-    RightHandWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, RightWeaponSocket);
-    RightHandWeapon->SetOwner(this);
-    Weapons.Add(RightHandWeapon);
 }
 
 void APlayerCharacter::AttackEnd()

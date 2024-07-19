@@ -7,8 +7,9 @@
 #include "PlayerCharacter.generated.h"
 
 class AWeapon;
-class USpringArmComponent;
 class UCameraComponent;
+class UCombatOverlay;
+class USpringArmComponent;
 class UTargetingComponent;
 
 UCLASS()
@@ -33,6 +34,8 @@ public:
 
 	virtual void GetHit(const FVector& ImpactPoint, AActor* Hitter) override;
 
+	TObjectPtr<UCombatOverlay> GetCombatOverlay() const;
+
 	TObjectPtr<UTargetingComponent> GetTargetingComponent() const;
 
 	FVector GetSpringArmLocation() const;
@@ -42,7 +45,7 @@ protected:
 
 	virtual void AttackEnd() override;
 
-	virtual void DestroyWeapon() override;
+	virtual void Die() override;
 
 	virtual void UpdateHealthBar() override;
 
@@ -120,9 +123,9 @@ private:
 
 	void SetupCamera();
 
+	void SetupHUD();
+
 	void SetupTargetingComponent();
-	
-	void SpawnWeapons();
 
 	void SpawnBlockParticles(const FVector& ImpactPoint);
 

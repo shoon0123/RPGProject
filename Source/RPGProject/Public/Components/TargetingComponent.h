@@ -6,6 +6,7 @@
 #include "Components/SphereComponent.h"
 #include "TargetingComponent.generated.h"
 
+class ACharacterBase;
 class APlayerCharacter;
 class APlayerController;
 
@@ -56,7 +57,7 @@ private:
 	TSet<TObjectPtr<AActor>> TargetableActors;
 
 	UPROPERTY(VisibleInstanceOnly)
-	TObjectPtr<AActor> Target;
+	TObjectPtr<ACharacterBase> Target;
 
 	UPROPERTY(VisibleInstanceOnly)
 	bool bIsLockOn = false;

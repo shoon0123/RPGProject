@@ -26,6 +26,11 @@ float UAttributeComponent::GetHealthPercent()
 	return Health / MaxHealth;
 }
 
+float UAttributeComponent::GetPosturePercent()
+{
+	return Posture / MaxPosture;
+}
+
 bool UAttributeComponent::IsAlive()
 {
 	return Health > 0.f;

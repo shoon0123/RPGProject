@@ -180,7 +180,7 @@ TObjectPtr<AActor> UTargetingComponent::FindTarget()
 
 void UTargetingComponent::SetTarget(TObjectPtr<AActor> Actor)
 {
-	Target = Actor;
+	Target = Cast<ACharacterBase>(Actor);
 	LastTimeSetTarget = GetWorld()->GetRealTimeSeconds();
 }
 
@@ -255,7 +255,7 @@ void UTargetingComponent::InitializeTargetableActors()
 
 bool UTargetingComponent::IsTargetable(TObjectPtr<AActor> Actor)
 {
-	return Actor->ActorHasTag(FName("Enemy"));
+	return IsValid(Actor) ? Actor->ActorHasTag(FName("Enemy")) : false;
 }
 
 void UTargetingComponent::SetupCollision()
@@ -269,7 +269,12 @@ void UTargetingComponent::UpdateCamera()
 {
 	if (IsValid(Target))
 	{
-		if (TObjectPtr<APlayerController> PlayerController = Cast<APlayerController>(PlayerCharacter->GetController()))
+		if (!Target->IsAlive())
+		{
+			RemoveTargetableActor(Target);
+			CancelLockOn(); 
+		}
+		else if (TObjectPtr<APlayerController> PlayerController = Cast<APlayerController>(PlayerCharacter->GetController()))
 		{
 			const FRotator PlayerControllerRotator = PlayerController->GetControlRotation();
 			const FVector CameraLocation = PlayerCharacter->GetSpringArmLocation();

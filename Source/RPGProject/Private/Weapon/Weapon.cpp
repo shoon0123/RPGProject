@@ -43,12 +43,12 @@ void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 	const FName TargetTag = GetTargetTag();
 	if (HittedCharacter && HittedCharacter->ActorHasTag(TargetTag))
 	{
-		ExecuteGetHit(BoxHit);
-		AddImpulse(HittedCharacter);
-		if (HittedCharacter->GetActionState() != EActionState::EAS_Block)
+		if (HittedCharacter->GetActionState() != EActionState::EAS_Block && HittedCharacter->GetActionState() != EActionState::EAS_Parrying)
 		{
 			UGameplayStatics::ApplyDamage(HittedCharacter, Damage, GetOwner()->GetInstigatorController(), this, UDamageType::StaticClass());
 		}
+		ExecuteGetHit(BoxHit);
+		AddImpulse(HittedCharacter);
 	}
 }
 
@@ -73,34 +73,22 @@ void AWeapon::BoxTrace(FHitResult& BoxHit)
 	{
 		ActorsToIgnore.AddUnique(Actor);
 	}
-
-	for (AActor* Actor : ActorsToIgnore)
-	{
-		if (Actor)
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, Actor->GetName());
-	}
+	
 
 	UKismetSystemLibrary::BoxTraceSingle(
 		this,
 		Start,
 		End,
-		FVector(5.f, 5.f, 5.f),
+		FVector(WeaponBox->GetScaledBoxExtent().X, WeaponBox->GetScaledBoxExtent().Y, 1.f),
 		BoxTraceStart->GetComponentRotation(),
 		ETraceTypeQuery::TraceTypeQuery1,
 		false,
 		ActorsToIgnore,
-		EDrawDebugTrace::ForDuration,
+		EDrawDebugTrace::None,
 		BoxHit,
 		true
 	);
 	IgnoreActors.AddUnique(BoxHit.GetActor());
-
-
-		if (BoxHit.GetActor())
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::White, BoxHit.GetActor()->GetName());
-		}
-
 }
 
 void AWeapon::ExecuteGetHit(FHitResult& BoxHit)

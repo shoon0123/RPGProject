@@ -30,6 +30,8 @@ public:
 
 	virtual void GetHit(const FVector& ImpactPoint, AActor* Hitter) override;
 
+	virtual bool IsAlive();
+
 	virtual void SetActionState(EActionState OtherActionState);
 
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
@@ -44,12 +46,12 @@ protected:
 	
 	virtual void DirectionalHitReact(const AActor* Hitter);
 
-	virtual void DestroyWeapon() PURE_VIRTUAL(ACharacterBase::DestroyWeapon, );
+	virtual void DestroyWeapons();
+
+	virtual double GetAngleXYFromForwardVector(FVector Vector) const;
 
 	UFUNCTION(BlueprintCallable)
 	virtual void HitReactEnd();
-
-	virtual bool IsAlive();
 
 	virtual void PlayHitSound(const FVector& ImpactPoint);
 
@@ -61,6 +63,8 @@ protected:
 
 	virtual void SpawnHitParticles(const FVector& ImpactPoint);
 
+	virtual void SpawnWeapons();
+
 	virtual void UpdateHealthBar() PURE_VIRTUAL(ACharacterBase::UpdateHealthBar, );
 
 	UPROPERTY(VisibleAnywhere)
@@ -69,8 +73,8 @@ protected:
 	UPROPERTY(BlueprintReadOnly)
 	EDeathPose DeathPose = EDeathPose::EDP_Alive;
 
-	UPROPERTY(VisibleInstanceOnly)
-	TSet<TObjectPtr<AWeapon>> Weapons;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Weapon")
+	TArray<TObjectPtr<AWeapon>> Weapons;
 
 	UPROPERTY(EditAnywhere, Category = "Montage")
 	TObjectPtr<UAnimMontage> AttackMontage;
@@ -90,4 +94,10 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "VisualEffects")
 	TObjectPtr<UParticleSystem> HitParticles;
+
+	UPROPERTY(EditAnywhere, Category = "Weapon")
+	TArray<TObjectPtr<UBlueprint>> WeaponTypes;
+
+	UPROPERTY(EditAnywhere, Category = "Weapon")
+	TMap<TObjectPtr<UBlueprint>, FName> WeaponTypeSocketMap;
 };

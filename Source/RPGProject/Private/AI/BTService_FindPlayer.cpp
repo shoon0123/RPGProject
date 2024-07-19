@@ -4,8 +4,10 @@
 #include "AI/BTService_FindPlayer.h"
 #include "AIController.h"
 #include "BehaviorTree/BTFunctionLibrary.h"
-#include "Kismet/GameplayStatics.h"
 #include "Character/EnemyCharacter.h"
+#include "Character/PlayerCharacter.h"
+#include "HUD/CombatOverlay.h"
+#include "Kismet/GameplayStatics.h"
 
 void UBTService_FindPlayer::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
@@ -18,13 +20,19 @@ void UBTService_FindPlayer::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* N
 	
 	UGameplayStatics::GetAllActorsWithTag(OwningPawn, FName("Player"), ActorWithTag);
 
-	AActor* TargetActor = ActorWithTag.IsEmpty() ? nullptr : ActorWithTag[0];
+	TObjectPtr<ACharacterBase> TargetActor = ActorWithTag.IsEmpty() ? nullptr : Cast<ACharacterBase>(ActorWithTag[0]);
 	float Distance = OwningPawn->GetDistanceTo(TargetActor);
 	Cast<AEnemyCharacter>(OwningPawn)->SetCombatTarget(TargetActor);
-	//GEngine->AddOnScreenDebugMessage(-1, .5f, FColor::Orange, ActorWithTag[0]->GetName());
 
 	UBTFunctionLibrary::SetBlackboardValueAsFloat(this, DistanceToTargetSelector, Distance);
 	UBTFunctionLibrary::SetBlackboardValueAsObject(this, TargetToFollowSelector, TargetActor);
-
-
+	if (TargetActor)
+	{
+		UBTFunctionLibrary::SetBlackboardValueAsEnum(this, TargetStateSelector, (uint8)TargetActor->GetActionState());
+		
+		if (Cast<AEnemyCharacter>(OwningPawn)->GetDetectionRange() < Distance)
+		{
+			Cast<AEnemyCharacter>(OwningPawn)->SetCombatTarget(nullptr);
+		}
+	}
 }

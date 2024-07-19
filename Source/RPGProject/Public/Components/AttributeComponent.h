@@ -16,10 +16,14 @@ public:
 	UAttributeComponent();
 
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-	
-	void ReceiveDamage(float Damage);
 
 	float GetHealthPercent();
+
+	float GetPosturePercent();
+
+	void ReceiveDamage(float Damage);
+
+	void RecievePosture(float Posture);
 
 	bool IsAlive();
 
@@ -32,4 +36,10 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Actor Attributes")
 	float MaxHealth = 100;
+
+	UPROPERTY(EditAnywhere, Category = "Actor Attributes")
+	float Posture = 0;
+
+	UPROPERTY(EditAnywhere, Category = "Actor Attributes")
+	float MaxPosture = 100;
 };
