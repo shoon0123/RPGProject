@@ -278,9 +278,9 @@ void UTargetingComponent::UpdateCamera()
 		{
 			const FRotator PlayerControllerRotator = PlayerController->GetControlRotation();
 			const FVector CameraLocation = PlayerCharacter->GetSpringArmLocation();
-			const FVector TargetLocation = Target->GetActorLocation();
+			const FVector LookAtLocation = (Target->GetActorLocation() + PlayerCharacter->GetActorLocation()) / 2;
 
-			const FRotator LookAtTarget = UKismetMathLibrary::FindLookAtRotation(CameraLocation, TargetLocation);
+			const FRotator LookAtTarget = UKismetMathLibrary::FindLookAtRotation(CameraLocation, LookAtLocation);
 			const FRotator RInterpToRotator = FMath::RInterpTo(PlayerControllerRotator, LookAtTarget,
 				GetWorld()->GetDeltaSeconds(), InterpSpeed);
 
