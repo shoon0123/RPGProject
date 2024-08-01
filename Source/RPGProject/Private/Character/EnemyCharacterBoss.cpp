@@ -7,6 +7,17 @@
 #include "HUD/PlayerHUD.h"
 #include "HUD/CombatOverlay.h"
 
+void AEnemyCharacterBoss::GetHit(const FVector& ImpactPoint, AActor* Hitter)
+{
+    PlayHitSound(ImpactPoint);
+    SpawnHitParticles(ImpactPoint);
+    UpdateHealthBar();
+    if (!IsAlive())
+    {
+        Die();
+    }
+}
+
 void AEnemyCharacterBoss::SetCombatTarget(ACharacter* Target)
 {
     if (TObjectPtr<APlayerCharacter> TargetPlayer = Cast<APlayerCharacter>(Target))

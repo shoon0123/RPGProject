@@ -15,6 +15,8 @@ class RPGPROJECT_API AEnemyCharacterBoss : public AEnemyCharacter
 	GENERATED_BODY()
 
 public:
+	virtual void GetHit(const FVector& ImpactPoint, AActor* Hitter) override;
+
 	virtual void SetCombatTarget(ACharacter* Target) override;
 
 protected:
