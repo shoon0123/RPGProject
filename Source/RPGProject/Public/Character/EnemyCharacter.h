@@ -45,7 +45,7 @@ protected:
 	TObjectPtr<ACharacter> CombatTarget;
 
 	UPROPERTY(EditAnywhere)
-	float DetectionRange = 1500.f;
+	float DetectionRange = 2000.f;
 
 	virtual void BeginPlay() override;
 

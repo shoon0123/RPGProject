@@ -17,6 +17,8 @@ class RPGPROJECT_API AEnemyCharacterNormal : public AEnemyCharacter
 public:
 	AEnemyCharacterNormal();
 
+	virtual void Attack() override;
+
 	virtual void GetHit(const FVector& ImpactPoint, AActor* Hitter) override;
 
 protected:

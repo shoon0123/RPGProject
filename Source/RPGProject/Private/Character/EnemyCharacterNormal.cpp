@@ -11,6 +11,29 @@ AEnemyCharacterNormal::AEnemyCharacterNormal()
 	HealthBarWidget->SetupAttachment(GetRootComponent());
 }
 
+void AEnemyCharacterNormal::Attack()
+{
+	Super::Attack();
+
+	const int32 Selection = FMath::RandRange(0, 2);
+	FName SectionName = FName();
+	switch (Selection)
+	{
+	case 0:
+		SectionName = FName("Attack1");
+		break;
+	case 1:
+		SectionName = FName("Attack2");
+		break;
+	case 2:
+		SectionName = FName("Attack3");
+		break;
+	default:
+		break;
+	}
+	PlayMontageSection(AttackMontage, SectionName);
+}
+
 void AEnemyCharacterNormal::GetHit(const FVector& ImpactPoint, AActor* Hitter)
 {
 	Super::GetHit(ImpactPoint, Hitter);

@@ -78,7 +78,7 @@ private:
 	float DodgingSpeed = 4000.f;
 
 	UPROPERTY(EditAnywhere, Category = "Movement")
-	float WalkingSpeed = 500.f;
+	float WalkingSpeed = 400.f;
 
 	UPROPERTY(EditAnywhere, Category = "Movement")
 	float RunningSpeed = 800.f;

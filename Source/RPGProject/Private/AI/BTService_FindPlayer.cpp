@@ -31,7 +31,7 @@ void UBTService_FindPlayer::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* N
 	UBTFunctionLibrary::SetBlackboardValueAsFloat(this, DistanceToTargetSelector, Distance);
 	UBTFunctionLibrary::SetBlackboardValueAsObject(this, TargetToFollowSelector, TargetActor);
 
-	if (TargetActor)
+	if (IsValid(TargetActor))
 	{
 		UBTFunctionLibrary::SetBlackboardValueAsEnum(this, TargetStateSelector, (uint8)TargetActor->GetActionState());
 		
