@@ -17,7 +17,8 @@ UTargetingComponent::UTargetingComponent()
 
 void UTargetingComponent::ExecuteLockOn()
 {
-	if (TObjectPtr<AActor> NewTarget = FindTarget())
+	TObjectPtr<AActor> NewTarget = FindTarget();
+	if (IsValid(NewTarget))
 	{
 		DrawDebugSphere(GetWorld(), NewTarget->GetActorLocation(), 100.f, 20, FColor::Blue, false, 1.f);
 		if (!bIsLockOn)
@@ -262,7 +263,7 @@ void UTargetingComponent::SetupCollision()
 {
 	SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
-	SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
+	SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldDynamic, ECollisionResponse::ECR_Ignore);
 }
 
 void UTargetingComponent::UpdateCamera()

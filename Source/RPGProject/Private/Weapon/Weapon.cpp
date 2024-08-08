@@ -43,12 +43,15 @@ void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 	const FName TargetTag = GetTargetTag();
 	if (HittedCharacter && HittedCharacter->ActorHasTag(TargetTag))
 	{
-		if (HittedCharacter->GetActionState() != EActionState::EAS_Block && HittedCharacter->GetActionState() != EActionState::EAS_Parrying)
+		if (HittedCharacter->GetActionState() != EActionState::EAS_Parrying)
 		{
-			UGameplayStatics::ApplyDamage(HittedCharacter, Damage, GetOwner()->GetInstigatorController(), this, UDamageType::StaticClass());
+			AddImpulse(HittedCharacter);
+			if (HittedCharacter->GetActionState() != EActionState::EAS_Block)
+			{
+				UGameplayStatics::ApplyDamage(HittedCharacter, Damage, GetOwner()->GetInstigatorController(), this, UDamageType::StaticClass());
+			}
 		}
 		ExecuteGetHit(BoxHit);
-		AddImpulse(HittedCharacter);
 	}
 }
 
@@ -57,7 +60,7 @@ void AWeapon::AddImpulse(ACharacter* HittedCharacter)
 	if (GetOwner())
 	{
 		const FVector HitVector = HittedCharacter->GetActorLocation() - GetOwner()->GetActorLocation();
-		HittedCharacter->GetCharacterMovement()->AddImpulse(HitVector.GetSafeNormal2D() * Impulse);
+		HittedCharacter->GetCharacterMovement()->AddImpulse(HitVector.GetSafeNormal2D() * Impulse * 10000);
 	}
 }
 

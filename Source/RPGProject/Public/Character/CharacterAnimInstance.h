@@ -34,12 +34,12 @@ protected:
 	TObjectPtr<UCharacterMovementComponent> CharacterMovement;
 
 	UPROPERTY(BlueprintReadOnly, Category = Movement)
+	float Angle;
+
+	UPROPERTY(BlueprintReadOnly, Category = Movement)
 	float GroundSpeed;
 
 	UPROPERTY(BlueprintReadOnly, Category = Movement)
 	bool IsFalling;
-
-	UPROPERTY(BlueprintReadOnly, Category = Movement)
-	float Angle;
 
 };

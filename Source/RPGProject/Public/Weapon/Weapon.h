@@ -47,7 +47,7 @@ private:
 	float Damage = 10.f;
 
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
-	float Impulse = 100000.f;
+	float Impulse = 10.f;
 
 	void AddImpulse(ACharacter* HittedCharacter);
 

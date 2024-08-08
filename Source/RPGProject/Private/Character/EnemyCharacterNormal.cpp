@@ -62,6 +62,14 @@ void AEnemyCharacterNormal::UpdateHealthBar()
 	}
 }
 
+void AEnemyCharacterNormal::UpdatePostureBar()
+{
+	if (HealthBarWidget)
+	{
+		HealthBarWidget->SetPosturePercent(Attributes->GetPosturePercent());
+	}
+}
+
 void AEnemyCharacterNormal::Die()
 {
 	Super::Die();

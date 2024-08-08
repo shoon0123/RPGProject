@@ -49,6 +49,8 @@ protected:
 
 	virtual void UpdateHealthBar() override;
 
+	virtual void UpdatePostureBar() override;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Weapon")
 	TObjectPtr<AWeapon> LeftHandWeapon;
 
@@ -64,12 +66,6 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category = "Camera")
 	TObjectPtr<UCameraComponent> Camera;
-
-	UPROPERTY(EditAnywhere, Category = "Weapon")
-	TObjectPtr<UBlueprint> LeftHandWeaponType;
-
-	UPROPERTY(EditAnywhere, Category = "Weapon")
-	TObjectPtr<UBlueprint> RightHandWeaponType;
 
 	UPROPERTY(EditAnywhere, Category = "Targeting")
 	TObjectPtr<UTargetingComponent> TargetingComponent;

@@ -26,6 +26,8 @@ protected:
 
 	virtual void UpdateHealthBar() override;
 
+	virtual void UpdatePostureBar() override;
+
 	virtual void Die() override;
 
 private:

@@ -11,8 +11,22 @@ void UHealthBarComponent::SetHealthPercent(float Percent)
 	{
 		HealthBarWidget = Cast<UHealthBar>(GetUserWidgetObject());
 	}
-	check(HealthBarWidget);
-	check(HealthBarWidget->HealthBar);
-	HealthBarWidget->HealthBar->SetPercent(Percent);
 
+	if (HealthBarWidget && HealthBarWidget->HealthBar)
+	{
+		HealthBarWidget->HealthBar->SetPercent(Percent);
+	}
+}
+
+void UHealthBarComponent::SetPosturePercent(float Percent)
+{
+	if (HealthBarWidget == nullptr)
+	{
+		HealthBarWidget = Cast<UHealthBar>(GetUserWidgetObject());
+	}
+
+	if (HealthBarWidget && HealthBarWidget->PostureBar)
+	{
+		HealthBarWidget->PostureBar->SetPercent(Percent);
+	}
 }

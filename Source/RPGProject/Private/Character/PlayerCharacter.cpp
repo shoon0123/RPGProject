@@ -195,6 +195,20 @@ void APlayerCharacter::UpdateHealthBar()
     }
 }
 
+void APlayerCharacter::UpdatePostureBar()
+{
+    if (TObjectPtr<APlayerController> PlayerController = Cast<APlayerController>(GetController()))
+    {
+        if (TObjectPtr<APlayerHUD> PlayerHUD = Cast<APlayerHUD>(PlayerController->GetHUD()))
+        {
+            if (TObjectPtr<UCombatOverlay> CombatOverlay = PlayerHUD->GetCombatOverlay())
+            {
+                CombatOverlay->SetPlayerPosturePercent(Attributes->GetPosturePercent());
+            }
+        }
+    }
+}
+
 void APlayerCharacter::PlayBlockSound(const FVector& ImpactPoint)
 {
     check(BlockSound);

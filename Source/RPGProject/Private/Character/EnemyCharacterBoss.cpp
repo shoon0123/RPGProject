@@ -76,6 +76,18 @@ void AEnemyCharacterBoss::UpdateHealthBar()
     }
 }
 
+void AEnemyCharacterBoss::UpdatePostureBar()
+{
+    if (TObjectPtr<APlayerCharacter> TargetPlayer = Cast<APlayerCharacter>(CombatTarget))
+    {
+        TObjectPtr<UCombatOverlay> CombatOverlay = TargetPlayer->GetCombatOverlay();
+        if (CombatOverlay && Attributes)
+        {
+            CombatOverlay->SetEnemyPosturePercent(Attributes->GetPosturePercent());
+        }
+    }
+}
+
 void AEnemyCharacterBoss::Die()
 {
     if (TObjectPtr<APlayerCharacter> CombatPlayer = Cast<APlayerCharacter>(CombatTarget))

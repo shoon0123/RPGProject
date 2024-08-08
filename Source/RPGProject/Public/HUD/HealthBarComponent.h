@@ -16,6 +16,8 @@ class RPGPROJECT_API UHealthBarComponent : public UWidgetComponent
 public:
 	void SetHealthPercent(float Percent);
 
+	void SetPosturePercent(float Percent);
+
 private:
 	UPROPERTY()
 	TObjectPtr<class UHealthBar> HealthBarWidget;

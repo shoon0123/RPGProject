@@ -65,7 +65,6 @@ void ACharacterBase::GetHit(const FVector& ImpactPoint, AActor* Hitter)
 	PlayHitSound(ImpactPoint);
 	SpawnHitParticles(ImpactPoint);
 	SetWeaponsCollisionDisable();
-	UpdateHealthBar();
 	if (IsAlive())
 	{
 		DirectionalHitReact(Hitter);
@@ -80,6 +79,10 @@ float ACharacterBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageE
 {
 	check(Attributes);
 	Attributes->ReceiveDamage(DamageAmount);
+	Attributes->ReceivePosture(DamageAmount);
+
+	UpdateHealthBar();
+	UpdatePostureBar();
 
 	return DamageAmount;
 }
@@ -185,7 +188,7 @@ void ACharacterBase::SetupCollision()
 	//GetCapsuleComponent()->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
 	//GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
 	//GetCapsuleComponent()->SetGenerateOverlapEvents(true);
-	//GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 
 	//GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 

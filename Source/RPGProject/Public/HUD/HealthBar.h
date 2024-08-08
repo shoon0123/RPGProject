@@ -17,4 +17,7 @@ class RPGPROJECT_API UHealthBar : public UUserWidget
 public:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<class UProgressBar> HealthBar;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<class UProgressBar> PostureBar;
 };

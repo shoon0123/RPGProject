@@ -35,12 +35,6 @@ protected:
 	UPROPERTY()
 	TObjectPtr<AEnemyAIController> EnemyAIController;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Weapon")
-	TObjectPtr<UBlueprint> WeaponType;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon")
-	TObjectPtr<AWeapon> Weapon;
-
 	UPROPERTY(BlueprintReadOnly)
 	TObjectPtr<ACharacter> CombatTarget;
 

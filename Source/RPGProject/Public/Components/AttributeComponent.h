@@ -23,7 +23,7 @@ public:
 
 	void ReceiveDamage(float Damage);
 
-	void RecievePosture(float Posture);
+	void ReceivePosture(float PostureDamage);
 
 	bool IsAlive();
 

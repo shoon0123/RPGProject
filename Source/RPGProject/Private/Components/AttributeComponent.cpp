@@ -21,6 +21,11 @@ void UAttributeComponent::ReceiveDamage(float Damage)
 	Health = FMath::Clamp(Health - Damage, 0.f, MaxHealth);
 }
 
+void UAttributeComponent::ReceivePosture(float PostureDamage)
+{
+	Posture = FMath::Clamp(Posture + PostureDamage, 0.f, MaxPosture);
+}
+
 float UAttributeComponent::GetHealthPercent()
 {
 	return Health / MaxHealth;
