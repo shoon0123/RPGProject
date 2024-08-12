@@ -21,6 +21,8 @@ public:
 
 	virtual void GetHit(const FVector& ImpactPoint, AActor* Hitter) override;
 
+	virtual void GetPostureDamage(const float PostureDamage) override;
+
 protected:
 	virtual void BeginPlay() override;
 

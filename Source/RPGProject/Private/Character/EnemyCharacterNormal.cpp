@@ -44,6 +44,16 @@ void AEnemyCharacterNormal::GetHit(const FVector& ImpactPoint, AActor* Hitter)
 	}
 }
 
+void AEnemyCharacterNormal::GetPostureDamage(const float PostureDamage)
+{
+	Super::GetPostureDamage(PostureDamage);
+
+	if (IsAlive())
+	{
+		HealthBarWidget->SetVisibility(true);
+	}
+}
+
 void AEnemyCharacterNormal::BeginPlay()
 {
 	Super::BeginPlay();

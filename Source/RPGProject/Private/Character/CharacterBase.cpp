@@ -35,11 +35,18 @@ void ACharacterBase::DestroyWeapons()
 	}
 }
 
-double ACharacterBase::GetAngleXYFromForwardVector(FVector Vector) const
+double ACharacterBase::GetAngleXYFromForwardVector(AActor* Actor) const
 {
-	const FVector VectorXY = FVector(Vector.X, Vector.Y, 0);
+	return GetAngleXYFromForwardVector(Actor->GetActorLocation());
+}
+
+double ACharacterBase::GetAngleXYFromForwardVector(const FVector& Location) const
+{
+	const FVector Vector = Location - GetActorLocation();
+	const FVector VectorXY = Vector.GetSafeNormal2D();
 	const double CosTheta = FVector::DotProduct(GetActorForwardVector(), VectorXY);
-	double Angle = FMath::RadiansToDegrees(FMath::Acos(CosTheta));
+	double Theta = FMath::Acos(CosTheta);
+	double Angle = FMath::RadiansToDegrees(Theta);
 	const FVector CrossProduct = FVector::CrossProduct(GetActorForwardVector(), VectorXY);
 
 	if (CrossProduct.Z < 0)
@@ -67,7 +74,10 @@ void ACharacterBase::GetHit(const FVector& ImpactPoint, AActor* Hitter)
 	SetWeaponsCollisionDisable();
 	if (IsAlive())
 	{
-		DirectionalHitReact(Hitter);
+		if (GetActionState() != EActionState::EAS_Stunned)
+		{
+			DirectionalHitReact(Hitter);
+		}
 	}
 	else
 	{
@@ -75,14 +85,38 @@ void ACharacterBase::GetHit(const FVector& ImpactPoint, AActor* Hitter)
 	}
 }
 
+void ACharacterBase::GetPostureDamage(const float PostureDamage)
+{
+	if (Attributes)
+	{
+		Attributes->ReceivePostureDamage(PostureDamage);
+		UpdatePostureBar();
+
+		if (Attributes->IsPostureBroken() && GetActionState() != EActionState::EAS_Stunned)
+		{
+			GetStunned();
+		}
+	}
+}
+
+void ACharacterBase::GetStunned()
+{
+	SetActionState(EActionState::EAS_Stunned);
+
+	PlayMontageSection(StunnedMontage, "Default");
+}
+
 float ACharacterBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
-	check(Attributes);
-	Attributes->ReceiveDamage(DamageAmount);
-	Attributes->ReceivePosture(DamageAmount);
-
-	UpdateHealthBar();
-	UpdatePostureBar();
+	if (Attributes && GetActionState() != EActionState::EAS_Block)
+	{
+		if (GetActionState() == EActionState::EAS_Stunned)
+		{
+			DamageAmount *= 2;
+		}
+		Attributes->ReceiveDamage(DamageAmount);
+		UpdateHealthBar();
+	}
 
 	return DamageAmount;
 }
@@ -131,13 +165,11 @@ void ACharacterBase::Die()
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
-void ACharacterBase::DirectionalHitReact(const AActor* Hitter)
+void ACharacterBase::DirectionalHitReact(AActor* Hitter)
 {
 	SetActionState(EActionState::EAS_HitReaction);
 
-	const FVector HitterVector = Hitter->GetActorLocation() - GetActorLocation();
-	
-	double Angle = GetAngleXYFromForwardVector(HitterVector);
+	double Angle = GetAngleXYFromForwardVector(Hitter);
 
 	FName Section("Back");
 
@@ -237,4 +269,14 @@ void ACharacterBase::SpawnWeapons()
 		Weapon->SetOwner(this);
 		Weapons.Add(Weapon);
 	}
+}
+
+void ACharacterBase::StunnedEnd()
+{
+	if (Attributes)
+	{
+		Attributes->SetPostureZero();
+		UpdatePostureBar();
+	}
+	SetActionState(EActionState::EAS_Unoccupied);
 }

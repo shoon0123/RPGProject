@@ -61,6 +61,9 @@ protected:
 	TObjectPtr<UBlendSpace> DodgeBlendSpace;
 
 private:
+	UPROPERTY(EditAnywhere, Category = "Attribute")
+	float ParryingPostureDamage = 10.f;
+
 	UPROPERTY(VisibleAnywhere, Category = "Camera")
 	TObjectPtr<USpringArmComponent> SpringArm;
 
@@ -96,8 +99,6 @@ private:
 
 	bool bDoNextAttack = false;
 
-	bool bParryingLeft = true;
-
 	UFUNCTION(BlueprintCallable)
 	void DodgeEnd();
 
@@ -109,7 +110,9 @@ private:
 
 	void ExecuteBlock(const FVector& ImpactPoint);
 
-	void ExecuteParrying(const FVector& ImpactPoint);
+	void ExecuteGetPostureDamage(AActor* DamagedActor);
+
+	void ExecuteParrying(const FVector& ImpactPoint, AActor* Hitter);
 
 	void PlayBlockSound(const FVector& ImpactPoint);
 

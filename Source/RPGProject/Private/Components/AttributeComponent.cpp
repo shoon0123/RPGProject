@@ -21,9 +21,14 @@ void UAttributeComponent::ReceiveDamage(float Damage)
 	Health = FMath::Clamp(Health - Damage, 0.f, MaxHealth);
 }
 
-void UAttributeComponent::ReceivePosture(float PostureDamage)
+void UAttributeComponent::ReceivePostureDamage(float PostureDamage)
 {
 	Posture = FMath::Clamp(Posture + PostureDamage, 0.f, MaxPosture);
+}
+
+void UAttributeComponent::SetPostureZero()
+{
+	Posture = 0;
 }
 
 float UAttributeComponent::GetHealthPercent()
@@ -39,6 +44,11 @@ float UAttributeComponent::GetPosturePercent()
 bool UAttributeComponent::IsAlive()
 {
 	return Health > 0.f;
+}
+
+bool UAttributeComponent::IsPostureBroken()
+{
+	return Posture >= MaxPosture;
 }
 
 void UAttributeComponent::BeginPlay()

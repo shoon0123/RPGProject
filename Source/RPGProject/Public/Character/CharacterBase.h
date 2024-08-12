@@ -30,6 +30,10 @@ public:
 
 	virtual void GetHit(const FVector& ImpactPoint, AActor* Hitter) override;
 
+	virtual void GetPostureDamage(const float PostureDamage) override;
+
+	virtual void GetStunned();
+
 	virtual bool IsAlive();
 
 	virtual void SetActionState(EActionState OtherActionState);
@@ -44,11 +48,13 @@ protected:
 
 	virtual void Die();
 	
-	virtual void DirectionalHitReact(const AActor* Hitter);
+	virtual void DirectionalHitReact(AActor* Hitter);
 
 	virtual void DestroyWeapons();
 
-	virtual double GetAngleXYFromForwardVector(FVector Vector) const;
+	virtual double GetAngleXYFromForwardVector(AActor* Actor) const;
+
+	virtual double GetAngleXYFromForwardVector(const FVector& Vector) const;
 
 	UFUNCTION(BlueprintCallable)
 	virtual void HitReactEnd();
@@ -64,6 +70,9 @@ protected:
 	virtual void SpawnHitParticles(const FVector& ImpactPoint);
 
 	virtual void SpawnWeapons();
+
+	UFUNCTION(BlueprintCallable)
+	virtual void StunnedEnd();
 
 	virtual void UpdateHealthBar() PURE_VIRTUAL(ACharacterBase::UpdateHealthBar, );
 
@@ -86,10 +95,13 @@ private:
 	EActionState ActionState = EActionState::EAS_Unoccupied;
 
 	UPROPERTY(EditAnywhere, Category = "Montage")
+	TObjectPtr<UAnimMontage> DeathMontage;
+
+	UPROPERTY(EditAnywhere, Category = "Montage")
 	TObjectPtr<UAnimMontage> HitReactMontage;
 	
 	UPROPERTY(EditAnywhere, Category = "Montage")
-	TObjectPtr<UAnimMontage> DeathMontage;
+	TObjectPtr<UAnimMontage> StunnedMontage;
 
 	UPROPERTY(EditAnywhere, Category = "Sounds")
 	TObjectPtr<USoundBase> HitSound;

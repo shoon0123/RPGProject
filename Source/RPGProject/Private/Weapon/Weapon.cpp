@@ -46,10 +46,8 @@ void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 		if (HittedCharacter->GetActionState() != EActionState::EAS_Parrying)
 		{
 			AddImpulse(HittedCharacter);
-			if (HittedCharacter->GetActionState() != EActionState::EAS_Block)
-			{
-				UGameplayStatics::ApplyDamage(HittedCharacter, Damage, GetOwner()->GetInstigatorController(), this, UDamageType::StaticClass());
-			}
+			UGameplayStatics::ApplyDamage(HittedCharacter, Damage, GetOwner()->GetInstigatorController(), this, UDamageType::StaticClass());
+			ExecuteGetPostureDamage(HittedCharacter);
 		}
 		ExecuteGetHit(BoxHit);
 	}
@@ -76,7 +74,6 @@ void AWeapon::BoxTrace(FHitResult& BoxHit)
 	{
 		ActorsToIgnore.AddUnique(Actor);
 	}
-	
 
 	UKismetSystemLibrary::BoxTraceSingle(
 		this,
@@ -100,6 +97,15 @@ void AWeapon::ExecuteGetHit(FHitResult& BoxHit)
 	if (HitInterface)
 	{
 		HitInterface->GetHit(BoxHit.ImpactPoint, GetOwner());
+	}
+}
+
+void AWeapon::ExecuteGetPostureDamage(AActor* DamagedActor)
+{
+	IHitInterface* HitInterface = Cast<IHitInterface>(DamagedActor);
+	if (HitInterface)
+	{
+		HitInterface->GetPostureDamage(PostureDamage);
 	}
 }
 

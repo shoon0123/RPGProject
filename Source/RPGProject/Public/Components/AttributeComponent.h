@@ -23,9 +23,13 @@ public:
 
 	void ReceiveDamage(float Damage);
 
-	void ReceivePosture(float PostureDamage);
+	void ReceivePostureDamage(float PostureDamage);
+
+	void SetPostureZero();
 
 	bool IsAlive();
+
+	bool IsPostureBroken();
 
 protected:
 	virtual void BeginPlay() override;

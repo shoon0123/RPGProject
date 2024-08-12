@@ -99,9 +99,20 @@ void APlayerCharacter::ExecuteBlock(const FVector& ImpactPoint)
     SpawnBlockParticles(ImpactPoint);
 }
 
-void APlayerCharacter::ExecuteParrying(const FVector& ImpactPoint)
+void APlayerCharacter::ExecuteGetPostureDamage(AActor* DamagedActor)
 {
-    if (bParryingLeft)
+    IHitInterface* HitInterface = Cast<IHitInterface>(DamagedActor);
+    if (HitInterface)
+    {
+        HitInterface->GetPostureDamage(ParryingPostureDamage);
+    }
+}
+
+void APlayerCharacter::ExecuteParrying(const FVector& ImpactPoint, AActor* Hitter)
+{
+    const double Angle = GetAngleXYFromForwardVector(ImpactPoint);
+
+    if (Angle < 0)
     {
         PlayMontageSection(BlockMontage, FName("ParryingLeft"));
     }
@@ -109,8 +120,8 @@ void APlayerCharacter::ExecuteParrying(const FVector& ImpactPoint)
     {
         PlayMontageSection(BlockMontage, FName("ParryingRight"));
     }
-    bParryingLeft = !bParryingLeft;
 
+    ExecuteGetPostureDamage(Hitter);
     PlayParryingSound(ImpactPoint);
     SpawnParryingParticles(ImpactPoint);
     DisableParrying();
@@ -133,7 +144,7 @@ void APlayerCharacter::EnableRun()
 
 void APlayerCharacter::GetHit(const FVector& ImpactPoint, AActor* Hitter)
 {
-    const double Angle = GetAngleXYFromForwardVector(Hitter->GetActorLocation() - GetActorLocation());
+    const double Angle = GetAngleXYFromForwardVector(Hitter);
     const bool bIsForward = -90.f < Angle && Angle < 90.f;
     if (GetActionState() == EActionState::EAS_Block && bIsForward)
     {
@@ -141,7 +152,7 @@ void APlayerCharacter::GetHit(const FVector& ImpactPoint, AActor* Hitter)
     }
     else if (GetActionState() == EActionState::EAS_Parrying && bIsForward)
     {
-        ExecuteParrying(ImpactPoint);
+        ExecuteParrying(ImpactPoint, Hitter);
     }
     else
     {

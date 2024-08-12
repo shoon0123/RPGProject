@@ -49,11 +49,16 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
 	float Impulse = 10.f;
 
+	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
+	float PostureDamage = 10.f;
+
 	void AddImpulse(ACharacter* HittedCharacter);
 
 	void BoxTrace(FHitResult& BoxHit);
 
 	void ExecuteGetHit(FHitResult& BoxHit);
+
+	void ExecuteGetPostureDamage(AActor* DamagedActor);
 
 	FName GetTargetTag();
 
