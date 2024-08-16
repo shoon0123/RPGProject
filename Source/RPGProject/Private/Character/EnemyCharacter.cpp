@@ -39,15 +39,6 @@ void AEnemyCharacter::SetActionState(EActionState OtherActionState)
 
 void AEnemyCharacter::Attack()
 {
-	if (GetCharacterMovement()->IsFalling())
-	{
-		return;
-	}
-	if (GetActionState() != EActionState::EAS_Unoccupied)
-	{
-		return;
-	}
-
 	SetActionState(EActionState::EAS_Attacking);
 }
 
@@ -69,7 +60,7 @@ void AEnemyCharacter::BeginPlay()
 void AEnemyCharacter::Die()
 {
 	Super::Die();
-	SetLifeSpan(10.f);
+	SetLifeSpan(30.f);
 }
 
 void AEnemyCharacter::AttackEnd()

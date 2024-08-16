@@ -10,7 +10,7 @@ class UBehaviorTree;
 class AEnemyAIController;
 class AWeapon;
 
-UCLASS()
+UCLASS(Abstract)
 class RPGPROJECT_API AEnemyCharacter : public ACharacterBase
 {
 	GENERATED_BODY()

@@ -156,6 +156,7 @@ void APlayerCharacter::GetHit(const FVector& ImpactPoint, AActor* Hitter)
     }
     else
     {
+        DisableRun();
         Super::GetHit(ImpactPoint, Hitter);
     }
 }
@@ -189,6 +190,7 @@ void APlayerCharacter::Die()
 {
     Super::Die();
 
+    GetCharacterMovement()->bOrientRotationToMovement = false;
     GetTargetingComponent()->CancelLockOn();
 }
 

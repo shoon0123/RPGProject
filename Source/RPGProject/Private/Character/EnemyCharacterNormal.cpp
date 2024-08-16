@@ -3,6 +3,7 @@
 
 #include "Character/EnemyCharacterNormal.h"
 #include "Components/AttributeComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "HUD/HealthBarComponent.h"
 
 AEnemyCharacterNormal::AEnemyCharacterNormal()
@@ -13,6 +14,15 @@ AEnemyCharacterNormal::AEnemyCharacterNormal()
 
 void AEnemyCharacterNormal::Attack()
 {
+	if (GetCharacterMovement()->IsFalling())
+	{
+		return;
+	}
+	if (GetActionState() != EActionState::EAS_Unoccupied)
+	{
+		return;
+	}
+
 	Super::Attack();
 
 	const int32 Selection = FMath::RandRange(0, 2);

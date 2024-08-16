@@ -4,15 +4,23 @@
 #include "Character/EnemyCharacterBoss.h"
 #include "Character/PlayerCharacter.h"
 #include "Components/AttributeComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "HUD/PlayerHUD.h"
 #include "HUD/CombatOverlay.h"
 
 void AEnemyCharacterBoss::Attack()
 {
-
+    if (GetCharacterMovement()->IsFalling())
+    {
+        return;
+    }
+    if (GetActionState() != EActionState::EAS_Unoccupied)
+    {
+        return;
+    }
     if (IsValid(CombatTarget))
     {
-        Super::Attack();
+        Super::Attack(); 
 
         const float Distance = GetDistanceTo(CombatTarget);
 
@@ -144,7 +152,7 @@ void AEnemyCharacterBoss::MidRangedAttack()
 
 void AEnemyCharacterBoss::RangedAttack()
 {
-    const int32 Selection = FMath::RandRange(0, 2);
+    const int32 Selection = FMath::RandRange(0, 1);
     FName SectionName = FName();
     switch (Selection)
     {
@@ -152,10 +160,7 @@ void AEnemyCharacterBoss::RangedAttack()
         SectionName = FName("Ranged1");
         break;
     case 1:
-        SectionName = FName("Ranged1");
-        break;
-    case 2:
-        SectionName = FName("Ranged1");
+        SectionName = FName("Ranged2");
         break;
     default:
         break;

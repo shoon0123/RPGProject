@@ -35,7 +35,7 @@ void UBTService_FindPlayer::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* N
 	{
 		UBTFunctionLibrary::SetBlackboardValueAsEnum(this, TargetStateSelector, (uint8)TargetActor->GetActionState());
 		
-		if (OwningPawn->GetDetectionRange() < Distance)
+		if (OwningPawn->GetDetectionRange() < Distance) 
 		{
 			OwningPawn->SetCombatTarget(nullptr);
 		}
