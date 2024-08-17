@@ -130,6 +130,10 @@ void ACharacterBase::Destroyed()
 void ACharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
+	
+	FTimerHandle TimerHandle;
+
+	GetWorldTimerManager().SetTimer(TimerHandle, this, &ACharacterBase::RecoverCondition, 1.0f, true, 1.0f);
 
 	SpawnWeapons();
 }
@@ -196,6 +200,18 @@ void ACharacterBase::PlayMontageSection(UAnimMontage* Montage, const FName& Sect
 	{
 		AnimInstance->Montage_Play(Montage);
 		AnimInstance->Montage_JumpToSection(SectionName, Montage);
+	}
+}
+
+void ACharacterBase::RecoverCondition()
+{
+	if (Attributes && IsAlive())
+	{
+		Attributes->RecoverHealth(RecoveryAmount);
+		UpdateHealthBar();
+
+		Attributes->RecoverPosture(RecoveryAmount);
+		UpdatePostureBar();
 	}
 }
 

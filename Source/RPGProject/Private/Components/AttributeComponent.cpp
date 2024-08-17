@@ -26,6 +26,16 @@ void UAttributeComponent::ReceivePostureDamage(float PostureDamage)
 	Posture = FMath::Clamp(Posture + PostureDamage, 0.f, MaxPosture);
 }
 
+void UAttributeComponent::RecoverHealth(float Amount)
+{
+	Health = FMath::Clamp(Health + Amount, 0.f, MaxHealth);
+}
+
+void UAttributeComponent::RecoverPosture(float Amount)
+{
+	Posture = FMath::Clamp(Posture - Amount, 0.f, MaxPosture);
+}
+
 void UAttributeComponent::SetPostureZero()
 {
 	Posture = 0;

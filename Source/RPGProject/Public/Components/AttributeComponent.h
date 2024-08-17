@@ -25,6 +25,10 @@ public:
 
 	void ReceivePostureDamage(float PostureDamage);
 
+	void RecoverHealth(float Amount);
+
+	void RecoverPosture(float Amount);
+
 	void SetPostureZero();
 
 	bool IsAlive();

@@ -63,6 +63,8 @@ protected:
 
 	virtual void PlayMontageSection(UAnimMontage* Montage, const FName& SectionName);
 
+	virtual void RecoverCondition();
+
 	virtual void SetupCollision();
 
 	virtual void SetWeaponsCollisionDisable();
@@ -89,6 +91,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "Montage")
 	TObjectPtr<UAnimMontage> AttackMontage;
+
+	UPROPERTY(EditAnywhere, Category = "Montage")
+	float RecoveryAmount = 1.f;
 
 private:
 	UPROPERTY(VisibleAnywhere, Category = "State")
