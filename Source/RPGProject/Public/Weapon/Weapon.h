@@ -16,6 +16,8 @@ class RPGPROJECT_API AWeapon : public AActor
 public:
 	AWeapon();
 
+	virtual void OnConstruction(const FTransform& Transform) override;
+
 	UFUNCTION(BlueprintCallable)
 	void CollisionEnable(ECollisionEnabled::Type CollisionEnabled);
 
@@ -43,14 +45,20 @@ private:
 	UPROPERTY()
 	TArray<AActor*> IgnoreActors;
 
-	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
-	float Damage = 10.f;
+	UPROPERTY(EditAnywhere, Category = "Data")
+	TObjectPtr<UDataTable> WeaponDataTable;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Data")
+	FName DataTableRowName;
 
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
-	float Impulse = 10.f;
+	float Damage;
 
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
-	float PostureDamage = 10.f;
+	float Impulse;
+
+	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
+	float PostureDamage;
 
 	void AddImpulse(ACharacter* HittedCharacter);
 
@@ -62,9 +70,11 @@ private:
 
 	FName GetTargetTag();
 
+	void SetupBoxTraceStartEnd();
+
+	void SetupData();
+
 	void SetupMesh();
 
 	void SetupWeaponBox();
-
-	void SetupBoxTraceStartEnd();
 };

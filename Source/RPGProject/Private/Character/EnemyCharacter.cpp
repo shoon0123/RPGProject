@@ -6,6 +6,7 @@
 #include "BehaviorTree/BehaviorTree.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Components/AttributeComponent.h"
+#include "Data/EnemyCharacterPDA.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Weapon/weapon.h"
 
@@ -61,6 +62,17 @@ void AEnemyCharacter::Die()
 {
 	Super::Die();
 	SetLifeSpan(30.f);
+}
+
+void AEnemyCharacter::SetupData()
+{
+	Super::SetupData();
+
+	if (TObjectPtr<UEnemyCharacterPDA> EnemyCharacterInfo = Cast<UEnemyCharacterPDA>(CharacterInfo))
+	{
+		BehaviorTree = EnemyCharacterInfo->BehaviorTree;
+		DetectionRange = EnemyCharacterInfo->DetectionRange;
+	}
 }
 
 void AEnemyCharacter::AttackEnd()

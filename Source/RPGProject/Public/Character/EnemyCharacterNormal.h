@@ -32,6 +32,8 @@ protected:
 
 	virtual void Die() override;
 
+	virtual void SetupData() override;
+
 private:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UHealthBarComponent> HealthBarWidget;

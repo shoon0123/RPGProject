@@ -4,6 +4,7 @@
 #include "Weapon/Weapon.h"
 #include "Character/CharacterBase.h"
 #include "Components/BoxComponent.h"
+#include "Data/WeaponData.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Interaction/HitInterface.h"
 #include "Kismet/KismetSystemLibrary.h"
@@ -14,6 +15,11 @@ AWeapon::AWeapon()
 	SetupMesh();
 	SetupWeaponBox();
 	SetupBoxTraceStartEnd();
+}
+
+void AWeapon::OnConstruction(const FTransform& Transform)
+{
+	SetupData();
 }
 
 void AWeapon::CollisionEnable(ECollisionEnabled::Type CollisionEnabled)
@@ -137,4 +143,17 @@ void AWeapon::SetupBoxTraceStartEnd()
 	BoxTraceStart->SetupAttachment(WeaponBox);
 	BoxTraceEnd = CreateDefaultSubobject<USceneComponent>(TEXT("Box Trace End"));
 	BoxTraceEnd->SetupAttachment(WeaponBox);
+}
+
+void AWeapon::SetupData()
+{
+	if (WeaponDataTable)
+	{
+		if (FWeaponData* WeaponInfo = WeaponDataTable->FindRow<FWeaponData>(DataTableRowName, FString(), true))
+		{
+			Damage = WeaponInfo->Damage;
+			Impulse = WeaponInfo->Impulse;
+			PostureDamage = WeaponInfo->PostureDamage;
+		}
+	}
 }

@@ -47,6 +47,8 @@ protected:
 
 	virtual void Die() override;
 
+	virtual void SetupData() override;
+
 	virtual void UpdateHealthBar() override;
 
 	virtual void UpdatePostureBar() override;

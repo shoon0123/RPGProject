@@ -3,6 +3,7 @@
 
 #include "Character/CharacterBase.h"
 #include "Components/CapsuleComponent.h"
+#include "Data/CharacterBasePDA.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/AttributeComponent.h"
 #include "Components/BoxComponent.h"
@@ -20,6 +21,14 @@ ACharacterBase::ACharacterBase()
 	GetCharacterMovement()->FallingLateralFriction = 2.0f;
 
 	Attributes = CreateDefaultSubobject<UAttributeComponent>(TEXT("Attributes"));
+}
+
+void ACharacterBase::OnConstruction(const FTransform& Transform)
+{
+	Super::OnConstruction(Transform);
+
+	SetupData();
+	SpawnWeapons();
 }
 
 EActionState ACharacterBase::GetActionState() const
@@ -131,11 +140,10 @@ void ACharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	FTimerHandle TimerHandle;
+	FTimerHandle RecoveryTimerHandle;
 
-	GetWorldTimerManager().SetTimer(TimerHandle, this, &ACharacterBase::RecoverCondition, 1.0f, true, 1.0f);
+	GetWorldTimerManager().SetTimer(RecoveryTimerHandle, this, &ACharacterBase::RecoverCondition, 1.0f, true, 1.0f);
 
-	SpawnWeapons();
 }
 
 void ACharacterBase::Die()
@@ -207,10 +215,10 @@ void ACharacterBase::RecoverCondition()
 {
 	if (Attributes && IsAlive())
 	{
-		Attributes->RecoverHealth(RecoveryAmount);
+		Attributes->RecoverHealth(RecoveryPerSec);
 		UpdateHealthBar();
 
-		Attributes->RecoverPosture(RecoveryAmount);
+		Attributes->RecoverPosture(RecoveryPerSec);
 		UpdatePostureBar();
 	}
 }
@@ -233,20 +241,34 @@ void ACharacterBase::PlayHitSound(const FVector& ImpactPoint)
 
 void ACharacterBase::SetupCollision()
 {
-	//GetCapsuleComponent()->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
-	//GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
-	//GetCapsuleComponent()->SetGenerateOverlapEvents(true);
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
-
-	//GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	GetMesh()->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
 	GetMesh()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 	GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
 	GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldDynamic, ECollisionResponse::ECR_Overlap);
 	GetMesh()->SetGenerateOverlapEvents(true);
+}
 
-	//GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+void ACharacterBase::SetupData()
+{
+	if (CharacterInfo)
+	{
+		if (Attributes)
+		{
+			Attributes->SetHealth(CharacterInfo->Health);
+			Attributes->SetMaxHealth(CharacterInfo->MaxHealth);
+			Attributes->SetPosture(CharacterInfo->Posture);
+			Attributes->SetMaxPosture(CharacterInfo->MaxPosture);
+		}
+		RecoveryPerSec = CharacterInfo->RecoveryPerSec;
+		AttackMontage = CharacterInfo->AttackMontage;
+		DeathMontage = CharacterInfo->DeathMontage;
+		HitReactMontage = CharacterInfo->HitReactMontage;
+		StunnedMontage = CharacterInfo->StunnedMontage;
+		HitSound = CharacterInfo->HitSound;
+		HitParticles = CharacterInfo->HitParticles;
+	}
 }
 
 void ACharacterBase::SetWeaponsCollisionDisable()
@@ -274,16 +296,18 @@ void ACharacterBase::SpawnHitParticles(const FVector& ImpactPoint)
 
 void ACharacterBase::SpawnWeapons()
 {
-	for (const TObjectPtr<UBlueprint> WeaponType : WeaponTypes)
+	if (CharacterInfo)
 	{
-		const FName Socket = *WeaponTypeSocketMap.Find(WeaponType);
-		TSubclassOf<class UObject> WeaponClass = WeaponType->GeneratedClass;
+		for (const FWeaponSocket& WeaponSocket : CharacterInfo->WeaponSocketInfo)
+		{
+			const FName Socket = WeaponSocket.SocketName;
+			const TSubclassOf<class UObject> WeaponClass = WeaponSocket.WeaponType->GeneratedClass;
 
-		TObjectPtr<AWeapon> Weapon = GetWorld()->SpawnActor<AWeapon>(WeaponClass, FVector::ZeroVector, FRotator::ZeroRotator);
-		
-		Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, Socket);
-		Weapon->SetOwner(this);
-		Weapons.Add(Weapon);
+			TObjectPtr<AWeapon> Weapon = GetWorld()->SpawnActor<AWeapon>(WeaponClass, FVector::ZeroVector, FRotator::ZeroRotator);
+			Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, Socket);
+			Weapon->SetOwner(this);
+			Weapons.Add(Weapon);
+		}
 	}
 }
 

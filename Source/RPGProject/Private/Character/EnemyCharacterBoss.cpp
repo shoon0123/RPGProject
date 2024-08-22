@@ -4,6 +4,7 @@
 #include "Character/EnemyCharacterBoss.h"
 #include "Character/PlayerCharacter.h"
 #include "Components/AttributeComponent.h"
+#include "Data/EnemyCharacterBossPDA.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "HUD/PlayerHUD.h"
 #include "HUD/CombatOverlay.h"
@@ -106,6 +107,17 @@ void AEnemyCharacterBoss::Die()
         }
     }
     Super::Die();
+}
+
+void AEnemyCharacterBoss::SetupData()
+{
+    Super::SetupData();
+
+    if (TObjectPtr<UEnemyCharacterBossPDA> EnemyCharacterBossInfo = Cast<UEnemyCharacterBossPDA>(CharacterInfo))
+    {
+        MeleeAttackDistance = EnemyCharacterBossInfo->MeleeAttackDistance;
+        RangedAttackDistance = EnemyCharacterBossInfo->RangedAttackDistance;
+    }
 }
 
 void AEnemyCharacterBoss::MeleeAttack()

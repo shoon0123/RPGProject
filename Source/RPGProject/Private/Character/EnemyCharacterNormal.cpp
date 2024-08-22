@@ -3,6 +3,7 @@
 
 #include "Character/EnemyCharacterNormal.h"
 #include "Components/AttributeComponent.h"
+#include "Data/EnemyCharacterNormalPDA.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "HUD/HealthBarComponent.h"
 
@@ -94,4 +95,9 @@ void AEnemyCharacterNormal::Die()
 {
 	Super::Die();
 	HealthBarWidget->SetVisibility(false);
+}
+
+void AEnemyCharacterNormal::SetupData()
+{
+	Super::SetupData();
 }

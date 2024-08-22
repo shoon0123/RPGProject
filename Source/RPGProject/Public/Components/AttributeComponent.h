@@ -31,6 +31,14 @@ public:
 
 	void SetPostureZero();
 
+	void SetHealth(float Amount);
+
+	void SetMaxHealth(float Amount);
+
+	void SetPosture(float Amount);
+
+	void SetMaxPosture(float Amount);
+
 	bool IsAlive();
 
 	bool IsPostureBroken();
@@ -40,14 +48,14 @@ protected:
 
 private:
 	UPROPERTY(EditAnywhere, Category = "Actor Attributes")
-	float Health = 100;
+	float Health;
 
 	UPROPERTY(EditAnywhere, Category = "Actor Attributes")
-	float MaxHealth = 100;
+	float MaxHealth;
 
 	UPROPERTY(EditAnywhere, Category = "Actor Attributes")
-	float Posture = 0;
+	float Posture;
 
 	UPROPERTY(EditAnywhere, Category = "Actor Attributes")
-	float MaxPosture = 100;
+	float MaxPosture;
 };

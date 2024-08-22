@@ -41,6 +41,26 @@ void UAttributeComponent::SetPostureZero()
 	Posture = 0;
 }
 
+void UAttributeComponent::SetHealth(float Amount)
+{
+	Health = Amount;
+}
+
+void UAttributeComponent::SetMaxHealth(float Amount)
+{
+	MaxHealth = Amount;
+}
+
+void UAttributeComponent::SetPosture(float Amount)
+{
+	Posture = Amount;
+}
+
+void UAttributeComponent::SetMaxPosture(float Amount)
+{
+	MaxPosture = Amount;
+}
+
 float UAttributeComponent::GetHealthPercent()
 {
 	return Health / MaxHealth;

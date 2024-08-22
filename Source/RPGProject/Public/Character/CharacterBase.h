@@ -11,6 +11,7 @@
 class UAttributeComponent;
 class UHealthBarComponent;
 class AWeapon;
+class UCharacterBasePDA;
 
 UCLASS(Abstract)
 class RPGPROJECT_API ACharacterBase : public ACharacter, public IHitInterface
@@ -19,6 +20,8 @@ class RPGPROJECT_API ACharacterBase : public ACharacter, public IHitInterface
 
 public:
 	ACharacterBase();
+
+	virtual void OnConstruction(const FTransform &Transform) override;
 
 	virtual void Attack() PURE_VIRTUAL(ACharacterBase::Attack, );
 
@@ -67,6 +70,8 @@ protected:
 
 	virtual void SetupCollision();
 
+	virtual void SetupData();
+
 	virtual void SetWeaponsCollisionDisable();
 
 	virtual void SpawnHitParticles(const FVector& ImpactPoint);
@@ -86,14 +91,17 @@ protected:
 	UPROPERTY(BlueprintReadOnly)
 	EDeathPose DeathPose = EDeathPose::EDP_Alive;
 
+	UPROPERTY(EditAnywhere, Category = "Data")
+	TObjectPtr<UCharacterBasePDA> CharacterInfo;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Weapon")
 	TArray<TObjectPtr<AWeapon>> Weapons;
 
 	UPROPERTY(EditAnywhere, Category = "Montage")
 	TObjectPtr<UAnimMontage> AttackMontage;
 
-	UPROPERTY(EditAnywhere, Category = "Montage")
-	float RecoveryAmount = 1.f;
+	UPROPERTY(EditAnywhere, Category = "Attributes")
+	float RecoveryPerSec;
 
 private:
 	UPROPERTY(VisibleAnywhere, Category = "State")

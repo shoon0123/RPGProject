@@ -5,6 +5,7 @@
 #include "Camera/CameraComponent.h"
 #include "Components/AttributeComponent.h"
 #include "Components/TargetingComponent.h"
+#include "Data/PlayerCharacterPDA.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "HUD/PlayerHUD.h"
@@ -192,6 +193,24 @@ void APlayerCharacter::Die()
 
     GetCharacterMovement()->bOrientRotationToMovement = false;
     GetTargetingComponent()->CancelLockOn();
+}
+
+void APlayerCharacter::SetupData()
+{
+    Super::SetupData();
+
+    if (TObjectPtr<UPlayerCharacterPDA> PlayerCharacterInfo = Cast<UPlayerCharacterPDA>(CharacterInfo))
+    {
+        ParryingPostureDamage = PlayerCharacterInfo->ParryingPostureDamage;
+        DodgingSpeed = PlayerCharacterInfo->DodgingSpeed;
+        WalkingSpeed = PlayerCharacterInfo->WalkingSpeed;
+        RunningSpeed = PlayerCharacterInfo->RunningSpeed;
+        BlockMontage = PlayerCharacterInfo->BlockMontage;
+        DodgeMontage = PlayerCharacterInfo->DodgeMontage;
+        BlockSound = PlayerCharacterInfo->BlockSound;
+        ParryingSound = PlayerCharacterInfo->ParryingSound;
+        BlockParticles = PlayerCharacterInfo->BlockParticles;
+    }
 }
 
 void APlayerCharacter::UpdateHealthBar()

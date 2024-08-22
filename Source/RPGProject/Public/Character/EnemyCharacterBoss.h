@@ -28,12 +28,14 @@ protected:
 
 	virtual void Die() override;
 
+	virtual void SetupData() override;
+
 private:
 	UPROPERTY(EditAnywhere)
-	float MeleeAttackDistance = 500.f;
+	float MeleeAttackDistance;
 
 	UPROPERTY(EditAnywhere)
-	float RangedAttackDistance = 1000.f;
+	float RangedAttackDistance;
 
 	void MeleeAttack();
 	
