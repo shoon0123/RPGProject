@@ -21,7 +21,7 @@ void AEnemyCharacterBoss::Attack()
     }
     if (IsValid(CombatTarget))
     {
-        Super::Attack(); 
+        SetActionState(EActionState::EAS_Attacking);
 
         const float Distance = GetDistanceTo(CombatTarget);
 
@@ -117,65 +117,34 @@ void AEnemyCharacterBoss::SetupData()
     {
         MeleeAttackDistance = EnemyCharacterBossInfo->MeleeAttackDistance;
         RangedAttackDistance = EnemyCharacterBossInfo->RangedAttackDistance;
+        MidRangedAttackMontageSections = EnemyCharacterBossInfo->MidRangedAttackMontageSections;
+        RangedAttackMontageSections = EnemyCharacterBossInfo->RangedAttackMontageSections;
     }
 }
 
 void AEnemyCharacterBoss::MeleeAttack()
 {
-    const int32 Selection = FMath::RandRange(0, 2);
-    FName SectionName = FName();
-    switch (Selection)
+    if (!AttackMontageSections.IsEmpty())
     {
-    case 0:
-        SectionName = FName("Melee1");
-        break;
-    case 1:
-        SectionName = FName("Melee2");
-        break;
-    case 2:
-        SectionName = FName("Melee3");
-        break;
-    default:
-        break;
+        const int32 Selection = FMath::RandRange(0, AttackMontageSections.Num() - 1);
+        PlayMontageSection(AttackMontage, AttackMontageSections[Selection]);
     }
-    PlayMontageSection(AttackMontage, SectionName);
 }
 
 void AEnemyCharacterBoss::MidRangedAttack()
 {
-    const int32 Selection = FMath::RandRange(0, 2);
-    FName SectionName = FName();
-    switch (Selection)
+    if (!MidRangedAttackMontageSections.IsEmpty())
     {
-    case 0:
-        SectionName = FName("MidRanged1");
-        break;
-    case 1:
-        SectionName = FName("MidRanged2");
-        break;
-    case 2:
-        SectionName = FName("MidRanged3");
-        break;
-    default:
-        break;
+        const int32 Selection = FMath::RandRange(0, MidRangedAttackMontageSections.Num() - 1);
+        PlayMontageSection(AttackMontage, MidRangedAttackMontageSections[Selection]);
     }
-    PlayMontageSection(AttackMontage, SectionName);
 }
 
 void AEnemyCharacterBoss::RangedAttack()
 {
-    const int32 Selection = FMath::RandRange(0, 1);
-    FName SectionName = FName();
-    switch (Selection)
+    if (!RangedAttackMontageSections.IsEmpty())
     {
-    case 0:
-        SectionName = FName("Ranged1");
-        break;
-    case 1:
-        SectionName = FName("Ranged2");
-        break;
-    default:
-        break;
+        const int32 Selection = FMath::RandRange(0, RangedAttackMontageSections.Num() - 1);
+        PlayMontageSection(AttackMontage, RangedAttackMontageSections[Selection]);
     }
-    PlayMontageSection(AttackMontage, SectionName);
 }

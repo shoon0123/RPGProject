@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Player/MyPlayerController.h"
+#include "Player/WarriorPlayerController.h"
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
 #include "Character/PlayerCharacter.h"
@@ -9,17 +9,17 @@
 #include "Components/TargetingComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
-AMyPlayerController::AMyPlayerController()
+AWarriorPlayerController::AWarriorPlayerController()
 {
 	bReplicates = true;
 }
 
-void AMyPlayerController::SetLockOnState(bool State)
+void AWarriorPlayerController::SetLockOnState(bool State)
 {
 	bIsLockOn = State;
 }
 
-void AMyPlayerController::BeginPlay()
+void AWarriorPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 	//ULocalPlayer의 라이프타임과 동일하며 레벨 이동에 따라 이동된다.
@@ -32,24 +32,24 @@ void AMyPlayerController::BeginPlay()
 	DefaultMouseCursor = EMouseCursor::Default;
 }
 
-void AMyPlayerController::SetupInputComponent()
+void AWarriorPlayerController::SetupInputComponent()
 {
 	Super::SetupInputComponent();
 
 	TObjectPtr<UEnhancedInputComponent> EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(InputComponent);
 
-	EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Started, this, &AMyPlayerController::Attack);
-	EnhancedInputComponent->BindAction(BlockAction, ETriggerEvent::Triggered, this, &AMyPlayerController::Block);
-	EnhancedInputComponent->BindAction(BlockAction, ETriggerEvent::Completed, this, &AMyPlayerController::BlockCancel);
-	EnhancedInputComponent->BindAction(DodgeAction, ETriggerEvent::Completed, this, &AMyPlayerController::Dodge);
-	EnhancedInputComponent->BindAction(DodgeAction, ETriggerEvent::Started, this, &AMyPlayerController::EnableRun);
-	EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &AMyPlayerController::Jump);
-	EnhancedInputComponent->BindAction(LockonAction, ETriggerEvent::Started, this, &AMyPlayerController::LockOn);
-	EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AMyPlayerController::Look);
-	EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AMyPlayerController::Move);
+	EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Started, this, &AWarriorPlayerController::Attack);
+	EnhancedInputComponent->BindAction(BlockAction, ETriggerEvent::Triggered, this, &AWarriorPlayerController::Block);
+	EnhancedInputComponent->BindAction(BlockAction, ETriggerEvent::Completed, this, &AWarriorPlayerController::BlockCancel);
+	EnhancedInputComponent->BindAction(DodgeAction, ETriggerEvent::Completed, this, &AWarriorPlayerController::Dodge);
+	EnhancedInputComponent->BindAction(DodgeAction, ETriggerEvent::Started, this, &AWarriorPlayerController::EnableRun);
+	EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &AWarriorPlayerController::Jump);
+	EnhancedInputComponent->BindAction(LockonAction, ETriggerEvent::Started, this, &AWarriorPlayerController::LockOn);
+	EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AWarriorPlayerController::Look);
+	EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AWarriorPlayerController::Move);
 }
 
-void AMyPlayerController::Attack()
+void AWarriorPlayerController::Attack()
 {
 	if (TObjectPtr<APlayerCharacter> PlayerCharacter = GetPawn<APlayerCharacter>())
 	{
@@ -57,7 +57,7 @@ void AMyPlayerController::Attack()
 	}
 }
 
-void AMyPlayerController::Block()
+void AWarriorPlayerController::Block()
 {
 	if (TObjectPtr<APlayerCharacter> PlayerCharacter = GetPawn<APlayerCharacter>())
 	{
@@ -65,7 +65,7 @@ void AMyPlayerController::Block()
 	}
 }
 
-void AMyPlayerController::BlockCancel()
+void AWarriorPlayerController::BlockCancel()
 {
 	if (TObjectPtr<APlayerCharacter> PlayerCharacter = GetPawn<APlayerCharacter>())
 	{
@@ -73,7 +73,7 @@ void AMyPlayerController::BlockCancel()
 	}
 }
 
-void AMyPlayerController::Dodge()
+void AWarriorPlayerController::Dodge()
 {
 	if (TObjectPtr<APlayerCharacter> PlayerCharacter = GetPawn<APlayerCharacter>())
 	{
@@ -81,7 +81,7 @@ void AMyPlayerController::Dodge()
 	}
 }
 
-void AMyPlayerController::EnableRun()
+void AWarriorPlayerController::EnableRun()
 {
 	if (TObjectPtr<APlayerCharacter> PlayerCharacter = GetPawn<APlayerCharacter>())
 	{
@@ -89,7 +89,7 @@ void AMyPlayerController::EnableRun()
 	}
 }
 
-void AMyPlayerController::Jump()
+void AWarriorPlayerController::Jump()
 {
 	if (GetPawn<ACharacter>())
 	{
@@ -97,7 +97,7 @@ void AMyPlayerController::Jump()
 	}
 }
 
-void AMyPlayerController::LockOn()
+void AWarriorPlayerController::LockOn()
 {
 	if (TObjectPtr<APlayerCharacter> PlayerCharacter = GetPawn<APlayerCharacter>())
 	{
@@ -115,7 +115,7 @@ void AMyPlayerController::LockOn()
 	}
 }
 
-void AMyPlayerController::Look(const FInputActionValue& InputActionValue)
+void AWarriorPlayerController::Look(const FInputActionValue& InputActionValue)
 {
 	const FVector2D InputAxisVector = InputActionValue.Get<FVector2D>();
 	if (bIsLockOn)
@@ -135,7 +135,7 @@ void AMyPlayerController::Look(const FInputActionValue& InputActionValue)
 	}
 }
 
-void AMyPlayerController::Move(const FInputActionValue& InputActionValue)
+void AWarriorPlayerController::Move(const FInputActionValue& InputActionValue)
 {
 	if (TObjectPtr<APlayerCharacter> PlayerCharacter = GetPawn<APlayerCharacter>())
 	{

@@ -4,13 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
-#include "MyGameModeBase.generated.h"
+#include "WarriorGameModeBase.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class RPGPROJECT_API AMyGameModeBase : public AGameModeBase
+class RPGPROJECT_API AWarriorGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
 	

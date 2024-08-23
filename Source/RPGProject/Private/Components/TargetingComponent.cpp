@@ -3,7 +3,7 @@
 
 #include "Components/TargetingComponent.h"
 #include "Character/PlayerCharacter.h"
-#include "Player/MyPlayerController.h"
+#include "Player/WarriorPlayerController.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -27,7 +27,7 @@ void UTargetingComponent::ExecuteLockOn()
 			PlayerCharacter->GetCharacterMovement()->bOrientRotationToMovement = false;
 			PlayerCharacter->GetCharacterMovement()->bUseControllerDesiredRotation = true;
 			bIsLockOn = true;
-			if (TObjectPtr<AMyPlayerController> PlayerController = Cast<AMyPlayerController>(PlayerCharacter->GetController()))
+			if (TObjectPtr<AWarriorPlayerController> PlayerController = Cast<AWarriorPlayerController>(PlayerCharacter->GetController()))
 			{
 				PlayerController->SetLockOnState(true);
 			}
@@ -43,7 +43,7 @@ void UTargetingComponent::CancelLockOn()
 		PlayerCharacter->GetCharacterMovement()->bOrientRotationToMovement = true;
 		PlayerCharacter->GetCharacterMovement()->bUseControllerDesiredRotation = false;
 		bIsLockOn = false;
-		if (TObjectPtr<AMyPlayerController> PlayerController = Cast<AMyPlayerController>(PlayerCharacter->GetController()))
+		if (TObjectPtr<AWarriorPlayerController> PlayerController = Cast<AWarriorPlayerController>(PlayerCharacter->GetController()))
 		{
 			PlayerController->SetLockOnState(false);
 		}

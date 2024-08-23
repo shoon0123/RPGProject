@@ -5,7 +5,7 @@
 #include "Character/CharacterBase.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
-#include "Player/MyPlayerController.h"
+#include "Player/WarriorPlayerController.h"
 
 void UCharacterAnimInstance::NativeBeginPlay()
 {

@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
-#include "MyPlayerController.generated.h" 
+#include "WarriorPlayerController.generated.h" 
 
 class APlayerCharacter;
 class UInputMappingContext;
@@ -15,12 +15,12 @@ struct FInputActionValue;
  * 
  */
 UCLASS()
-class RPGPROJECT_API AMyPlayerController : public APlayerController
+class RPGPROJECT_API AWarriorPlayerController : public APlayerController
 {
 	GENERATED_BODY()
 
 public:
-	AMyPlayerController();
+	AWarriorPlayerController();
 
 	void SetLockOnState(bool State);
 

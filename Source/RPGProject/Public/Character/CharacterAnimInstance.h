@@ -8,7 +8,7 @@
 #include "CharacterAnimInstance.generated.h"
 
 class ACharacterBase;
-class AMyPlayerController;
+class AWarriorPlayerController;
 class APlayerCharacter;
 class UCharacterMovementComponent;
 enum class EActionState : uint8;

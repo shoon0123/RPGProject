@@ -24,25 +24,12 @@ void AEnemyCharacterNormal::Attack()
 		return;
 	}
 
-	Super::Attack();
-
-	const int32 Selection = FMath::RandRange(0, 2);
-	FName SectionName = FName();
-	switch (Selection)
+	if (!AttackMontageSections.IsEmpty())
 	{
-	case 0:
-		SectionName = FName("Attack1");
-		break;
-	case 1:
-		SectionName = FName("Attack2");
-		break;
-	case 2:
-		SectionName = FName("Attack3");
-		break;
-	default:
-		break;
+		SetActionState(EActionState::EAS_Attacking);
+		const int32 Selection = FMath::RandRange(0, AttackMontageSections.Num() - 1);
+		PlayMontageSection(AttackMontage, AttackMontageSections[Selection]);
 	}
-	PlayMontageSection(AttackMontage, SectionName);
 }
 
 void AEnemyCharacterNormal::GetHit(const FVector& ImpactPoint, AActor* Hitter)

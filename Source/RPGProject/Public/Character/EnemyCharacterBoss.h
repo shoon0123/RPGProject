@@ -31,6 +31,12 @@ protected:
 	virtual void SetupData() override;
 
 private:
+	UPROPERTY(EditDefaultsOnly, Category = "Montage")
+	TArray<FName> MidRangedAttackMontageSections;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Montage")
+	TArray<FName> RangedAttackMontageSections;
+
 	UPROPERTY(EditAnywhere)
 	float MeleeAttackDistance;
 

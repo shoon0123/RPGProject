@@ -149,30 +149,12 @@ void ACharacterBase::BeginPlay()
 void ACharacterBase::Die()
 {
 	SetActionState(EActionState::EAS_Dead);
-	const int32 Selection = FMath::RandRange(0, 3);
-	FName SectionName = FName();
-	switch (Selection)
+	if (!DeathMontageSections.IsEmpty())
 	{
-	case 0:
-		SectionName = FName("Death1");
-		DeathPose = EDeathPose::EDP_Death1;
-		break;
-	case 1:
-		SectionName = FName("Death2");
-		DeathPose = EDeathPose::EDP_Death2;
-		break;
-	case 2:
-		SectionName = FName("Death3");
-		DeathPose = EDeathPose::EDP_Death3;
-		break;
-	case 3:
-		SectionName = FName("Death4");
-		DeathPose = EDeathPose::EDP_Death4;
-		break;
-	default:
-		break;
+		const int32 Selection = FMath::RandRange(0, DeathMontageSections.Num() - 1);
+		PlayMontageSection(DeathMontage, DeathMontageSections[Selection]);
 	}
-	PlayMontageSection(DeathMontage, SectionName);
+
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
@@ -266,6 +248,11 @@ void ACharacterBase::SetupData()
 		DeathMontage = CharacterInfo->DeathMontage;
 		HitReactMontage = CharacterInfo->HitReactMontage;
 		StunnedMontage = CharacterInfo->StunnedMontage;
+
+		AttackMontageSections = CharacterInfo->AttackMontageSections;
+		DeathMontageSections = CharacterInfo->DeathMontageSections;
+		HitReactMontageSections = CharacterInfo->HitReactMontageSections;
+
 		HitSound = CharacterInfo->HitSound;
 		HitParticles = CharacterInfo->HitParticles;
 	}

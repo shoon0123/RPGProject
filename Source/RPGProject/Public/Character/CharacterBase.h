@@ -97,8 +97,11 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Weapon")
 	TArray<TObjectPtr<AWeapon>> Weapons;
 
-	UPROPERTY(EditAnywhere, Category = "Montage")
+	UPROPERTY(EditDefaultsOnly, Category = "Montage")
 	TObjectPtr<UAnimMontage> AttackMontage;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Montage")
+	TArray<FName> AttackMontageSections;
 
 	UPROPERTY(EditAnywhere, Category = "Attributes")
 	float RecoveryPerSec;
@@ -107,11 +110,17 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = "State")
 	EActionState ActionState = EActionState::EAS_Unoccupied;
 
-	UPROPERTY(EditAnywhere, Category = "Montage")
+	UPROPERTY(EditDefaultsOnly, Category = "Montage")
 	TObjectPtr<UAnimMontage> DeathMontage;
 
-	UPROPERTY(EditAnywhere, Category = "Montage")
+	UPROPERTY(EditDefaultsOnly, Category = "Montage")
+	TArray<FName> DeathMontageSections;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Montage")
 	TObjectPtr<UAnimMontage> HitReactMontage;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Montage")
+	TArray<FName> HitReactMontageSections;
 	
 	UPROPERTY(EditAnywhere, Category = "Montage")
 	TObjectPtr<UAnimMontage> StunnedMontage;

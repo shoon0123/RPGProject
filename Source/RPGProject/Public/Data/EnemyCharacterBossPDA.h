@@ -15,6 +15,12 @@ class RPGPROJECT_API UEnemyCharacterBossPDA : public UEnemyCharacterPDA
 	GENERATED_BODY()
 	
 public:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Montage")
+	TArray<FName> MidRangedAttackMontageSections;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Montage")
+	TArray<FName> RangedAttackMontageSections;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Combat")
 	float MeleeAttackDistance;
 

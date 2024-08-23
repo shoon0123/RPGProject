@@ -10,7 +10,7 @@ class ACharacterBase;
 class APlayerCharacter;
 class APlayerController;
 
-UCLASS()
+UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class RPGPROJECT_API UTargetingComponent : public USphereComponent
 {
 	GENERATED_BODY()

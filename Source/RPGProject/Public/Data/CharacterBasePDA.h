@@ -48,10 +48,19 @@ public:
 	TObjectPtr<UAnimMontage> AttackMontage;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Montage")
+	TArray<FName> AttackMontageSections;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Montage")
 	TObjectPtr<UAnimMontage> DeathMontage;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Montage")
+	TArray<FName> DeathMontageSections;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Montage")
 	TObjectPtr<UAnimMontage> HitReactMontage;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Montage")
+	TArray<FName> HitReactMontageSections;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Montage")
 	TObjectPtr<UAnimMontage> StunnedMontage;
