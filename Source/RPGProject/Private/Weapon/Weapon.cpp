@@ -45,10 +45,9 @@ void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 {
 	FHitResult BoxHit;
 	BoxTrace(BoxHit);
-
 	TObjectPtr<ACharacterBase> HittedCharacter = Cast<ACharacterBase>(BoxHit.GetActor());
 	const FName TargetTag = GetTargetTag();
-	if (HittedCharacter && HittedCharacter->ActorHasTag(TargetTag))
+	if (IsValid(HittedCharacter) && HittedCharacter->ActorHasTag(TargetTag))
 	{
 		if (HittedCharacter->GetActionState() != EActionState::EAS_Parrying)
 		{
@@ -62,7 +61,7 @@ void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 
 void AWeapon::AddImpulse(ACharacter* HittedCharacter)
 {
-	if (GetOwner())
+	if (IsValid(GetOwner()))
 	{
 		const FVector HitVector = HittedCharacter->GetActorLocation() - GetOwner()->GetActorLocation();
 		HittedCharacter->GetCharacterMovement()->AddImpulse(HitVector.GetSafeNormal2D() * Impulse * 10000);

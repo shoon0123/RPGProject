@@ -56,7 +56,7 @@ void AEnemyCharacterNormal::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (HealthBarWidget)
+	if (IsValid(HealthBarWidget))
 	{
 		HealthBarWidget->SetVisibility(false);
 	}
@@ -64,7 +64,7 @@ void AEnemyCharacterNormal::BeginPlay()
 
 void AEnemyCharacterNormal::UpdateHealthBar()
 {
-	if (HealthBarWidget)
+	if (IsValid(HealthBarWidget))
 	{
 		HealthBarWidget->SetHealthPercent(Attributes->GetHealthPercent());
 	}
@@ -72,7 +72,7 @@ void AEnemyCharacterNormal::UpdateHealthBar()
 
 void AEnemyCharacterNormal::UpdatePostureBar()
 {
-	if (HealthBarWidget)
+	if (IsValid(HealthBarWidget))
 	{
 		HealthBarWidget->SetPosturePercent(Attributes->GetPosturePercent());
 	}
@@ -81,7 +81,11 @@ void AEnemyCharacterNormal::UpdatePostureBar()
 void AEnemyCharacterNormal::Die()
 {
 	Super::Die();
-	HealthBarWidget->SetVisibility(false);
+
+	if (IsValid(HealthBarWidget))
+	{
+		HealthBarWidget->SetVisibility(false);
+	}
 }
 
 void AEnemyCharacterNormal::SetupData()

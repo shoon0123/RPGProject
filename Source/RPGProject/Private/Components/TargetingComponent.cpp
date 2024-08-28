@@ -53,7 +53,6 @@ void UTargetingComponent::ChangeLockOnTarget(const FVector2D InputVector)
 	{
 		return;
 	}
-
 	const float TimeSinceLastChangeTarget = GetWorld()->GetRealTimeSeconds() - LastTimeSetTarget;
 	if (TimeSinceLastChangeTarget < ChangeTargetCooldown)
 	{
@@ -162,27 +161,30 @@ void UTargetingComponent::SetTargetableDistance(float Distance)
 TObjectPtr<AActor> UTargetingComponent::FindTargetInViewport()
 {
 	TObjectPtr<AActor> TargetActor = nullptr;
-
-	if (TObjectPtr<APlayerController> PlayerController = Cast<APlayerController>(OwnerCharacter->GetController()))
+	if (IsValid(OwnerCharacter))
 	{
-		FVector2D ScreenPosition = FVector2D::ZeroVector;
-		const FVector2D ViewportSize = GEngine->GameViewport->Viewport->GetSizeXY();
-		long MinimumDistance = LONG_MAX;
-
-		for (TObjectPtr<AActor> TargetableActor : TargetableActors)
+		TObjectPtr<APlayerController> PlayerController = Cast<APlayerController>(OwnerCharacter->GetController());
+		if (IsValid(PlayerController))
 		{
-			if (UGameplayStatics::ProjectWorldToScreen(PlayerController, TargetableActor->GetActorLocation(), ScreenPosition))
+			FVector2D ScreenPosition = FVector2D::ZeroVector;
+			const FVector2D ViewportSize = GEngine->GameViewport->Viewport->GetSizeXY();
+			long MinimumDistance = LONG_MAX;
+
+			for (TObjectPtr<AActor> TargetableActor : TargetableActors)
 			{
-				const double Distance = FVector2D::Distance(ScreenPosition, ViewportSize * 0.5f);
-				if (Distance < MinimumDistance)
+				if (UGameplayStatics::ProjectWorldToScreen(PlayerController, TargetableActor->GetActorLocation(), ScreenPosition))
 				{
-					MinimumDistance = Distance;
-					TargetActor = TargetableActor;
+					const double Distance = FVector2D::Distance(ScreenPosition, ViewportSize * 0.5f);
+					if (Distance < MinimumDistance)
+					{
+						MinimumDistance = Distance;
+						TargetActor = TargetableActor;
+					}
 				}
 			}
 		}
 	}
-	
+
 	return TargetActor;
 }
 
@@ -233,7 +235,7 @@ void UTargetingComponent::RemoveTargetableActor(TObjectPtr<AActor> Actor)
 void UTargetingComponent::FindTargetableActors()
 {
 	TArray<FHitResult> HitResults;
-	if (OwnerCharacter)
+	if (IsValid(OwnerCharacter))
 	{
 		bool bIsHit = GetWorld()->SweepMultiByChannel(HitResults, OwnerCharacter->GetActorLocation(), OwnerCharacter->GetActorLocation(), FQuat::Identity,
 			ECollisionChannel::ECC_GameTraceChannel1, FCollisionShape::MakeSphere(TargetableDistance));
@@ -258,21 +260,24 @@ void UTargetingComponent::UpdateCamera()
 	{
 		TObjectPtr<ACharacterBase> TargetCharacter = Cast<ACharacterBase>(Target);
 
-		if (TargetCharacter && !TargetCharacter->IsAlive())
+		if (IsValid(TargetCharacter) && !TargetCharacter->IsAlive())
 		{
 			RemoveTargetableActor(TargetCharacter);
 			CancelLockOn(); 
 		}
-		else
+		else if(IsValid(OwnerCharacter))
 		{
 			TObjectPtr<AController> Controller = OwnerCharacter->GetController();
-			const FRotator ControllerRotator = Controller->GetControlRotation();
-			const FVector CameraLocation = GetCameraLocation();
-			const FVector LookAtLocation = (Target->GetActorLocation() + OwnerCharacter->GetActorLocation()) / 2;
-			const FRotator LookAtTarget = UKismetMathLibrary::FindLookAtRotation(CameraLocation, LookAtLocation);
-			const FRotator RInterpToRotator = FMath::RInterpTo(ControllerRotator, LookAtTarget,
-				GetWorld()->GetDeltaSeconds(), InterpSpeed);
-			Controller->SetControlRotation(RInterpToRotator);
+			if (IsValid(Controller))
+			{
+				const FRotator ControllerRotator = Controller->GetControlRotation();
+				const FVector CameraLocation = GetCameraLocation();
+				const FVector LookAtLocation = (Target->GetActorLocation() + OwnerCharacter->GetActorLocation()) / 2;
+				const FRotator LookAtTarget = UKismetMathLibrary::FindLookAtRotation(CameraLocation, LookAtLocation);
+				const FRotator RInterpToRotator = FMath::RInterpTo(ControllerRotator, LookAtTarget,
+					GetWorld()->GetDeltaSeconds(), InterpSpeed);
+				Controller->SetControlRotation(RInterpToRotator);
+			}
 		}
 	}
 }

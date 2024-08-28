@@ -19,7 +19,7 @@ void UCharacterAnimInstance::NativeInitializeAnimation()
 	Super::NativeInitializeAnimation();
 
 	Character = Cast<ACharacterBase>(TryGetPawnOwner());
-	if (Character)
+	if (IsValid(Character))
 	{
 		CharacterMovement = Character->GetCharacterMovement();
 	}
@@ -28,7 +28,7 @@ void UCharacterAnimInstance::NativeInitializeAnimation()
 void UCharacterAnimInstance::NativeUpdateAnimation(float DeltaTime)
 {
 	Super::NativeUpdateAnimation(DeltaTime);
-	if (CharacterMovement)
+	if (IsValid(CharacterMovement))
 	{
 		Angle = UKismetMathLibrary::InverseTransformDirection(Character->GetActorTransform(), CharacterMovement->Velocity).Rotation().Yaw;
 		GroundSpeed = UKismetMathLibrary::VSizeXY(CharacterMovement->Velocity);

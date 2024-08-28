@@ -304,11 +304,14 @@ void APlayerCharacter::SetupCamera()
 
 void APlayerCharacter::SetupHUD()
 {
-    if (TObjectPtr<APlayerController> PlayerController = Cast<APlayerController>(GetController()))
+    TObjectPtr<APlayerController> PlayerController = Cast<APlayerController>(GetController());
+    if (IsValid(PlayerController))
     {
-        if (TObjectPtr<APlayerHUD> PlayerHUD = Cast<APlayerHUD>(PlayerController->GetHUD()))
+        TObjectPtr<APlayerHUD> PlayerHUD = Cast<APlayerHUD>(PlayerController->GetHUD());
+        if (IsValid(PlayerHUD))
         {
-            if (TObjectPtr<UCombatOverlay> CombatOverlay = PlayerHUD->GetCombatOverlay())
+            TObjectPtr<UCombatOverlay> CombatOverlay = PlayerHUD->GetCombatOverlay();
+            if (IsValid(CombatOverlay))
             {
                 CombatOverlay->SetEnemyWidgetVisibility(ESlateVisibility::Hidden);
             }

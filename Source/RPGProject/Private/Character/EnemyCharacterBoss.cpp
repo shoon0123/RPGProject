@@ -60,9 +60,11 @@ void AEnemyCharacterBoss::SetCombatTarget(ACharacterBase* NewTarget)
 {
     if (IsValid(NewTarget))
     {
-        if (TObjectPtr<APlayerCharacter> NewTargetPlayer = Cast<APlayerCharacter>(NewTarget))
+        TObjectPtr<APlayerCharacter> NewTargetPlayer = Cast<APlayerCharacter>(NewTarget);
+        if (IsValid(NewTargetPlayer))
         {
-            if (TObjectPtr<UCombatOverlay> CombatOverlay = NewTargetPlayer->GetCombatOverlay())
+            TObjectPtr<UCombatOverlay> CombatOverlay = NewTargetPlayer->GetCombatOverlay();
+            if (IsValid(CombatOverlay))
             {
                 CombatOverlay->SetEnemyWidgetVisibility(ESlateVisibility::Visible);
             }
@@ -70,9 +72,11 @@ void AEnemyCharacterBoss::SetCombatTarget(ACharacterBase* NewTarget)
     }
     else
     {
-        if (TObjectPtr<APlayerCharacter> CombatTargetPlayer = Cast<APlayerCharacter>(CombatTarget))
+        TObjectPtr<APlayerCharacter> CombatTargetPlayer = Cast<APlayerCharacter>(CombatTarget);
+        if (IsValid(CombatTargetPlayer))
         {
-            if (TObjectPtr<UCombatOverlay> CombatOverlay = CombatTargetPlayer->GetCombatOverlay())
+            TObjectPtr<UCombatOverlay> CombatOverlay = CombatTargetPlayer->GetCombatOverlay();
+            if (IsValid(CombatOverlay))
             {
                 CombatOverlay->SetEnemyWidgetVisibility(ESlateVisibility::Hidden);
             }
@@ -83,10 +87,11 @@ void AEnemyCharacterBoss::SetCombatTarget(ACharacterBase* NewTarget)
 
 void AEnemyCharacterBoss::UpdateHealthBar()
 {
-    if (TObjectPtr<APlayerCharacter> TargetPlayer = Cast<APlayerCharacter>(CombatTarget))
+    TObjectPtr<APlayerCharacter> TargetPlayer = Cast<APlayerCharacter>(CombatTarget);
+    if (IsValid(TargetPlayer))
     {
         TObjectPtr<UCombatOverlay> CombatOverlay = TargetPlayer->GetCombatOverlay();
-        if (CombatOverlay && Attributes)
+        if (IsValid(CombatOverlay) && IsValid(Attributes))
         {
             CombatOverlay->SetEnemyHealthPercent(Attributes->GetHealthPercent());
         }
@@ -95,10 +100,11 @@ void AEnemyCharacterBoss::UpdateHealthBar()
 
 void AEnemyCharacterBoss::UpdatePostureBar()
 {
-    if (TObjectPtr<APlayerCharacter> TargetPlayer = Cast<APlayerCharacter>(CombatTarget))
+    TObjectPtr<APlayerCharacter> TargetPlayer = Cast<APlayerCharacter>(CombatTarget);
+    if (IsValid(TargetPlayer))
     {
         TObjectPtr<UCombatOverlay> CombatOverlay = TargetPlayer->GetCombatOverlay();
-        if (CombatOverlay && Attributes)
+        if (IsValid(CombatOverlay) && IsValid(Attributes))
         {
             CombatOverlay->SetEnemyPosturePercent(Attributes->GetPosturePercent());
         }
@@ -107,9 +113,11 @@ void AEnemyCharacterBoss::UpdatePostureBar()
 
 void AEnemyCharacterBoss::Die()
 {
-    if (TObjectPtr<APlayerCharacter> CombatPlayer = Cast<APlayerCharacter>(CombatTarget))
+    TObjectPtr<APlayerCharacter> CombatPlayer = Cast<APlayerCharacter>(CombatTarget);
+    if (IsValid(CombatPlayer))
     {
-        if (TObjectPtr<UCombatOverlay> CombatOverlay = CombatPlayer->GetCombatOverlay())
+        TObjectPtr<UCombatOverlay> CombatOverlay = CombatPlayer->GetCombatOverlay();
+        if (IsValid(CombatOverlay))
         {
             CombatOverlay->SetEnemyWidgetVisibility(ESlateVisibility::Hidden);
         }
@@ -120,8 +128,8 @@ void AEnemyCharacterBoss::Die()
 void AEnemyCharacterBoss::SetupData()
 {
     Super::SetupData();
-
-    if (TObjectPtr<UEnemyCharacterBossPDA> EnemyCharacterBossInfo = Cast<UEnemyCharacterBossPDA>(CharacterInfo))
+    TObjectPtr<UEnemyCharacterBossPDA> EnemyCharacterBossInfo = Cast<UEnemyCharacterBossPDA>(CharacterInfo);
+    if (IsValid(EnemyCharacterBossInfo))
     {
         MeleeAttackDistance = EnemyCharacterBossInfo->MeleeAttackDistance;
         RangedAttackDistance = EnemyCharacterBossInfo->RangedAttackDistance;

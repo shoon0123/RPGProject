@@ -12,11 +12,11 @@ TObjectPtr<UCombatOverlay> APlayerHUD::GetCombatOverlay() const
 void APlayerHUD::BeginPlay()
 {
 	Super::BeginPlay();
-
-	if (UWorld* World = GetWorld())
+	TObjectPtr<UWorld> World = GetWorld();
+	if (IsValid(World))
 	{
 		TObjectPtr<APlayerController> Controller = World->GetFirstPlayerController();
-		if (Controller && CombatOverlayClass)
+		if (IsValid(Controller) && IsValid(CombatOverlayClass))
 		{
 			CombatOverlay = CreateWidget<UCombatOverlay>(Controller, CombatOverlayClass);
 			CombatOverlay->SetPlayerHealthPercent(1.f);

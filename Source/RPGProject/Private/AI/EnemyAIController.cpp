@@ -9,9 +9,7 @@
 AEnemyAIController::AEnemyAIController()
 {
 	Blackboard = CreateDefaultSubobject<UBlackboardComponent>("BlackboardComponent");
-	check(Blackboard);
 	BehaviorTreeComponent = CreateDefaultSubobject<UBehaviorTreeComponent>("BehaviorTreeComponent");
-	check(BehaviorTreeComponent);
 	GetBlackboardComponent()->SetValueAsEnum(FName("ActionState"), (uint8)EActionState::EAS_Unoccupied);
 	GetBlackboardComponent()->SetValueAsEnum(FName("TargetState"), (uint8)EActionState::EAS_Unoccupied);
 }

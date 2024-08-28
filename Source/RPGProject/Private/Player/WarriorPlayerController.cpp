@@ -46,7 +46,8 @@ void AWarriorPlayerController::SetupInputComponent()
 
 void AWarriorPlayerController::Attack()
 {
-	if (TObjectPtr<APlayerCharacter> PlayerCharacter = GetPawn<APlayerCharacter>())
+	TObjectPtr<APlayerCharacter> PlayerCharacter = GetPawn<APlayerCharacter>();
+	if (IsValid(PlayerCharacter))
 	{
 		PlayerCharacter->Attack();
 	}
@@ -54,7 +55,8 @@ void AWarriorPlayerController::Attack()
 
 void AWarriorPlayerController::Block()
 {
-	if (TObjectPtr<APlayerCharacter> PlayerCharacter = GetPawn<APlayerCharacter>())
+	TObjectPtr<APlayerCharacter> PlayerCharacter = GetPawn<APlayerCharacter>()
+	if (IsValid(PlayerCharacter))
 	{
 		PlayerCharacter->Block();
 	}
@@ -62,7 +64,8 @@ void AWarriorPlayerController::Block()
 
 void AWarriorPlayerController::BlockCancel()
 {
-	if (TObjectPtr<APlayerCharacter> PlayerCharacter = GetPawn<APlayerCharacter>())
+	TObjectPtr<APlayerCharacter> PlayerCharacter = GetPawn<APlayerCharacter>();
+	if (IsValid(PlayerCharacter))
 	{
 		PlayerCharacter->BlockCancel();
 	}
@@ -70,7 +73,8 @@ void AWarriorPlayerController::BlockCancel()
 
 void AWarriorPlayerController::Dodge()
 {
-	if (TObjectPtr<APlayerCharacter> PlayerCharacter = GetPawn<APlayerCharacter>())
+	TObjectPtr<APlayerCharacter> PlayerCharacter = GetPawn<APlayerCharacter>();
+	if (IsValid(PlayerCharacter))
 	{
 		PlayerCharacter->Dodge();
 	}
@@ -78,7 +82,8 @@ void AWarriorPlayerController::Dodge()
 
 void AWarriorPlayerController::EnableRun()
 {
-	if (TObjectPtr<APlayerCharacter> PlayerCharacter = GetPawn<APlayerCharacter>())
+	TObjectPtr<APlayerCharacter> PlayerCharacter = GetPawn<APlayerCharacter>();
+	if (IsValid(PlayerCharacter))
 	{
 		PlayerCharacter->EnableRun();
 	}
@@ -86,17 +91,20 @@ void AWarriorPlayerController::EnableRun()
 
 void AWarriorPlayerController::Jump()
 {
-	if (GetPawn<ACharacter>())
+	TObjectPtr<APlayerCharacter> PlayerCharacter = GetPawn<APlayerCharacter>();
+	if (IsValid(PlayerCharacter))
 	{
-		GetPawn<ACharacter>()->Jump();
+		PlayerCharacter->Jump();
 	}
 }
 
 void AWarriorPlayerController::LockOn()
 {
-	if (TObjectPtr<APlayerCharacter> PlayerCharacter = GetPawn<APlayerCharacter>())
+	TObjectPtr<APlayerCharacter> PlayerCharacter = GetPawn<APlayerCharacter>();
+	if (IsValid(PlayerCharacter))
 	{
-		if (TObjectPtr<UTargetingComponent> TargetingComponent = PlayerCharacter->GetTargetingComponent())
+		TObjectPtr<UTargetingComponent> TargetingComponent = PlayerCharacter->GetTargetingComponent();
+		if (IsValid(TargetingComponent))
 		{
 			if (TargetingComponent->IsLockOn())
 			{
@@ -113,10 +121,11 @@ void AWarriorPlayerController::LockOn()
 void AWarriorPlayerController::Look(const FInputActionValue& InputActionValue)
 {
 	const FVector2D InputAxisVector = InputActionValue.Get<FVector2D>();
-	if (TObjectPtr<APlayerCharacter> PlayerCharacter = GetPawn<APlayerCharacter>())
+	TObjectPtr<APlayerCharacter> PlayerCharacter = GetPawn<APlayerCharacter>();
+	if (IsValid(PlayerCharacter))
 	{
 		TObjectPtr<UTargetingComponent> TargetingComponent = PlayerCharacter->GetTargetingComponent();
-		if (TargetingComponent&& TargetingComponent->IsLockOn())
+		if (IsValid(TargetingComponent)&& TargetingComponent->IsLockOn())
 		{
 			TargetingComponent->ChangeLockOnTarget(InputAxisVector);
 			return;
@@ -128,7 +137,8 @@ void AWarriorPlayerController::Look(const FInputActionValue& InputActionValue)
 
 void AWarriorPlayerController::Move(const FInputActionValue& InputActionValue)
 {
-	if (TObjectPtr<APlayerCharacter> PlayerCharacter = GetPawn<APlayerCharacter>())
+	TObjectPtr<APlayerCharacter> PlayerCharacter = GetPawn<APlayerCharacter>();
+	if (IsValid(PlayerCharacter))
 	{
 		if (PlayerCharacter->GetActionState() != EActionState::EAS_Unoccupied)
 		{

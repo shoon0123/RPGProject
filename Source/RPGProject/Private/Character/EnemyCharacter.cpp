@@ -26,10 +26,14 @@ void AEnemyCharacter::PossessedBy(AController* NewController)
 	Super::PossessedBy(NewController);
 	
 	if (!HasAuthority()) return;
+
 	EnemyAIController = Cast<AEnemyAIController>(NewController);
-	EnemyAIController->GetBlackboardComponent()->InitializeBlackboard(*BehaviorTree->BlackboardAsset);
-	EnemyAIController->RunBehaviorTree(BehaviorTree);
-	EnemyAIController->GetBlackboardComponent()->SetValueAsFloat(FName("DetectionRange"), DetectionRange);
+	if (IsValid(EnemyAIController))
+	{
+		EnemyAIController->GetBlackboardComponent()->InitializeBlackboard(*BehaviorTree->BlackboardAsset);
+		EnemyAIController->RunBehaviorTree(BehaviorTree);
+		EnemyAIController->GetBlackboardComponent()->SetValueAsFloat(FName("DetectionRange"), DetectionRange);
+	}
 }
 
 void AEnemyCharacter::SetActionState(EActionState OtherActionState)
@@ -72,8 +76,8 @@ void AEnemyCharacter::Die()
 void AEnemyCharacter::SetupData()
 {
 	Super::SetupData();
-
-	if (TObjectPtr<UEnemyCharacterPDA> EnemyCharacterInfo = Cast<UEnemyCharacterPDA>(CharacterInfo))
+	TObjectPtr<UEnemyCharacterPDA> EnemyCharacterInfo = Cast<UEnemyCharacterPDA>(CharacterInfo);
+	if (IsValid(EnemyCharacterInfo))
 	{
 		BehaviorTree = EnemyCharacterInfo->BehaviorTree;
 		DetectionRange = EnemyCharacterInfo->DetectionRange;

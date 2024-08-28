@@ -7,14 +7,17 @@
 
 void UCombatOverlay::SetEnemyWidgetVisibility(ESlateVisibility InVisibility)
 {
-	EnemyHealthBar->SetVisibility(InVisibility);
-	EnemyPostureBar->SetVisibility(InVisibility);
-	EnemyPostureImage->SetVisibility(InVisibility);
+	if (IsValid(EnemyHealthBar) && IsValid(EnemyPostureBar) && IsValid(EnemyPostureImage))
+	{
+		EnemyHealthBar->SetVisibility(InVisibility);
+		EnemyPostureBar->SetVisibility(InVisibility);
+		EnemyPostureImage->SetVisibility(InVisibility);
+	}
 }
 
 void UCombatOverlay::SetPlayerHealthPercent(float Percent)
 {
-	if (PlayerHealthBar)
+	if (IsValid(PlayerHealthBar))
 	{
 		PlayerHealthBar->SetPercent(Percent);
 	}
@@ -22,7 +25,7 @@ void UCombatOverlay::SetPlayerHealthPercent(float Percent)
 
 void UCombatOverlay::SetPlayerPosturePercent(float Percent)
 {
-	if (PlayerPostureBar)
+	if (IsValid(PlayerPostureBar))
 	{
 		PlayerPostureBar->SetPercent(Percent);
 	}
@@ -30,7 +33,7 @@ void UCombatOverlay::SetPlayerPosturePercent(float Percent)
 
 void UCombatOverlay::SetEnemyHealthPercent(float Percent)
 {
-	if (EnemyHealthBar)
+	if (IsValid(EnemyHealthBar))
 	{
 		EnemyHealthBar->SetPercent(Percent);
 	}
@@ -38,7 +41,7 @@ void UCombatOverlay::SetEnemyHealthPercent(float Percent)
 
 void UCombatOverlay::SetEnemyPosturePercent(float Percent)
 {
-	if (EnemyPostureBar)
+	if (IsValid(EnemyPostureBar))	
 	{
 		EnemyPostureBar->SetPercent(Percent);
 	}

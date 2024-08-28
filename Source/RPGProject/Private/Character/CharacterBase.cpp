@@ -95,7 +95,7 @@ void ACharacterBase::GetHit(const FVector& ImpactPoint, AActor* Hitter)
 
 void ACharacterBase::GetPostureDamage(const float PostureDamage)
 {
-	if (Attributes)
+	if (IsValid(Attributes))
 	{
 		Attributes->ReceivePostureDamage(PostureDamage);
 		UpdatePostureBar();
@@ -116,7 +116,7 @@ void ACharacterBase::GetStunned()
 
 float ACharacterBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
-	if (Attributes && GetActionState() != EActionState::EAS_Block)
+	if (IsValid(Attributes) && GetActionState() != EActionState::EAS_Block)
 	{
 		if (GetActionState() == EActionState::EAS_Stunned)
 		{
@@ -184,7 +184,8 @@ void ACharacterBase::DirectionalHitReact(AActor* Hitter)
 void ACharacterBase::PlayMontageSection(UAnimMontage* Montage, const FName& SectionName)
 {
 	check(Montage);
-	if (TObjectPtr<UAnimInstance> AnimInstance = GetMesh()->GetAnimInstance())
+	TObjectPtr<UAnimInstance> AnimInstance = GetMesh()->GetAnimInstance();
+	if (IsValid(AnimInstance))
 	{
 		AnimInstance->Montage_Play(Montage);
 		AnimInstance->Montage_JumpToSection(SectionName, Montage);
@@ -198,7 +199,7 @@ void ACharacterBase::HitReactEnd()
 
 bool ACharacterBase::IsAlive()
 {
-	return Attributes && Attributes->IsAlive();
+	return IsValid(Attributes) && Attributes->IsAlive();
 }
 
 void ACharacterBase::PlayHitSound(const FVector& ImpactPoint)
@@ -220,9 +221,9 @@ void ACharacterBase::SetupCollision()
 
 void ACharacterBase::SetupData()
 {
-	if (CharacterInfo)
+	if (IsValid(CharacterInfo))
 	{
-		if (Attributes)
+		if (IsValid(Attributes))
 		{
 			Attributes->SetHealth(CharacterInfo->Health);
 			Attributes->SetMaxHealth(CharacterInfo->MaxHealth);
@@ -269,7 +270,7 @@ void ACharacterBase::SpawnHitParticles(const FVector& ImpactPoint)
 
 void ACharacterBase::SpawnWeapons()
 {
-	if (CharacterInfo)
+	if (IsValid(CharacterInfo))
 	{
 		for (const FWeaponSocket& WeaponSocket : CharacterInfo->WeaponSocketInfo)
 		{
@@ -286,7 +287,7 @@ void ACharacterBase::SpawnWeapons()
 
 void ACharacterBase::StunnedEnd()
 {
-	if (Attributes)
+	if (IsValid(Attributes))
 	{
 		Attributes->SetPostureZero();
 		UpdatePostureBar();
