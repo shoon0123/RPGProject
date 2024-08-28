@@ -14,11 +14,6 @@ AWarriorPlayerController::AWarriorPlayerController()
 	bReplicates = true;
 }
 
-void AWarriorPlayerController::SetLockOnState(bool State)
-{
-	bIsLockOn = State;
-}
-
 void AWarriorPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
@@ -103,7 +98,7 @@ void AWarriorPlayerController::LockOn()
 	{
 		if (TObjectPtr<UTargetingComponent> TargetingComponent = PlayerCharacter->GetTargetingComponent())
 		{
-			if (bIsLockOn)
+			if (TargetingComponent->IsLockOn())
 			{
 				TargetingComponent->CancelLockOn();
 			}
@@ -118,18 +113,14 @@ void AWarriorPlayerController::LockOn()
 void AWarriorPlayerController::Look(const FInputActionValue& InputActionValue)
 {
 	const FVector2D InputAxisVector = InputActionValue.Get<FVector2D>();
-	if (bIsLockOn)
+	if (TObjectPtr<APlayerCharacter> PlayerCharacter = GetPawn<APlayerCharacter>())
 	{
-		if (TObjectPtr<APlayerCharacter> PlayerCharacter = GetPawn<APlayerCharacter>())
+		TObjectPtr<UTargetingComponent> TargetingComponent = PlayerCharacter->GetTargetingComponent();
+		if (TargetingComponent&& TargetingComponent->IsLockOn())
 		{
-			if (TObjectPtr<UTargetingComponent> TargetingComponent = PlayerCharacter->GetTargetingComponent())
-			{
-				TargetingComponent->ChangeLockOnTarget(InputAxisVector);
-			}
+			TargetingComponent->ChangeLockOnTarget(InputAxisVector);
+			return;
 		}
-	}
-	else
-	{
 		AddPitchInput(-InputAxisVector.Y);
 		AddYawInput(InputAxisVector.X);
 	}

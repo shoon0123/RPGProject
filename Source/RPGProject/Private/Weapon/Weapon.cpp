@@ -7,6 +7,7 @@
 #include "Data/WeaponData.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Interaction/HitInterface.h"
+#include "Interaction/PostureInterface.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -108,10 +109,10 @@ void AWeapon::ExecuteGetHit(FHitResult& BoxHit)
 
 void AWeapon::ExecuteGetPostureDamage(AActor* DamagedActor)
 {
-	IHitInterface* HitInterface = Cast<IHitInterface>(DamagedActor);
-	if (HitInterface)
+	IPostureInterface* PostureInterface = Cast<IPostureInterface>(DamagedActor);
+	if (PostureInterface)
 	{
-		HitInterface->GetPostureDamage(PostureDamage);
+		PostureInterface->GetPostureDamage(PostureDamage);
 	}
 }
 

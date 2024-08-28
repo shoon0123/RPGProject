@@ -22,15 +22,12 @@ class RPGPROJECT_API AWarriorPlayerController : public APlayerController
 public:
 	AWarriorPlayerController();
 
-	void SetLockOnState(bool State);
-
 protected:
 	virtual void BeginPlay() override;
 
 	virtual void SetupInputComponent() override;
 
 private:
-	//Input Actions
 	UPROPERTY(EditAnywhere, Category="Input")
 	TObjectPtr<UInputMappingContext> Context;
 
@@ -54,8 +51,6 @@ private:
 
 	UPROPERTY(EditAnywhere, Category="Input")
 	TObjectPtr<UInputAction> MoveAction;
-
-	bool bIsLockOn = false;
 
 	void Attack();
 

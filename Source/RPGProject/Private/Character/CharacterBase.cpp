@@ -4,9 +4,9 @@
 #include "Character/CharacterBase.h"
 #include "Components/CapsuleComponent.h"
 #include "Data/CharacterBasePDA.h"
-#include "GameFramework/CharacterMovementComponent.h"
 #include "Components/AttributeComponent.h"
 #include "Components/BoxComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Weapon/Weapon.h"
 
@@ -28,7 +28,6 @@ void ACharacterBase::OnConstruction(const FTransform& Transform)
 	Super::OnConstruction(Transform);
 
 	SetupData();
-	SpawnWeapons();
 }
 
 EActionState ACharacterBase::GetActionState() const
@@ -44,19 +43,19 @@ void ACharacterBase::DestroyWeapons()
 	}
 }
 
-double ACharacterBase::GetAngleXYFromForwardVector(AActor* Actor) const
+double ACharacterBase::GetAngle2DFromForwardVector(AActor* Actor) const
 {
-	return GetAngleXYFromForwardVector(Actor->GetActorLocation());
+	return GetAngle2DFromForwardVector(Actor->GetActorLocation());
 }
 
-double ACharacterBase::GetAngleXYFromForwardVector(const FVector& Location) const
+double ACharacterBase::GetAngle2DFromForwardVector(const FVector& Location) const
 {
 	const FVector Vector = Location - GetActorLocation();
-	const FVector VectorXY = Vector.GetSafeNormal2D();
-	const double CosTheta = FVector::DotProduct(GetActorForwardVector(), VectorXY);
-	double Theta = FMath::Acos(CosTheta);
+	const FVector Vector2D = Vector.GetSafeNormal2D();
+	const double CosTheta = FVector::DotProduct(GetActorForwardVector(), Vector2D);
+	const double Theta = FMath::Acos(CosTheta);
 	double Angle = FMath::RadiansToDegrees(Theta);
-	const FVector CrossProduct = FVector::CrossProduct(GetActorForwardVector(), VectorXY);
+	const FVector CrossProduct = FVector::CrossProduct(GetActorForwardVector(), Vector2D);
 
 	if (CrossProduct.Z < 0)
 	{
@@ -139,11 +138,8 @@ void ACharacterBase::Destroyed()
 void ACharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	FTimerHandle RecoveryTimerHandle;
 
-	GetWorldTimerManager().SetTimer(RecoveryTimerHandle, this, &ACharacterBase::RecoverCondition, 1.0f, true, 1.0f);
-
+	SpawnWeapons();
 }
 
 void ACharacterBase::Die()
@@ -152,7 +148,9 @@ void ACharacterBase::Die()
 	if (!DeathMontageSections.IsEmpty())
 	{
 		const int32 Selection = FMath::RandRange(0, DeathMontageSections.Num() - 1);
-		PlayMontageSection(DeathMontage, DeathMontageSections[Selection]);
+		PlayMontageSection(DeathMontage, DeathMontageSections[Selection]); 
+		TEnumAsByte<EDeathPose> Pose(Selection + 1);
+		DeathPose = Pose;
 	}
 
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
@@ -163,7 +161,7 @@ void ACharacterBase::DirectionalHitReact(AActor* Hitter)
 {
 	SetActionState(EActionState::EAS_HitReaction);
 
-	double Angle = GetAngleXYFromForwardVector(Hitter);
+	double Angle = GetAngle2DFromForwardVector(Hitter);
 
 	FName Section("Back");
 
@@ -190,18 +188,6 @@ void ACharacterBase::PlayMontageSection(UAnimMontage* Montage, const FName& Sect
 	{
 		AnimInstance->Montage_Play(Montage);
 		AnimInstance->Montage_JumpToSection(SectionName, Montage);
-	}
-}
-
-void ACharacterBase::RecoverCondition()
-{
-	if (Attributes && IsAlive())
-	{
-		Attributes->RecoverHealth(RecoveryPerSec);
-		UpdateHealthBar();
-
-		Attributes->RecoverPosture(RecoveryPerSec);
-		UpdatePostureBar();
 	}
 }
 
@@ -242,8 +228,8 @@ void ACharacterBase::SetupData()
 			Attributes->SetMaxHealth(CharacterInfo->MaxHealth);
 			Attributes->SetPosture(CharacterInfo->Posture);
 			Attributes->SetMaxPosture(CharacterInfo->MaxPosture);
+			Attributes->SetRecoveryAmountPerSec(CharacterInfo->RecoveryAmountPerSec);
 		}
-		RecoveryPerSec = CharacterInfo->RecoveryPerSec;
 		AttackMontage = CharacterInfo->AttackMontage;
 		DeathMontage = CharacterInfo->DeathMontage;
 		HitReactMontage = CharacterInfo->HitReactMontage;

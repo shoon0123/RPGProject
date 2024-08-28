@@ -102,16 +102,16 @@ void APlayerCharacter::ExecuteBlock(const FVector& ImpactPoint)
 
 void APlayerCharacter::ExecuteGetPostureDamage(AActor* DamagedActor)
 {
-    IHitInterface* HitInterface = Cast<IHitInterface>(DamagedActor);
-    if (HitInterface)
+    IPostureInterface* PostureInterface = Cast<IPostureInterface>(DamagedActor);
+    if (PostureInterface)
     {
-        HitInterface->GetPostureDamage(ParryingPostureDamage);
+        PostureInterface->GetPostureDamage(ParryingPostureDamage);
     }
 }
 
 void APlayerCharacter::ExecuteParrying(const FVector& ImpactPoint, AActor* Hitter)
 {
-    const double Angle = GetAngleXYFromForwardVector(ImpactPoint);
+    const double Angle = GetAngle2DFromForwardVector(ImpactPoint);
 
     if (Angle < 0)
     {
@@ -145,7 +145,7 @@ void APlayerCharacter::EnableRun()
 
 void APlayerCharacter::GetHit(const FVector& ImpactPoint, AActor* Hitter)
 {
-    const double Angle = GetAngleXYFromForwardVector(Hitter);
+    const double Angle = GetAngle2DFromForwardVector(Hitter);
     const bool bIsForward = -90.f < Angle && Angle < 90.f;
     if (GetActionState() == EActionState::EAS_Block && bIsForward)
     {
@@ -319,7 +319,6 @@ void APlayerCharacter::SetupHUD()
 void APlayerCharacter::SetupTargetingComponent()
 {
     TargetingComponent = CreateDefaultSubobject<UTargetingComponent>(TEXT("Targeting"));
-    TargetingComponent->SetupAttachment(GetRootComponent());
 }
 
 void APlayerCharacter::AttackEnd()

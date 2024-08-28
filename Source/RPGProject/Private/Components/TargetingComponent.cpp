@@ -2,6 +2,7 @@
 
 
 #include "Components/TargetingComponent.h"
+#include "Character/EnemyCharacter.h"
 #include "Character/PlayerCharacter.h"
 #include "Player/WarriorPlayerController.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -11,26 +12,25 @@
 UTargetingComponent::UTargetingComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
-
-	SetupCollision();
 }
 
 void UTargetingComponent::ExecuteLockOn()
 {
-	TObjectPtr<AActor> NewTarget = FindTarget();
-	if (IsValid(NewTarget))
+	if (!bIsLockOn)
 	{
-		DrawDebugSphere(GetWorld(), NewTarget->GetActorLocation(), 100.f, 20, FColor::Blue, false, 1.f);
-		if (!bIsLockOn)
+		
+		FindTargetableActors();
+		TObjectPtr<AActor> NewTarget = FindTargetInViewport();
+
+		if (IsValid(NewTarget))
 		{
+			DrawDebugSphere(GetWorld(), NewTarget->GetActorLocation(), 100.f, 20, FColor::Blue, false, 1.f);
+
 			SetTarget(NewTarget);
-			PlayerCharacter->GetCharacterMovement()->bOrientRotationToMovement = false;
-			PlayerCharacter->GetCharacterMovement()->bUseControllerDesiredRotation = true;
+			OwnerCharacter->GetCharacterMovement()->bOrientRotationToMovement = false;
+			OwnerCharacter->GetCharacterMovement()->bUseControllerDesiredRotation = true;
+			SetComponentTickEnabled(true);
 			bIsLockOn = true;
-			if (TObjectPtr<AWarriorPlayerController> PlayerController = Cast<AWarriorPlayerController>(PlayerCharacter->GetController()))
-			{
-				PlayerController->SetLockOnState(true);
-			}
 		}
 	}
 }
@@ -40,28 +40,36 @@ void UTargetingComponent::CancelLockOn()
 	if (bIsLockOn)
 	{
 		SetTarget(nullptr);
-		PlayerCharacter->GetCharacterMovement()->bOrientRotationToMovement = true;
-		PlayerCharacter->GetCharacterMovement()->bUseControllerDesiredRotation = false;
-		bIsLockOn = false;
-		if (TObjectPtr<AWarriorPlayerController> PlayerController = Cast<AWarriorPlayerController>(PlayerCharacter->GetController()))
-		{
-			PlayerController->SetLockOnState(false);
-		}
+		OwnerCharacter->GetCharacterMovement()->bOrientRotationToMovement = true;
+		OwnerCharacter->GetCharacterMovement()->bUseControllerDesiredRotation = false;
+		SetComponentTickEnabled(false);
+		bIsLockOn = false; 
 	}
 }
 
 void UTargetingComponent::ChangeLockOnTarget(const FVector2D InputVector)
 {
-	TObjectPtr<APlayerController> PlayerController = Cast<APlayerController>(PlayerCharacter->GetController());
-	const float TimeSinceLastChangeTarget = GetWorld()->GetRealTimeSeconds() - LastTimeSetTarget;
-
-	if (InputVector.Length() > ChangeTargetSensitivity && TimeSinceLastChangeTarget > ChangeTargetCooldown && PlayerController)
+	if (InputVector.Length() < ChangeTargetSensitivity)
 	{
+		return;
+	}
+
+	const float TimeSinceLastChangeTarget = GetWorld()->GetRealTimeSeconds() - LastTimeSetTarget;
+	if (TimeSinceLastChangeTarget < ChangeTargetCooldown)
+	{
+		return;
+	}
+
+	
+	if (TObjectPtr<APlayerController> PlayerController = Cast<APlayerController>(OwnerCharacter->GetController()))
+	{
+		FindTargetableActors();
+
 		TObjectPtr<AActor> TargetActor = nullptr;
 		FVector2D ScreenPosition = FVector2D::ZeroVector;
 		const FVector2D ViewportSize = GEngine->GameViewport->Viewport->GetSizeXY();
 		long MinimumDistance = LONG_MAX;
-		 
+
 		if (FMath::Abs(InputVector.X) >= FMath::Abs(InputVector.Y))
 		{
 			if (InputVector.X > 0)
@@ -149,14 +157,13 @@ bool UTargetingComponent::IsLockOn()
 void UTargetingComponent::SetTargetableDistance(float Distance)
 {
 	TargetableDistance = Distance;
-	SetSphereRadius(Distance);
 }
 
-TObjectPtr<AActor> UTargetingComponent::FindTarget()
+TObjectPtr<AActor> UTargetingComponent::FindTargetInViewport()
 {
 	TObjectPtr<AActor> TargetActor = nullptr;
 
-	if (TObjectPtr<APlayerController> PlayerController = Cast<APlayerController>(PlayerCharacter->GetController()))
+	if (TObjectPtr<APlayerController> PlayerController = Cast<APlayerController>(OwnerCharacter->GetController()))
 	{
 		FVector2D ScreenPosition = FVector2D::ZeroVector;
 		const FVector2D ViewportSize = GEngine->GameViewport->Viewport->GetSizeXY();
@@ -179,6 +186,13 @@ TObjectPtr<AActor> UTargetingComponent::FindTarget()
 	return TargetActor;
 }
 
+FVector UTargetingComponent::GetCameraLocation()
+{
+	TObjectPtr<APlayerCharacter> PlayerCharacter = Cast<APlayerCharacter>(OwnerCharacter);
+
+	return IsValid(PlayerCharacter) ? PlayerCharacter->GetSpringArmLocation() : OwnerCharacter->GetActorLocation();
+}
+
 void UTargetingComponent::SetTarget(TObjectPtr<AActor> Actor)
 {
 	Target = Cast<ACharacterBase>(Actor);
@@ -189,39 +203,15 @@ void UTargetingComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	PlayerCharacter = Cast<APlayerCharacter>(GetOwner());
-	SetTargetableDistance(TargetableDistance);
-	InitializeTargetableActors();
-
-	OnComponentBeginOverlap.AddDynamic(this, &UTargetingComponent::OnSphereBeginOverlap);
-	OnComponentEndOverlap.AddDynamic(this, &UTargetingComponent::OnSphereEndOverlap);
+	OwnerCharacter = Cast<ACharacterBase>(GetOwner());
+	SetComponentTickEnabled(false);
 }
 
 void UTargetingComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	for (TObjectPtr<AActor> TargetableActor : TargetableActors)
-	{
-		//DrawDebugSphere(GetWorld(), TargetableActor->GetActorLocation(), 30.f, 20, FColor::Red, false);
-	}
-
 	UpdateCamera();
-
-}
-
-void UTargetingComponent::OnSphereBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	AddTargetableActor(OtherActor);
-}
-
-void UTargetingComponent::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
-{
-	RemoveTargetableActor(OtherActor);
-	if (OtherActor == Target)
-	{
-		CancelLockOn();
-	}
 }
 
 void UTargetingComponent::AddTargetableActor(TObjectPtr<AActor> Actor)
@@ -240,16 +230,19 @@ void UTargetingComponent::RemoveTargetableActor(TObjectPtr<AActor> Actor)
 	}
 }
 
-void UTargetingComponent::InitializeTargetableActors()
+void UTargetingComponent::FindTargetableActors()
 {
 	TArray<FHitResult> HitResults;
-	bool bIsHit = GetWorld()->SweepMultiByChannel(HitResults, GetComponentLocation(), GetComponentLocation(), FQuat::Identity,
-		ECollisionChannel::ECC_GameTraceChannel1, FCollisionShape::MakeSphere(TargetableDistance));
-	if (bIsHit)
+	if (OwnerCharacter)
 	{
-		for (const FHitResult& Hit : HitResults)
+		bool bIsHit = GetWorld()->SweepMultiByChannel(HitResults, OwnerCharacter->GetActorLocation(), OwnerCharacter->GetActorLocation(), FQuat::Identity,
+			ECollisionChannel::ECC_GameTraceChannel1, FCollisionShape::MakeSphere(TargetableDistance));
+		if (bIsHit)
 		{
-			AddTargetableActor(Hit.GetActor());
+			for (const FHitResult& Hit : HitResults)
+			{
+				AddTargetableActor(Hit.GetActor());
+			}
 		}
 	}
 }
@@ -259,33 +252,27 @@ bool UTargetingComponent::IsTargetable(TObjectPtr<AActor> Actor)
 	return IsValid(Actor) ? Actor->ActorHasTag(FName("Enemy")) : false;
 }
 
-void UTargetingComponent::SetupCollision()
-{
-	SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
-	SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldDynamic, ECollisionResponse::ECR_Ignore);
-}
-
 void UTargetingComponent::UpdateCamera()
 {
 	if (IsValid(Target))
 	{
-		if (!Target->IsAlive())
+		TObjectPtr<ACharacterBase> TargetCharacter = Cast<ACharacterBase>(Target);
+
+		if (TargetCharacter && !TargetCharacter->IsAlive())
 		{
-			RemoveTargetableActor(Target);
+			RemoveTargetableActor(TargetCharacter);
 			CancelLockOn(); 
 		}
-		else if (TObjectPtr<APlayerController> PlayerController = Cast<APlayerController>(PlayerCharacter->GetController()))
+		else
 		{
-			const FRotator PlayerControllerRotator = PlayerController->GetControlRotation();
-			const FVector CameraLocation = PlayerCharacter->GetSpringArmLocation();
-			const FVector LookAtLocation = (Target->GetActorLocation() + PlayerCharacter->GetActorLocation()) / 2;
-
+			TObjectPtr<AController> Controller = OwnerCharacter->GetController();
+			const FRotator ControllerRotator = Controller->GetControlRotation();
+			const FVector CameraLocation = GetCameraLocation();
+			const FVector LookAtLocation = (Target->GetActorLocation() + OwnerCharacter->GetActorLocation()) / 2;
 			const FRotator LookAtTarget = UKismetMathLibrary::FindLookAtRotation(CameraLocation, LookAtLocation);
-			const FRotator RInterpToRotator = FMath::RInterpTo(PlayerControllerRotator, LookAtTarget,
+			const FRotator RInterpToRotator = FMath::RInterpTo(ControllerRotator, LookAtTarget,
 				GetWorld()->GetDeltaSeconds(), InterpSpeed);
-
-			PlayerController->SetControlRotation(RInterpToRotator);
+			Controller->SetControlRotation(RInterpToRotator);
 		}
 	}
 }

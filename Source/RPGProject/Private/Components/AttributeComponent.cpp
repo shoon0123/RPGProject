@@ -2,6 +2,7 @@
 
 
 #include "Components/AttributeComponent.h"
+#include "Character/CharacterBase.h"
 
 
 UAttributeComponent::UAttributeComponent()
@@ -61,6 +62,11 @@ void UAttributeComponent::SetMaxPosture(float Amount)
 	MaxPosture = Amount;
 }
 
+void UAttributeComponent::SetRecoveryAmountPerSec(float Amount)
+{
+	RecoveryAmountPerSec = Amount;
+}
+
 float UAttributeComponent::GetHealthPercent()
 {
 	return Health / MaxHealth;
@@ -85,6 +91,23 @@ void UAttributeComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
+	FTimerHandle RecoveryTimerHandle;
+	GetWorld()->GetTimerManager().SetTimer(RecoveryTimerHandle, this, &UAttributeComponent::RecoverPerSec, 1.0f, true, 1.0f);
+}
+
+void UAttributeComponent::RecoverPerSec()
+{
+	if (IsAlive())
+	{
+		RecoverHealth(RecoveryAmountPerSec);
+		RecoverPosture(RecoveryAmountPerSec);
+
+		if (TObjectPtr<ACharacterBase> OwnerCharacter = Cast< ACharacterBase>(GetOwner()))
+		{
+			OwnerCharacter->UpdateHealthBar();
+			OwnerCharacter->UpdatePostureBar();
+		}
+	}
 }
 
 

@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "CharacterTypes.h"
 #include "Interaction/HitInterface.h"
+#include "Interaction/PostureInterface.h"
 #include "CharacterBase.generated.h"
 
 class UAttributeComponent;
@@ -14,7 +15,7 @@ class AWeapon;
 class UCharacterBasePDA;
 
 UCLASS(Abstract)
-class RPGPROJECT_API ACharacterBase : public ACharacter, public IHitInterface
+class RPGPROJECT_API ACharacterBase : public ACharacter, public IHitInterface, public IPostureInterface
 {
 	GENERATED_BODY()
 
@@ -43,6 +44,10 @@ public:
 
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 
+	virtual void UpdateHealthBar() PURE_VIRTUAL(ACharacterBase::UpdateHealthBar, );
+
+	virtual void UpdatePostureBar() PURE_VIRTUAL(ACharacterBase::UpdatePostureBar, );
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -55,9 +60,9 @@ protected:
 
 	virtual void DestroyWeapons();
 
-	virtual double GetAngleXYFromForwardVector(AActor* Actor) const;
+	virtual double GetAngle2DFromForwardVector(AActor* Actor) const;
 
-	virtual double GetAngleXYFromForwardVector(const FVector& Vector) const;
+	virtual double GetAngle2DFromForwardVector(const FVector& Vector) const;
 
 	UFUNCTION(BlueprintCallable)
 	virtual void HitReactEnd();
@@ -65,8 +70,6 @@ protected:
 	virtual void PlayHitSound(const FVector& ImpactPoint);
 
 	virtual void PlayMontageSection(UAnimMontage* Montage, const FName& SectionName);
-
-	virtual void RecoverCondition();
 
 	virtual void SetupCollision();
 
@@ -80,10 +83,6 @@ protected:
 
 	UFUNCTION(BlueprintCallable)
 	virtual void StunnedEnd();
-
-	virtual void UpdateHealthBar() PURE_VIRTUAL(ACharacterBase::UpdateHealthBar, );
-
-	virtual void UpdatePostureBar() PURE_VIRTUAL(ACharacterBase::UpdatePostureBar, );
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UAttributeComponent> Attributes;
@@ -102,9 +101,6 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Montage")
 	TArray<FName> AttackMontageSections;
-
-	UPROPERTY(EditAnywhere, Category = "Attributes")
-	float RecoveryPerSec;
 
 private:
 	UPROPERTY(VisibleAnywhere, Category = "State")
@@ -130,10 +126,4 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "VisualEffects")
 	TObjectPtr<UParticleSystem> HitParticles;
-
-	UPROPERTY(EditAnywhere, Category = "Weapon")
-	TArray<TObjectPtr<UBlueprint>> WeaponTypes;
-
-	UPROPERTY(EditAnywhere, Category = "Weapon")
-	TMap<TObjectPtr<UBlueprint>, FName> WeaponTypeSocketMap;
 };

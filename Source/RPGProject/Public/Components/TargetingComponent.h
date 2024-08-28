@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/SphereComponent.h"
+#include "Components/ActorComponent.h"
 #include "TargetingComponent.generated.h"
 
 class ACharacterBase;
@@ -11,7 +11,7 @@ class APlayerCharacter;
 class APlayerController;
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
-class RPGPROJECT_API UTargetingComponent : public USphereComponent
+class RPGPROJECT_API UTargetingComponent : public UActorComponent
 {
 	GENERATED_BODY()
 	
@@ -28,17 +28,11 @@ public:
 
 protected:
 	UPROPERTY()
-	TObjectPtr<APlayerCharacter> PlayerCharacter;
+	TObjectPtr<ACharacterBase> OwnerCharacter;
 
 	virtual void BeginPlay() override;
 
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
-	UFUNCTION()
-	void OnSphereBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-
-	UFUNCTION()
-	void OnSphereEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
 private:
 	UPROPERTY(EditAnywhere)
@@ -57,7 +51,7 @@ private:
 	TSet<TObjectPtr<AActor>> TargetableActors;
 
 	UPROPERTY(VisibleInstanceOnly)
-	TObjectPtr<ACharacterBase> Target;
+	TObjectPtr<AActor> Target;
 
 	UPROPERTY(VisibleInstanceOnly)
 	bool bIsLockOn = false;
@@ -66,15 +60,15 @@ private:
 
 	void AddTargetableActor(TObjectPtr<AActor> Actor);
 
-	TObjectPtr<AActor> FindTarget();
+	void FindTargetableActors();
 
-	void InitializeTargetableActors();
+	TObjectPtr<AActor> FindTargetInViewport();
+
+	FVector GetCameraLocation();
 
 	bool IsTargetable(TObjectPtr<AActor> Actor);
 
 	void RemoveTargetableActor(TObjectPtr<AActor> Actor);
-
-	void SetupCollision();
 
 	void SetTarget(TObjectPtr<AActor> Actor);
 

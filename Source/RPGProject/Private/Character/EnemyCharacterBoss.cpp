@@ -4,10 +4,15 @@
 #include "Character/EnemyCharacterBoss.h"
 #include "Character/PlayerCharacter.h"
 #include "Components/AttributeComponent.h"
+#include "Components/TargetingComponent.h"
 #include "Data/EnemyCharacterBossPDA.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "HUD/PlayerHUD.h"
 #include "HUD/CombatOverlay.h"
+
+AEnemyCharacterBoss::AEnemyCharacterBoss()
+{
+}
 
 void AEnemyCharacterBoss::Attack()
 {
@@ -51,26 +56,29 @@ void AEnemyCharacterBoss::GetHit(const FVector& ImpactPoint, AActor* Hitter)
     }
 }
 
-void AEnemyCharacterBoss::SetCombatTarget(ACharacter* Target)
+void AEnemyCharacterBoss::SetCombatTarget(ACharacterBase* NewTarget)
 {
-    if (TObjectPtr<APlayerCharacter> TargetPlayer = Cast<APlayerCharacter>(Target))
+    if (IsValid(NewTarget))
     {
-        if (TObjectPtr<UCombatOverlay> CombatOverlay = TargetPlayer->GetCombatOverlay())
+        if (TObjectPtr<APlayerCharacter> NewTargetPlayer = Cast<APlayerCharacter>(NewTarget))
         {
-            CombatOverlay->SetEnemyWidgetVisibility(ESlateVisibility::Visible);
+            if (TObjectPtr<UCombatOverlay> CombatOverlay = NewTargetPlayer->GetCombatOverlay())
+            {
+                CombatOverlay->SetEnemyWidgetVisibility(ESlateVisibility::Visible);
+            }
         }
     }
     else
     {
-        if (TObjectPtr<APlayerCharacter> CombatPlayer = Cast<APlayerCharacter>(CombatTarget))
+        if (TObjectPtr<APlayerCharacter> CombatTargetPlayer = Cast<APlayerCharacter>(CombatTarget))
         {
-            if (TObjectPtr<UCombatOverlay> CombatOverlay = CombatPlayer->GetCombatOverlay())
+            if (TObjectPtr<UCombatOverlay> CombatOverlay = CombatTargetPlayer->GetCombatOverlay())
             {
                 CombatOverlay->SetEnemyWidgetVisibility(ESlateVisibility::Hidden);
             }
         }
     }
-    Super::SetCombatTarget(Target);
+    Super::SetCombatTarget(NewTarget);
 }
 
 void AEnemyCharacterBoss::UpdateHealthBar()
@@ -148,3 +156,4 @@ void AEnemyCharacterBoss::RangedAttack()
         PlayMontageSection(AttackMontage, RangedAttackMontageSections[Selection]);
     }
 }
+

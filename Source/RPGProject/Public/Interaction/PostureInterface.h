@@ -4,11 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
-#include "EnemyInterface.generated.h"
+#include "PostureInterface.generated.h"
 
 // This class does not need to be modified.
 UINTERFACE(MinimalAPI)
-class UEnemyInterface : public UInterface
+class UPostureInterface : public UInterface
 {
 	GENERATED_BODY()
 };
@@ -16,10 +16,11 @@ class UEnemyInterface : public UInterface
 /**
  * 
  */
-class RPGPROJECT_API IEnemyInterface
+class RPGPROJECT_API IPostureInterface
 {
 	GENERATED_BODY()
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
+	virtual void GetPostureDamage(const float PostureDamage) = 0;
 };

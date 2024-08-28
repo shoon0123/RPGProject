@@ -13,15 +13,15 @@ void UBTService_FindPlayer::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* N
 {
 	Super::TickNode(OwnerComp, NodeMemory, DeltaSeconds);
 
-	
+
 	TObjectPtr<AEnemyCharacter> OwningPawn = Cast<AEnemyCharacter>(AIOwner->GetPawn());
 	if (!OwningPawn->IsAlive())
 	{
 		return;
 	}
 
+
 	TArray<AActor*> ActorWithTag;
-	
 	UGameplayStatics::GetAllActorsWithTag(OwningPawn, FName("Player"), ActorWithTag);
 
 	TObjectPtr<ACharacterBase> TargetActor = ActorWithTag.IsEmpty() ? nullptr : Cast<ACharacterBase>(ActorWithTag[0]);

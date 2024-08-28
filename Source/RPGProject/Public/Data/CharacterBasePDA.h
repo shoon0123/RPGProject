@@ -42,7 +42,7 @@ public:
 	float MaxPosture;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes")
-	float RecoveryPerSec;
+	float RecoveryAmountPerSec;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Montage")
 	TObjectPtr<UAnimMontage> AttackMontage;

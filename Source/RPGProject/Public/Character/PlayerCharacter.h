@@ -64,7 +64,7 @@ protected:
 
 private:
 	UPROPERTY(EditAnywhere, Category = "Attribute")
-	float ParryingPostureDamage = 10.f;
+	float ParryingPostureDamage;
 
 	UPROPERTY(VisibleAnywhere, Category = "Camera")
 	TObjectPtr<USpringArmComponent> SpringArm;
@@ -72,17 +72,17 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = "Camera")
 	TObjectPtr<UCameraComponent> Camera;
 
-	UPROPERTY(EditAnywhere, Category = "Targeting")
+	UPROPERTY(VisibleAnywhere, Category = "Targeting")
 	TObjectPtr<UTargetingComponent> TargetingComponent;
 
 	UPROPERTY(EditAnywhere, Category = "Movement")
-	float DodgingSpeed = 4000.f;
+	float DodgingSpeed;
 
 	UPROPERTY(EditAnywhere, Category = "Movement")
-	float WalkingSpeed = 400.f;
+	float WalkingSpeed;
 
 	UPROPERTY(EditAnywhere, Category = "Movement")
-	float RunningSpeed = 800.f;
+	float RunningSpeed;
 
 	UPROPERTY(EditAnywhere, Category = "Montage")
 	TObjectPtr<UAnimMontage> BlockMontage;

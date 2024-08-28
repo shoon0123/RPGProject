@@ -48,9 +48,14 @@ float AEnemyCharacter::GetDetectionRange() const
 	return DetectionRange;
 }
 
-void AEnemyCharacter::SetCombatTarget(ACharacter* Target)
+TObjectPtr<ACharacterBase> AEnemyCharacter::GetCombatTarget() const
 {
-	CombatTarget = Target;
+	return CombatTarget;
+}
+
+void AEnemyCharacter::SetCombatTarget(ACharacterBase* NewTarget)
+{
+	CombatTarget = NewTarget;
 }
 
 void AEnemyCharacter::BeginPlay()

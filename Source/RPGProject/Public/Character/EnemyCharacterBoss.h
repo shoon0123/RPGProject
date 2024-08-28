@@ -6,6 +6,7 @@
 #include "Character/EnemyCharacter.h"
 #include "EnemyCharacterBoss.generated.h"
 
+class UTargetingComponent;
 /**
  * 
  */
@@ -15,11 +16,13 @@ class RPGPROJECT_API AEnemyCharacterBoss : public AEnemyCharacter
 	GENERATED_BODY()
 
 public:
+	AEnemyCharacterBoss();
+
 	virtual void Attack() override;
 
 	virtual void GetHit(const FVector& ImpactPoint, AActor* Hitter) override;
 
-	virtual void SetCombatTarget(ACharacter* Target) override;
+	virtual void SetCombatTarget(ACharacterBase* NewTarget) override;
 
 protected:
 	virtual void UpdateHealthBar() override;

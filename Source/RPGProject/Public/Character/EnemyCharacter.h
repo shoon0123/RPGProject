@@ -22,11 +22,13 @@ public:
 
 	virtual float GetDetectionRange() const;
 
+	virtual TObjectPtr<ACharacterBase> GetCombatTarget() const;
+
 	virtual void PossessedBy(AController* NewController) override;
 
 	virtual void SetActionState(EActionState OtherActionState) override;
 
-	virtual void SetCombatTarget(ACharacter* Target);
+	virtual void SetCombatTarget(ACharacterBase* NewTarget);
 
 protected:
 	UPROPERTY(EditAnywhere, Category = "AI")
@@ -36,7 +38,7 @@ protected:
 	TObjectPtr<AEnemyAIController> EnemyAIController;
 
 	UPROPERTY(BlueprintReadOnly)
-	TObjectPtr<ACharacter> CombatTarget;
+	TObjectPtr<ACharacterBase> CombatTarget;
 
 	UPROPERTY(EditAnywhere)
 	float DetectionRange;
