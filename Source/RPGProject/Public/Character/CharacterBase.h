@@ -9,10 +9,11 @@
 #include "Interaction/PostureInterface.h"
 #include "CharacterBase.generated.h"
 
-class UAttributeComponent;
-class UHealthBarComponent;
 class AWeapon;
+class UAttributeComponent;
 class UCharacterBasePDA;
+class UHealthBarComponent;
+class UWeaponSystemComponent;
 
 UCLASS(Abstract)
 class RPGPROJECT_API ACharacterBase : public ACharacter, public IHitInterface, public IPostureInterface
@@ -32,11 +33,15 @@ public:
 
 	virtual EActionState GetActionState() const;
 
+	virtual TObjectPtr<UCharacterBasePDA> GetCharacterInfo() const;
+
 	virtual void GetHit(const FVector& ImpactPoint, AActor* Hitter) override;
 
 	virtual void GetPostureDamage(const float PostureDamage) override;
 
 	virtual void GetStunned();
+
+	virtual TObjectPtr<UWeaponSystemComponent> GetWeaponSystem() const;
 
 	virtual bool IsAlive();
 
@@ -58,8 +63,6 @@ protected:
 	
 	virtual void DirectionalHitReact(AActor* Hitter);
 
-	virtual void DestroyWeapons();
-
 	virtual double GetAngle2DFromForwardVector(AActor* Actor) const;
 
 	virtual double GetAngle2DFromForwardVector(const FVector& Vector) const;
@@ -75,11 +78,7 @@ protected:
 
 	virtual void SetupData();
 
-	virtual void SetWeaponsCollisionDisable();
-
 	virtual void SpawnHitParticles(const FVector& ImpactPoint);
-
-	virtual void SpawnWeapons();
 
 	UFUNCTION(BlueprintCallable)
 	virtual void StunnedEnd();
@@ -87,14 +86,14 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UAttributeComponent> Attributes;
 
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UWeaponSystemComponent> WeaponSystem;
+
 	UPROPERTY(BlueprintReadOnly)
 	EDeathPose DeathPose = EDeathPose::EDP_Alive;
 
 	UPROPERTY(EditAnywhere, Category = "Data")
 	TObjectPtr<UCharacterBasePDA> CharacterInfo;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Weapon")
-	TArray<TObjectPtr<AWeapon>> Weapons;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Montage")
 	TObjectPtr<UAnimMontage> AttackMontage;

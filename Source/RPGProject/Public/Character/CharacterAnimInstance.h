@@ -11,6 +11,7 @@ class ACharacterBase;
 class AWarriorPlayerController;
 class APlayerCharacter;
 class UCharacterMovementComponent;
+class UWeaponSystemComponent;
 enum class EActionState : uint8;
 
 UCLASS()
@@ -34,12 +35,14 @@ protected:
 	TObjectPtr<UCharacterMovementComponent> CharacterMovement;
 
 	UPROPERTY(BlueprintReadOnly, Category = Movement)
-	float Angle;
-
-	UPROPERTY(BlueprintReadOnly, Category = Movement)
 	float GroundSpeed;
 
 	UPROPERTY(BlueprintReadOnly, Category = Movement)
 	bool IsFalling;
 
+	UPROPERTY(BlueprintReadOnly, Category = Movement)
+	float MovementAngle;
+
+	UPROPERTY(BlueprintReadOnly, Category = Weapon)
+	TObjectPtr<UWeaponSystemComponent> WeaponSystem;
 };

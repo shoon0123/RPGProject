@@ -22,6 +22,7 @@ void UCharacterAnimInstance::NativeInitializeAnimation()
 	if (IsValid(Character))
 	{
 		CharacterMovement = Character->GetCharacterMovement();
+		WeaponSystem = Character->GetWeaponSystem();
 	}
 }
 
@@ -30,7 +31,7 @@ void UCharacterAnimInstance::NativeUpdateAnimation(float DeltaTime)
 	Super::NativeUpdateAnimation(DeltaTime);
 	if (IsValid(CharacterMovement))
 	{
-		Angle = UKismetMathLibrary::InverseTransformDirection(Character->GetActorTransform(), CharacterMovement->Velocity).Rotation().Yaw;
+		MovementAngle = UKismetMathLibrary::InverseTransformDirection(Character->GetActorTransform(), CharacterMovement->Velocity).Rotation().Yaw;
 		GroundSpeed = UKismetMathLibrary::VSizeXY(CharacterMovement->Velocity);
 		IsFalling = CharacterMovement->IsFalling();
 	}

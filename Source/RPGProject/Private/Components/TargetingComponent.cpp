@@ -18,7 +18,6 @@ void UTargetingComponent::ExecuteLockOn()
 {
 	if (!bIsLockOn)
 	{
-		
 		FindTargetableActors();
 		TObjectPtr<AActor> NewTarget = FindTargetInViewport();
 
@@ -40,6 +39,7 @@ void UTargetingComponent::CancelLockOn()
 	if (bIsLockOn)
 	{
 		SetTarget(nullptr);
+		TargetableActors.Empty();
 		OwnerCharacter->GetCharacterMovement()->bOrientRotationToMovement = true;
 		OwnerCharacter->GetCharacterMovement()->bUseControllerDesiredRotation = false;
 		SetComponentTickEnabled(false);
@@ -58,7 +58,6 @@ void UTargetingComponent::ChangeLockOnTarget(const FVector2D InputVector)
 	{
 		return;
 	}
-
 	
 	if (TObjectPtr<APlayerController> PlayerController = Cast<APlayerController>(OwnerCharacter->GetController()))
 	{
@@ -234,6 +233,7 @@ void UTargetingComponent::RemoveTargetableActor(TObjectPtr<AActor> Actor)
 
 void UTargetingComponent::FindTargetableActors()
 {
+	TargetableActors.Empty();
 	TArray<FHitResult> HitResults;
 	if (IsValid(OwnerCharacter))
 	{

@@ -55,7 +55,7 @@ void AWarriorPlayerController::Attack()
 
 void AWarriorPlayerController::Block()
 {
-	TObjectPtr<APlayerCharacter> PlayerCharacter = GetPawn<APlayerCharacter>()
+	TObjectPtr<APlayerCharacter> PlayerCharacter = GetPawn<APlayerCharacter>();
 	if (IsValid(PlayerCharacter))
 	{
 		PlayerCharacter->Block();

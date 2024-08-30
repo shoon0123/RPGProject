@@ -3,6 +3,7 @@
 
 #include "Character/CharacterBase.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/WeaponSystemComponent.h"
 #include "Data/CharacterBasePDA.h"
 #include "Components/AttributeComponent.h"
 #include "Components/BoxComponent.h"
@@ -21,6 +22,7 @@ ACharacterBase::ACharacterBase()
 	GetCharacterMovement()->FallingLateralFriction = 2.0f;
 
 	Attributes = CreateDefaultSubobject<UAttributeComponent>(TEXT("Attributes"));
+	WeaponSystem = CreateDefaultSubobject<UWeaponSystemComponent>(TEXT("WeaponSystem"));
 }
 
 void ACharacterBase::OnConstruction(const FTransform& Transform)
@@ -35,12 +37,9 @@ EActionState ACharacterBase::GetActionState() const
 	return ActionState;
 }
 
-void ACharacterBase::DestroyWeapons()
+TObjectPtr<UCharacterBasePDA> ACharacterBase::GetCharacterInfo() const
 {
-	for (TObjectPtr<AWeapon> Weapon : Weapons)
-	{
-		Weapon->Destroy();
-	}
+	return CharacterInfo;
 }
 
 double ACharacterBase::GetAngle2DFromForwardVector(AActor* Actor) const
@@ -79,7 +78,11 @@ void ACharacterBase::GetHit(const FVector& ImpactPoint, AActor* Hitter)
 {
 	PlayHitSound(ImpactPoint);
 	SpawnHitParticles(ImpactPoint);
-	SetWeaponsCollisionDisable();
+	if (IsValid(WeaponSystem))
+	{
+		WeaponSystem->SetWeaponsCollisionDisable();
+	}
+	
 	if (IsAlive())
 	{
 		if (GetActionState() != EActionState::EAS_Stunned)
@@ -114,6 +117,11 @@ void ACharacterBase::GetStunned()
 	PlayMontageSection(StunnedMontage, "Default");
 }
 
+TObjectPtr<UWeaponSystemComponent> ACharacterBase::GetWeaponSystem() const
+{
+	return WeaponSystem;
+}
+
 float ACharacterBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	if (IsValid(Attributes) && GetActionState() != EActionState::EAS_Block)
@@ -132,14 +140,20 @@ float ACharacterBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageE
 void ACharacterBase::Destroyed()
 {
 	Super::Destroyed();
-	DestroyWeapons();
+	if (IsValid(WeaponSystem))
+	{
+		WeaponSystem->DestroyWeapons();
+	}
 }
 
 void ACharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
 
-	SpawnWeapons();
+	if (IsValid(WeaponSystem))
+	{
+		WeaponSystem->SpawnWeapons();
+	}
 }
 
 void ACharacterBase::Die()
@@ -245,14 +259,6 @@ void ACharacterBase::SetupData()
 	}
 }
 
-void ACharacterBase::SetWeaponsCollisionDisable()
-{
-	for (TObjectPtr<AWeapon> Weapon : Weapons)
-	{
-		Weapon->CollisionEnable(ECollisionEnabled::NoCollision);
-	}
-}
-
 void ACharacterBase::SpawnHitParticles(const FVector& ImpactPoint)
 {
 	const FVector ImpactPointNormalVector = (ImpactPoint - GetActorLocation()).GetSafeNormal();
@@ -266,23 +272,6 @@ void ACharacterBase::SpawnHitParticles(const FVector& ImpactPoint)
 		GetActorScale() * 2,
 		EAttachLocation::KeepWorldPosition
 	);
-}
-
-void ACharacterBase::SpawnWeapons()
-{
-	if (IsValid(CharacterInfo))
-	{
-		for (const FWeaponSocket& WeaponSocket : CharacterInfo->WeaponSocketInfo)
-		{
-			const FName Socket = WeaponSocket.SocketName;
-			const TSubclassOf<class UObject> WeaponClass = WeaponSocket.WeaponType->GeneratedClass;
-
-			TObjectPtr<AWeapon> Weapon = GetWorld()->SpawnActor<AWeapon>(WeaponClass, FVector::ZeroVector, FRotator::ZeroRotator);
-			Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, Socket);
-			Weapon->SetOwner(this);
-			Weapons.Add(Weapon);
-		}
-	}
 }
 
 void ACharacterBase::StunnedEnd()
