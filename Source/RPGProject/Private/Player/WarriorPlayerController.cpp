@@ -6,6 +6,7 @@
 #include "EnhancedInputComponent.h"
 #include "Character/PlayerCharacter.h"
 #include "Character/EnemyCharacter.h"
+#include "Components/MovementAbilityComponent.h"
 #include "Components/TargetingComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
@@ -76,7 +77,11 @@ void AWarriorPlayerController::Dodge()
 	TObjectPtr<APlayerCharacter> PlayerCharacter = GetPawn<APlayerCharacter>();
 	if (IsValid(PlayerCharacter))
 	{
-		PlayerCharacter->Dodge();
+		TObjectPtr<UMovementAbilityComponent> MovementAbility = PlayerCharacter->GetMovementAbility();
+		if (IsValid(MovementAbility))
+		{
+			MovementAbility->Dodge();
+		}
 	}
 }
 
@@ -85,7 +90,11 @@ void AWarriorPlayerController::EnableRun()
 	TObjectPtr<APlayerCharacter> PlayerCharacter = GetPawn<APlayerCharacter>();
 	if (IsValid(PlayerCharacter))
 	{
-		PlayerCharacter->EnableRun();
+		TObjectPtr<UMovementAbilityComponent> MovementAbility = PlayerCharacter->GetMovementAbility();
+		if (IsValid(MovementAbility))
+		{
+			MovementAbility->EnableRun();
+		}
 	}
 }
 

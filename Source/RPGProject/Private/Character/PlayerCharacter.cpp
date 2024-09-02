@@ -4,6 +4,7 @@
 #include "Character/PlayerCharacter.h"
 #include "Camera/CameraComponent.h"
 #include "Components/AttributeComponent.h"
+#include "Components/MovementAbilityComponent.h"
 #include "Components/TargetingComponent.h"
 #include "Data/PlayerCharacterPDA.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -18,10 +19,14 @@ APlayerCharacter::APlayerCharacter()
     SetupSpringArm();
     SetupCamera();
     SetupTargetingComponent();
+    SetupMovementAbility();
 
     GetCharacterMovement()->bOrientRotationToMovement = true;
     GetCharacterMovement()->RotationRate = FRotator(0.f, 1000.f, 0.f);
-    GetCharacterMovement()->MaxWalkSpeed = WalkingSpeed;
+    if (IsValid(MovementAbility))
+    {
+        GetCharacterMovement()->MaxWalkSpeed = GetMovementAbility()->WalkingSpeed;
+    }
 
     bUseControllerRotationPitch = false;
     bUseControllerRotationRoll = false;
@@ -50,8 +55,11 @@ void APlayerCharacter::Block()
 {
     if (GetActionState() == EActionState::EAS_Unoccupied && !GetCharacterMovement()->IsFalling())
     {
+        if (IsValid(MovementAbility))
+        {
+            MovementAbility->DisableRun();
+        }
         SetActionState(EActionState::EAS_Block);
-        DisableRun();
         PlayMontageSection(BlockMontage, FName("Start"));
     }
 }
@@ -68,24 +76,6 @@ void APlayerCharacter::BlockCancel()
 void APlayerCharacter::DisableParrying()
 {
     SetActionState(EActionState::EAS_Block);
-}
-
-void APlayerCharacter::Dodge()
-{
-    if (GetActionState() == EActionState::EAS_Unoccupied && !GetCharacterMovement()->IsFalling())
-    {
-        SetActionState(EActionState::EAS_Dodge);
-        PlayMontageSection(DodgeMontage, FName("Dodge"));
-
-        if (GetCharacterMovement()->Velocity.IsZero())
-        {
-            LaunchCharacter(GetActorForwardVector() * DodgingSpeed, true, true);
-        }
-        else
-        {
-            LaunchCharacter(GetCharacterMovement()->Velocity.GetSafeNormal2D() * DodgingSpeed, true, true);
-        }
-    }
 }
 
 void APlayerCharacter::EnableParrying()
@@ -107,6 +97,11 @@ void APlayerCharacter::ExecuteGetPostureDamage(AActor* DamagedActor)
     {
         PostureInterface->GetPostureDamage(ParryingPostureDamage);
     }
+}
+
+void APlayerCharacter::SetupMovementAbility()
+{
+    MovementAbility = CreateDefaultSubobject<UMovementAbilityComponent>(TEXT("MovementAbility"));
 }
 
 void APlayerCharacter::ExecuteParrying(const FVector& ImpactPoint, AActor* Hitter)
@@ -138,11 +133,6 @@ FVector APlayerCharacter::GetSpringArmLocation() const
     return SpringArm->GetComponentLocation();
 }
 
-void APlayerCharacter::EnableRun()
-{
-    GetCharacterMovement()->MaxWalkSpeed = RunningSpeed;
-}
-
 void APlayerCharacter::GetHit(const FVector& ImpactPoint, AActor* Hitter)
 {
     const double Angle = GetAngle2DFromForwardVector(Hitter);
@@ -157,7 +147,10 @@ void APlayerCharacter::GetHit(const FVector& ImpactPoint, AActor* Hitter)
     }
     else
     {
-        DisableRun();
+        if (IsValid(MovementAbility))
+        {
+            MovementAbility->DisableRun();
+        }
         Super::GetHit(ImpactPoint, Hitter);
     }
 }
@@ -175,9 +168,9 @@ TObjectPtr<UCombatOverlay> APlayerCharacter::GetCombatOverlay() const
     return CombatOverlay;
 }
 
-void APlayerCharacter::DisableRun()
+UMovementAbilityComponent* APlayerCharacter::GetMovementAbility() const
 {
-    GetCharacterMovement()->MaxWalkSpeed = WalkingSpeed;
+    return MovementAbility;
 }
 
 void APlayerCharacter::BeginPlay()
@@ -201,12 +194,16 @@ void APlayerCharacter::SetupData()
 
     if (TObjectPtr<UPlayerCharacterPDA> PlayerCharacterInfo = Cast<UPlayerCharacterPDA>(CharacterInfo))
     {
+        if (IsValid(MovementAbility))
+        {
+            MovementAbility->DodgingSpeed = PlayerCharacterInfo->DodgingSpeed;
+            MovementAbility->WalkingSpeed = PlayerCharacterInfo->WalkingSpeed;
+            MovementAbility->RunningSpeed = PlayerCharacterInfo->RunningSpeed;
+            MovementAbility->DodgeMontage = PlayerCharacterInfo->DodgeMontage;
+        }
+
         ParryingPostureDamage = PlayerCharacterInfo->ParryingPostureDamage;
-        DodgingSpeed = PlayerCharacterInfo->DodgingSpeed;
-        WalkingSpeed = PlayerCharacterInfo->WalkingSpeed;
-        RunningSpeed = PlayerCharacterInfo->RunningSpeed;
         BlockMontage = PlayerCharacterInfo->BlockMontage;
-        DodgeMontage = PlayerCharacterInfo->DodgeMontage;
         BlockSound = PlayerCharacterInfo->BlockSound;
         ParryingSound = PlayerCharacterInfo->ParryingSound;
         BlockParticles = PlayerCharacterInfo->BlockParticles;
@@ -335,10 +332,4 @@ void APlayerCharacter::AttackEnd()
         AnimInstance->Montage_Stop(0.5f, AttackMontage);
     }
     bDoNextAttack = false;
-}
-
-void APlayerCharacter::DodgeEnd()
-{
-    SetActionState(EActionState::EAS_Unoccupied);
-    DisableRun();
 }

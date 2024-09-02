@@ -29,8 +29,6 @@ public:
 
 	virtual void Destroyed() override;
 
-	virtual UAnimMontage* GetAttackMontage() const;
-
 	virtual EActionState GetActionState() const;
 
 	virtual TObjectPtr<UCharacterBasePDA> GetCharacterInfo() const;
@@ -44,6 +42,8 @@ public:
 	virtual TObjectPtr<UWeaponSystemComponent> GetWeaponSystem() const;
 
 	virtual bool IsAlive();
+
+	virtual void PlayMontageSection(UAnimMontage* Montage, const FName& SectionName);
 
 	virtual void SetActionState(EActionState OtherActionState);
 
@@ -71,8 +71,6 @@ protected:
 	virtual void HitReactEnd();
 
 	virtual void PlayHitSound(const FVector& ImpactPoint);
-
-	virtual void PlayMontageSection(UAnimMontage* Montage, const FName& SectionName);
 
 	virtual void SetupCollision();
 

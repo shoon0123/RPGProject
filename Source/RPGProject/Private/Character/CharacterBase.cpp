@@ -44,7 +44,7 @@ TObjectPtr<UCharacterBasePDA> ACharacterBase::GetCharacterInfo() const
 
 double ACharacterBase::GetAngle2DFromForwardVector(AActor* Actor) const
 {
-	return GetAngle2DFromForwardVector(Actor->GetActorLocation());
+	return IsValid(Actor) ? GetAngle2DFromForwardVector(Actor->GetActorLocation()) : 0.f ;
 }
 
 double ACharacterBase::GetAngle2DFromForwardVector(const FVector& Location) const
@@ -54,24 +54,15 @@ double ACharacterBase::GetAngle2DFromForwardVector(const FVector& Location) cons
 	const double CosTheta = FVector::DotProduct(GetActorForwardVector(), Vector2D);
 	const double Theta = FMath::Acos(CosTheta);
 	double Angle = FMath::RadiansToDegrees(Theta);
+
 	const FVector CrossProduct = FVector::CrossProduct(GetActorForwardVector(), Vector2D);
 
-	if (CrossProduct.Z < 0)
-	{
-		Angle *= -1.f;
-	}
-
-	return Angle;
+	return (CrossProduct.Z >= 0) ? Angle : -Angle;
 }
 
 void ACharacterBase::SetActionState(EActionState OtherActionState)
 {
 	ActionState = OtherActionState;
-}
-
-UAnimMontage* ACharacterBase::GetAttackMontage() const
-{
-	return AttackMontage;
 }
 
 void ACharacterBase::GetHit(const FVector& ImpactPoint, AActor* Hitter)

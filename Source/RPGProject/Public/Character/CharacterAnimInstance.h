@@ -11,6 +11,7 @@ class ACharacterBase;
 class AWarriorPlayerController;
 class APlayerCharacter;
 class UCharacterMovementComponent;
+class UMovementAbilityComponent;
 class UWeaponSystemComponent;
 enum class EActionState : uint8;
 

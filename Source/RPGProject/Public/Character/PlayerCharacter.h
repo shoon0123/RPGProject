@@ -9,6 +9,7 @@
 class AWeapon;
 class UCameraComponent;
 class UCombatOverlay;
+class UMovementAbilityComponent;
 class USpringArmComponent;
 class UTargetingComponent;
 
@@ -26,15 +27,12 @@ public:
 
 	void BlockCancel();
 
-	void DisableRun();
-
-	void Dodge();
-
-	void EnableRun();
-
 	virtual void GetHit(const FVector& ImpactPoint, AActor* Hitter) override;
 
 	TObjectPtr<UCombatOverlay> GetCombatOverlay() const;
+
+	UFUNCTION(BlueprintCallable)
+	UMovementAbilityComponent* GetMovementAbility() const;
 
 	TObjectPtr<UTargetingComponent> GetTargetingComponent() const;
 
@@ -72,23 +70,14 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = "Camera")
 	TObjectPtr<UCameraComponent> Camera;
 
+	UPROPERTY(VisibleAnywhere, Category = "MovementAbility")
+	TObjectPtr<UMovementAbilityComponent> MovementAbility;
+
 	UPROPERTY(VisibleAnywhere, Category = "Targeting")
 	TObjectPtr<UTargetingComponent> TargetingComponent;
 
-	UPROPERTY(EditAnywhere, Category = "Movement")
-	float DodgingSpeed;
-
-	UPROPERTY(EditAnywhere, Category = "Movement")
-	float WalkingSpeed;
-
-	UPROPERTY(EditAnywhere, Category = "Movement")
-	float RunningSpeed;
-
 	UPROPERTY(EditAnywhere, Category = "Montage")
 	TObjectPtr<UAnimMontage> BlockMontage;
-
-	UPROPERTY(EditAnywhere, Category = "Montage")
-	TObjectPtr<UAnimMontage> DodgeMontage;
 
 	UPROPERTY(EditAnywhere, Category = "Sounds")
 	TObjectPtr<USoundBase> BlockSound;
@@ -100,9 +89,6 @@ private:
 	TObjectPtr<UParticleSystem> BlockParticles;
 
 	bool bDoNextAttack = false;
-
-	UFUNCTION(BlueprintCallable)
-	void DodgeEnd();
 
 	UFUNCTION(BlueprintCallable)
 	void DisableParrying();
@@ -125,6 +111,8 @@ private:
 	void SetupCamera();
 
 	void SetupHUD();
+
+	void SetupMovementAbility();
 
 	void SetupTargetingComponent();
 
