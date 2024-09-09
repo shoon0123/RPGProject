@@ -54,9 +54,9 @@ private:
 
 	void Attack();
 
-	void Block();
+	void ExecuteBlock();
 
-	void BlockCancel();
+	void CancelBlock();
 
 	void Dodge();
 

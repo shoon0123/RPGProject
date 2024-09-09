@@ -6,6 +6,7 @@
 #include "EnhancedInputComponent.h"
 #include "Character/PlayerCharacter.h"
 #include "Character/EnemyCharacter.h"
+#include "Components/GuardAbilityComponent.h"
 #include "Components/MovementAbilityComponent.h"
 #include "Components/TargetingComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -35,8 +36,8 @@ void AWarriorPlayerController::SetupInputComponent()
 	TObjectPtr<UEnhancedInputComponent> EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(InputComponent);
 
 	EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Started, this, &AWarriorPlayerController::Attack);
-	EnhancedInputComponent->BindAction(BlockAction, ETriggerEvent::Triggered, this, &AWarriorPlayerController::Block);
-	EnhancedInputComponent->BindAction(BlockAction, ETriggerEvent::Completed, this, &AWarriorPlayerController::BlockCancel);
+	EnhancedInputComponent->BindAction(BlockAction, ETriggerEvent::Triggered, this, &AWarriorPlayerController::ExecuteBlock);
+	EnhancedInputComponent->BindAction(BlockAction, ETriggerEvent::Completed, this, &AWarriorPlayerController::CancelBlock);
 	EnhancedInputComponent->BindAction(DodgeAction, ETriggerEvent::Completed, this, &AWarriorPlayerController::Dodge);
 	EnhancedInputComponent->BindAction(DodgeAction, ETriggerEvent::Started, this, &AWarriorPlayerController::EnableRun);
 	EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &AWarriorPlayerController::Jump);
@@ -54,21 +55,29 @@ void AWarriorPlayerController::Attack()
 	}
 }
 
-void AWarriorPlayerController::Block()
+void AWarriorPlayerController::ExecuteBlock()
 {
 	TObjectPtr<APlayerCharacter> PlayerCharacter = GetPawn<APlayerCharacter>();
 	if (IsValid(PlayerCharacter))
 	{
-		PlayerCharacter->Block();
+		TObjectPtr<UGuardAbilityComponent> GuardAbility = PlayerCharacter->GetGuardAbility();
+		if (IsValid(GuardAbility))
+		{
+			GuardAbility->ExecuteBlock();
+		}
 	}
 }
 
-void AWarriorPlayerController::BlockCancel()
+void AWarriorPlayerController::CancelBlock()
 {
 	TObjectPtr<APlayerCharacter> PlayerCharacter = GetPawn<APlayerCharacter>();
 	if (IsValid(PlayerCharacter))
 	{
-		PlayerCharacter->BlockCancel();
+		TObjectPtr<UGuardAbilityComponent> GuardAbility = PlayerCharacter->GetGuardAbility();
+		if (IsValid(GuardAbility))
+		{
+			GuardAbility->CancelBlock();
+		}
 	}
 }
 

@@ -4,6 +4,7 @@
 #include "Character/PlayerCharacter.h"
 #include "Camera/CameraComponent.h"
 #include "Components/AttributeComponent.h"
+#include "Components/GuardAbilityComponent.h"
 #include "Components/MovementAbilityComponent.h"
 #include "Components/TargetingComponent.h"
 #include "Data/PlayerCharacterPDA.h"
@@ -17,15 +18,16 @@
 APlayerCharacter::APlayerCharacter()
 {
     SetupSpringArm();
-    SetupCamera();
-    SetupTargetingComponent();
-    SetupMovementAbility();
+    SetupCamera(); 
+    GuardAbility = CreateDefaultSubobject<UGuardAbilityComponent>(TEXT("GuardAbility"));
+    MovementAbility = CreateDefaultSubobject<UMovementAbilityComponent>(TEXT("MovementAbility"));
+    TargetingComponent = CreateDefaultSubobject<UTargetingComponent>(TEXT("Targeting"));
 
     GetCharacterMovement()->bOrientRotationToMovement = true;
     GetCharacterMovement()->RotationRate = FRotator(0.f, 1000.f, 0.f);
     if (IsValid(MovementAbility))
     {
-        GetCharacterMovement()->MaxWalkSpeed = GetMovementAbility()->WalkingSpeed;
+        GetCharacterMovement()->MaxWalkSpeed = MovementAbility->WalkingSpeed;
     }
 
     bUseControllerRotationPitch = false;
@@ -51,78 +53,6 @@ void APlayerCharacter::Attack()
     }
 }
 
-void APlayerCharacter::Block()
-{
-    if (GetActionState() == EActionState::EAS_Unoccupied && !GetCharacterMovement()->IsFalling())
-    {
-        if (IsValid(MovementAbility))
-        {
-            MovementAbility->DisableRun();
-        }
-        SetActionState(EActionState::EAS_Block);
-        PlayMontageSection(BlockMontage, FName("Start"));
-    }
-}
-
-void APlayerCharacter::BlockCancel()
-{
-    if (GetActionState() == EActionState::EAS_Block || GetActionState() == EActionState::EAS_Parrying)
-    {
-        SetActionState(EActionState::EAS_Unoccupied);
-        PlayMontageSection(BlockMontage, FName("End"));
-    }
-}
-
-void APlayerCharacter::DisableParrying()
-{
-    SetActionState(EActionState::EAS_Block);
-}
-
-void APlayerCharacter::EnableParrying()
-{
-    SetActionState(EActionState::EAS_Parrying);
-}
-
-void APlayerCharacter::ExecuteBlock(const FVector& ImpactPoint)
-{
-    PlayMontageSection(BlockMontage, FName("React"));
-    PlayBlockSound(ImpactPoint);
-    SpawnBlockParticles(ImpactPoint);
-}
-
-void APlayerCharacter::ExecuteGetPostureDamage(AActor* DamagedActor)
-{
-    IPostureInterface* PostureInterface = Cast<IPostureInterface>(DamagedActor);
-    if (PostureInterface)
-    {
-        PostureInterface->GetPostureDamage(ParryingPostureDamage);
-    }
-}
-
-void APlayerCharacter::SetupMovementAbility()
-{
-    MovementAbility = CreateDefaultSubobject<UMovementAbilityComponent>(TEXT("MovementAbility"));
-}
-
-void APlayerCharacter::ExecuteParrying(const FVector& ImpactPoint, AActor* Hitter)
-{
-    const double Angle = GetAngle2DFromForwardVector(ImpactPoint);
-
-    if (Angle < 0)
-    {
-        PlayMontageSection(BlockMontage, FName("ParryingLeft"));
-    }
-    else
-    {
-        PlayMontageSection(BlockMontage, FName("ParryingRight"));
-    }
-
-    ExecuteGetPostureDamage(Hitter);
-    PlayParryingSound(ImpactPoint);
-    SpawnParryingParticles(ImpactPoint);
-    DisableParrying();
-}
-
 TObjectPtr<UTargetingComponent> APlayerCharacter::GetTargetingComponent() const
 {
     return TargetingComponent;
@@ -137,13 +67,13 @@ void APlayerCharacter::GetHit(const FVector& ImpactPoint, AActor* Hitter)
 {
     const double Angle = GetAngle2DFromForwardVector(Hitter);
     const bool bIsForward = -90.f < Angle && Angle < 90.f;
-    if (GetActionState() == EActionState::EAS_Block && bIsForward)
+    if (GetActionState() == EActionState::EAS_Block && bIsForward && IsValid(GuardAbility))
     {
-        ExecuteBlock(ImpactPoint);
+        GuardAbility->Block(ImpactPoint);
     }
-    else if (GetActionState() == EActionState::EAS_Parrying && bIsForward)
+    else if (GetActionState() == EActionState::EAS_Parrying && bIsForward && IsValid(GuardAbility))
     {
-        ExecuteParrying(ImpactPoint, Hitter);
+        GuardAbility->ExecuteParrying(ImpactPoint, Hitter);
     }
     else
     {
@@ -168,7 +98,12 @@ TObjectPtr<UCombatOverlay> APlayerCharacter::GetCombatOverlay() const
     return CombatOverlay;
 }
 
-UMovementAbilityComponent* APlayerCharacter::GetMovementAbility() const
+TObjectPtr<UGuardAbilityComponent> APlayerCharacter::GetGuardAbility() const
+{
+    return GuardAbility;
+}
+
+TObjectPtr<UMovementAbilityComponent> APlayerCharacter::GetMovementAbility() const
 {
     return MovementAbility;
 }
@@ -201,12 +136,15 @@ void APlayerCharacter::SetupData()
             MovementAbility->RunningSpeed = PlayerCharacterInfo->RunningSpeed;
             MovementAbility->DodgeMontage = PlayerCharacterInfo->DodgeMontage;
         }
-
-        ParryingPostureDamage = PlayerCharacterInfo->ParryingPostureDamage;
-        BlockMontage = PlayerCharacterInfo->BlockMontage;
-        BlockSound = PlayerCharacterInfo->BlockSound;
-        ParryingSound = PlayerCharacterInfo->ParryingSound;
-        BlockParticles = PlayerCharacterInfo->BlockParticles;
+        if (IsValid(GuardAbility))
+        {
+            GuardAbility->ParryingPostureDamage = PlayerCharacterInfo->ParryingPostureDamage;
+            GuardAbility->BlockMontage = PlayerCharacterInfo->BlockMontage;
+            GuardAbility->BlockSound = PlayerCharacterInfo->BlockSound;
+            GuardAbility->ParryingSound = PlayerCharacterInfo->ParryingSound;
+            GuardAbility->BlockParticles = PlayerCharacterInfo->BlockParticles;
+        }
+        
     }
 }
 
@@ -236,48 +174,6 @@ void APlayerCharacter::UpdatePostureBar()
             }
         }
     }
-}
-
-void APlayerCharacter::PlayBlockSound(const FVector& ImpactPoint)
-{
-    check(BlockSound);
-    UGameplayStatics::PlaySoundAtLocation(this, BlockSound, ImpactPoint);
-}
-
-void APlayerCharacter::PlayParryingSound(const FVector& ImpactPoint)
-{
-    check(ParryingSound);
-    UGameplayStatics::PlaySoundAtLocation(this, ParryingSound, ImpactPoint);
-}
-
-void APlayerCharacter::SpawnBlockParticles(const FVector& ImpactPoint)
-{
-    const FVector ImpactPointNormalVector = (ImpactPoint - GetActorLocation()).GetSafeNormal();
-    check(BlockParticles);
-    UGameplayStatics::SpawnEmitterAttached(
-        BlockParticles,
-        GetRootComponent(),
-        FName("Block"),
-        ImpactPoint,
-        ImpactPointNormalVector.Rotation(),
-        GetActorScale() * 0.5,
-        EAttachLocation::KeepWorldPosition
-    );
-}
-
-void APlayerCharacter::SpawnParryingParticles(const FVector& ImpactPoint)
-{
-    const FVector ImpactPointNormalVector = (ImpactPoint - GetActorLocation()).GetSafeNormal();
-    check(BlockParticles);
-    UGameplayStatics::SpawnEmitterAttached(
-        BlockParticles,
-        GetRootComponent(),
-        FName("Block"),
-        ImpactPoint,
-        ImpactPointNormalVector.Rotation(),
-        GetActorScale()*2,
-        EAttachLocation::KeepWorldPosition
-    );
 }
 
 void APlayerCharacter::SetupSpringArm()
@@ -314,11 +210,6 @@ void APlayerCharacter::SetupHUD()
             }
         }
     }
-}
-
-void APlayerCharacter::SetupTargetingComponent()
-{
-    TargetingComponent = CreateDefaultSubobject<UTargetingComponent>(TEXT("Targeting"));
 }
 
 void APlayerCharacter::AttackEnd()

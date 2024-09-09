@@ -31,6 +31,10 @@ public:
 
 	virtual EActionState GetActionState() const;
 
+	virtual double GetAngle2DFromForwardVector(AActor* Actor) const;
+
+	virtual double GetAngle2DFromForwardVector(const FVector& Vector) const;
+
 	virtual TObjectPtr<UCharacterBasePDA> GetCharacterInfo() const;
 
 	virtual void GetHit(const FVector& ImpactPoint, AActor* Hitter) override;
@@ -62,10 +66,6 @@ protected:
 	virtual void Die();
 	
 	virtual void DirectionalHitReact(AActor* Hitter);
-
-	virtual double GetAngle2DFromForwardVector(AActor* Actor) const;
-
-	virtual double GetAngle2DFromForwardVector(const FVector& Vector) const;
 
 	UFUNCTION(BlueprintCallable)
 	virtual void HitReactEnd();

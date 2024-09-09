@@ -9,6 +9,7 @@
 class AWeapon;
 class UCameraComponent;
 class UCombatOverlay;
+class UGuardAbilityComponent;
 class UMovementAbilityComponent;
 class USpringArmComponent;
 class UTargetingComponent;
@@ -23,16 +24,13 @@ public:
 
 	virtual void Attack() override;
 
-	void Block();
-
-	void BlockCancel();
-
 	virtual void GetHit(const FVector& ImpactPoint, AActor* Hitter) override;
 
 	TObjectPtr<UCombatOverlay> GetCombatOverlay() const;
 
-	UFUNCTION(BlueprintCallable)
-	UMovementAbilityComponent* GetMovementAbility() const;
+	TObjectPtr<UGuardAbilityComponent> GetGuardAbility() const;
+
+	TObjectPtr<UMovementAbilityComponent> GetMovementAbility() const;
 
 	TObjectPtr<UTargetingComponent> GetTargetingComponent() const;
 
@@ -51,72 +49,27 @@ protected:
 
 	virtual void UpdatePostureBar() override;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Weapon")
-	TObjectPtr<AWeapon> LeftHandWeapon;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GuardAbility")
+	TObjectPtr<UGuardAbilityComponent> GuardAbility;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Weapon")
-	TObjectPtr<AWeapon> RightHandWeapon;
-
-	UPROPERTY(EditAnywhere, Category = "Dodge")
-	TObjectPtr<UBlendSpace> DodgeBlendSpace;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "MovementAbility")
+	TObjectPtr<UMovementAbilityComponent> MovementAbility;
 
 private:
-	UPROPERTY(EditAnywhere, Category = "Attribute")
-	float ParryingPostureDamage;
-
 	UPROPERTY(VisibleAnywhere, Category = "Camera")
 	TObjectPtr<USpringArmComponent> SpringArm;
 
 	UPROPERTY(VisibleAnywhere, Category = "Camera")
 	TObjectPtr<UCameraComponent> Camera;
 
-	UPROPERTY(VisibleAnywhere, Category = "MovementAbility")
-	TObjectPtr<UMovementAbilityComponent> MovementAbility;
-
 	UPROPERTY(VisibleAnywhere, Category = "Targeting")
 	TObjectPtr<UTargetingComponent> TargetingComponent;
 
-	UPROPERTY(EditAnywhere, Category = "Montage")
-	TObjectPtr<UAnimMontage> BlockMontage;
-
-	UPROPERTY(EditAnywhere, Category = "Sounds")
-	TObjectPtr<USoundBase> BlockSound;
-
-	UPROPERTY(EditAnywhere, Category = "Sounds")
-	TObjectPtr<USoundBase> ParryingSound;
-
-	UPROPERTY(EditAnywhere, Category = "VisualEffects")
-	TObjectPtr<UParticleSystem> BlockParticles;
-
 	bool bDoNextAttack = false;
-
-	UFUNCTION(BlueprintCallable)
-	void DisableParrying();
-
-	UFUNCTION(BlueprintCallable)
-	void EnableParrying();
-
-	void ExecuteBlock(const FVector& ImpactPoint);
-
-	void ExecuteGetPostureDamage(AActor* DamagedActor);
-
-	void ExecuteParrying(const FVector& ImpactPoint, AActor* Hitter);
-
-	void PlayBlockSound(const FVector& ImpactPoint);
-
-	void PlayParryingSound(const FVector& ImpactPoint);
 
 	void SetupSpringArm();
 
 	void SetupCamera();
 
 	void SetupHUD();
-
-	void SetupMovementAbility();
-
-	void SetupTargetingComponent();
-
-	void SpawnBlockParticles(const FVector& ImpactPoint);
-
-	void SpawnParryingParticles(const FVector& ImpactPoint);
 };
