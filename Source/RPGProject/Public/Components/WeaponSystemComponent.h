@@ -3,13 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/ActorComponent.h"
+#include "Components/CharacterBaseComponent.h"
 #include "WeaponSystemComponent.generated.h"
 
 class AWeapon;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class RPGPROJECT_API UWeaponSystemComponent : public UActorComponent
+class RPGPROJECT_API UWeaponSystemComponent : public UCharacterBaseComponent
 {
 	GENERATED_BODY()
 

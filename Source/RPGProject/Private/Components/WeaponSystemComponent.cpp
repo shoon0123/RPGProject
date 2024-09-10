@@ -31,7 +31,6 @@ void UWeaponSystemComponent::SetWeaponsCollisionDisable()
 
 void UWeaponSystemComponent::SpawnWeapons()
 {
-	TObjectPtr<ACharacterBase> OwnerCharacter = Cast<ACharacterBase>(GetOwner());
 	if (IsValid(OwnerCharacter))
 	{
 		TObjectPtr<UCharacterBasePDA> CharacterInfo = OwnerCharacter->GetCharacterInfo();

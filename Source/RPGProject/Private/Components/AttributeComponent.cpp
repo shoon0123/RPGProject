@@ -101,7 +101,6 @@ void UAttributeComponent::RecoverPerSec()
 	{
 		RecoverHealth(RecoveryAmountPerSec);
 		RecoverPosture(RecoveryAmountPerSec);
-		TObjectPtr<ACharacterBase> OwnerCharacter = Cast< ACharacterBase>(GetOwner());
 		if (IsValid(OwnerCharacter))
 		{
 			OwnerCharacter->UpdateHealthBar();

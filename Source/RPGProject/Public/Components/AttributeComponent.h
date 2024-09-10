@@ -3,12 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/ActorComponent.h"
+#include "Components/CharacterBaseComponent.h"
 #include "AttributeComponent.generated.h"
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class RPGPROJECT_API UAttributeComponent : public UActorComponent
+class RPGPROJECT_API UAttributeComponent : public UCharacterBaseComponent
 {
 	GENERATED_BODY()
 

@@ -204,7 +204,6 @@ void UTargetingComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	OwnerCharacter = Cast<ACharacterBase>(GetOwner());
 	SetComponentTickEnabled(false);
 }
 

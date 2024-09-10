@@ -3,15 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/ActorComponent.h"
+#include "Components/CharacterBaseComponent.h"
 #include "TargetingComponent.generated.h"
 
-class ACharacterBase;
 class APlayerCharacter;
 class APlayerController;
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
-class RPGPROJECT_API UTargetingComponent : public UActorComponent
+class RPGPROJECT_API UTargetingComponent : public UCharacterBaseComponent
 {
 	GENERATED_BODY()
 	
@@ -27,9 +26,6 @@ public:
 	bool IsLockOn();
 
 protected:
-	UPROPERTY()
-	TObjectPtr<ACharacterBase> OwnerCharacter;
-
 	virtual void BeginPlay() override;
 
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;

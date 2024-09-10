@@ -28,7 +28,6 @@ void UGuardAbilityComponent::BeginPlay()
 
 void UGuardAbilityComponent::Block(const FVector& ImpactPoint)
 {
-	TObjectPtr<ACharacterBase> OwnerCharacter = Cast<ACharacterBase>(GetOwner());
 	if (IsValid(OwnerCharacter))
 	{
 		OwnerCharacter->PlayMontageSection(BlockMontage, FName("React"));
@@ -39,7 +38,6 @@ void UGuardAbilityComponent::Block(const FVector& ImpactPoint)
 
 void UGuardAbilityComponent::EnableParrying()
 {
-	TObjectPtr<ACharacterBase> OwnerCharacter = Cast<ACharacterBase>(GetOwner());
 	if (IsValid(OwnerCharacter))
 	{
 		OwnerCharacter->SetActionState(EActionState::EAS_Parrying);
@@ -48,7 +46,6 @@ void UGuardAbilityComponent::EnableParrying()
 
 void UGuardAbilityComponent::DisableParrying()
 {
-	TObjectPtr<ACharacterBase> OwnerCharacter = Cast<ACharacterBase>(GetOwner());
 	if (IsValid(OwnerCharacter))
 	{
 		OwnerCharacter->SetActionState(EActionState::EAS_Block);
@@ -57,8 +54,6 @@ void UGuardAbilityComponent::DisableParrying()
 
 void UGuardAbilityComponent::ExecuteParrying(const FVector& ImpactPoint, AActor* Hitter)
 {
-	TObjectPtr<ACharacterBase> OwnerCharacter = GetOwner<ACharacterBase>();;
-	
 	if (IsValid(OwnerCharacter))
 	{
 		const double Angle = OwnerCharacter->GetAngle2DFromForwardVector(ImpactPoint);
@@ -107,7 +102,6 @@ void UGuardAbilityComponent::PlayParryingSound(const FVector& ImpactPoint)
 
 void UGuardAbilityComponent::SpawnBlockParticles(const FVector& ImpactPoint)
 {
-	TObjectPtr<ACharacterBase> OwnerCharacter = Cast<ACharacterBase>(GetOwner());
 	if (IsValid(OwnerCharacter))
 	{
 		const FVector ImpactPointNormalVector = (ImpactPoint - OwnerCharacter->GetActorLocation()).GetSafeNormal();
@@ -126,7 +120,6 @@ void UGuardAbilityComponent::SpawnBlockParticles(const FVector& ImpactPoint)
 
 void UGuardAbilityComponent::SpawnParryingParticles(const FVector& ImpactPoint)
 {
-	TObjectPtr<ACharacterBase> OwnerCharacter = Cast<ACharacterBase>(GetOwner());
 	if (IsValid(OwnerCharacter))
 	{
 		const FVector ImpactPointNormalVector = (ImpactPoint - OwnerCharacter->GetActorLocation()).GetSafeNormal();
@@ -154,7 +147,6 @@ void UGuardAbilityComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 
 void UGuardAbilityComponent::ExecuteBlock()
 {
-	TObjectPtr<ACharacterBase> OwnerCharacter = Cast<ACharacterBase>(GetOwner());
 	if (IsValid(OwnerCharacter))
 	{
 		if (OwnerCharacter->GetActionState() == EActionState::EAS_Unoccupied && !OwnerCharacter->GetCharacterMovement()->IsFalling())
@@ -168,7 +160,6 @@ void UGuardAbilityComponent::ExecuteBlock()
 
 void UGuardAbilityComponent::CancelBlock()
 {
-	TObjectPtr<ACharacterBase> OwnerCharacter = Cast<ACharacterBase>(GetOwner());
 	if (IsValid(OwnerCharacter))
 	{
 		if (OwnerCharacter->GetActionState() == EActionState::EAS_Block || OwnerCharacter->GetActionState() == EActionState::EAS_Parrying)

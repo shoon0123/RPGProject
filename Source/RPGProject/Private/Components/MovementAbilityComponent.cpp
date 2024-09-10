@@ -17,7 +17,6 @@ UMovementAbilityComponent::UMovementAbilityComponent()
 
 void UMovementAbilityComponent::Dodge()
 {
-    TObjectPtr<ACharacterBase> OwnerCharacter = Cast< ACharacterBase>(GetOwner());
     if (IsValid(OwnerCharacter))
     {
         if (OwnerCharacter->GetActionState() == EActionState::EAS_Unoccupied && !OwnerCharacter->GetCharacterMovement()->IsFalling())
@@ -40,7 +39,6 @@ void UMovementAbilityComponent::Dodge()
 
 void UMovementAbilityComponent::EnableRun()
 {
-    TObjectPtr<ACharacterBase> OwnerCharacter = Cast<ACharacterBase>(GetOwner());
     if (IsValid(OwnerCharacter))
     {
         OwnerCharacter->GetCharacterMovement()->MaxWalkSpeed = RunningSpeed;
@@ -49,7 +47,6 @@ void UMovementAbilityComponent::EnableRun()
 
 void UMovementAbilityComponent::DisableRun()
 {
-    TObjectPtr<ACharacterBase> OwnerCharacter = Cast<ACharacterBase>(GetOwner());
     if (IsValid(OwnerCharacter))
     {
         OwnerCharacter->GetCharacterMovement()->MaxWalkSpeed = WalkingSpeed;
@@ -77,7 +74,6 @@ void UMovementAbilityComponent::TickComponent(float DeltaTime, ELevelTick TickTy
 
 void UMovementAbilityComponent::DodgeEnd()
 {
-    TObjectPtr<ACharacterBase> OwnerCharacter = Cast< ACharacterBase>(GetOwner());
     if (IsValid(OwnerCharacter))
     {
         OwnerCharacter->SetActionState(EActionState::EAS_Unoccupied);
