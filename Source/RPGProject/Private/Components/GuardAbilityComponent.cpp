@@ -86,7 +86,7 @@ void UGuardAbilityComponent::ExecuteGetPostureDamage(AActor* DamagedActor)
 
 void UGuardAbilityComponent::PlayBlockSound(const FVector& ImpactPoint)
 {
-	if (BlockSound)
+	if (BlockSound != nullptr)
 	{
 		UGameplayStatics::PlaySoundAtLocation(this, BlockSound, ImpactPoint);
 	}
@@ -94,7 +94,7 @@ void UGuardAbilityComponent::PlayBlockSound(const FVector& ImpactPoint)
 
 void UGuardAbilityComponent::PlayParryingSound(const FVector& ImpactPoint)
 {
-	if (ParryingSound)
+	if (ParryingSound != nullptr)
 	{
 		UGameplayStatics::PlaySoundAtLocation(this, ParryingSound, ImpactPoint);
 	}
@@ -134,15 +134,6 @@ void UGuardAbilityComponent::SpawnParryingParticles(const FVector& ImpactPoint)
 			EAttachLocation::KeepWorldPosition
 		);
 	}
-}
-
-
-// Called every frame
-void UGuardAbilityComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	// ...
 }
 
 void UGuardAbilityComponent::ExecuteBlock()

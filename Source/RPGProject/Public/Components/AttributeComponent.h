@@ -15,8 +15,6 @@ class RPGPROJECT_API UAttributeComponent : public UCharacterBaseComponent
 public:	
 	UAttributeComponent();
 
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
 	float GetHealthPercent();
 
 	float GetPosturePercent();

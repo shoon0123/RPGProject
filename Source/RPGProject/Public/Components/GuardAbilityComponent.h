@@ -13,10 +13,7 @@ class RPGPROJECT_API UGuardAbilityComponent : public UCharacterBaseComponent
 	GENERATED_BODY()
 
 public:	
-	// Sets default values for this component's properties
 	UGuardAbilityComponent();
-
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	UPROPERTY(EditAnywhere, Category = "Actor Attribute")
 	float ParryingPostureDamage = 0.f;
@@ -43,7 +40,6 @@ public:
 
 
 protected:
-	// Called when the game starts
 	virtual void BeginPlay() override;
 
 private :

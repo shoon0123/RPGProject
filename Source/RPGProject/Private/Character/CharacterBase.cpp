@@ -240,7 +240,7 @@ void ACharacterBase::SetupData()
 		DeathMontage = CharacterInfo->DeathMontage;
 		HitReactMontage = CharacterInfo->HitReactMontage;
 		StunnedMontage = CharacterInfo->StunnedMontage;
-
+		
 		AttackMontageSections = CharacterInfo->AttackMontageSections;
 		DeathMontageSections = CharacterInfo->DeathMontageSections;
 		HitReactMontageSections = CharacterInfo->HitReactMontageSections;
