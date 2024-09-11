@@ -25,9 +25,14 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+	virtual void OnPossess(APawn* PawnToPossess) override;
+
 	virtual void SetupInputComponent() override;
 
 private:
+	UPROPERTY(VisibleInstanceOnly, Category = "Player")
+	TObjectPtr<APlayerCharacter> PlayerCharacter;
+
 	UPROPERTY(EditAnywhere, Category="Input")
 	TObjectPtr<UInputMappingContext> Context;
 
@@ -59,6 +64,8 @@ private:
 	void CancelBlock();
 
 	void Dodge();
+
+	void DisableRun();
 
 	void EnableRun();
 

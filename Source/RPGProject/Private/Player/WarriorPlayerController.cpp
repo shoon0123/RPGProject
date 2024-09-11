@@ -29,6 +29,12 @@ void AWarriorPlayerController::BeginPlay()
 	DefaultMouseCursor = EMouseCursor::Default;
 }
 
+void AWarriorPlayerController::OnPossess(APawn* PawnToPossess)
+{
+	Super::OnPossess(PawnToPossess);
+	PlayerCharacter = GetPawn<APlayerCharacter>();
+}
+
 void AWarriorPlayerController::SetupInputComponent()
 {
 	Super::SetupInputComponent();
@@ -38,6 +44,7 @@ void AWarriorPlayerController::SetupInputComponent()
 	EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Started, this, &AWarriorPlayerController::Attack);
 	EnhancedInputComponent->BindAction(BlockAction, ETriggerEvent::Triggered, this, &AWarriorPlayerController::ExecuteBlock);
 	EnhancedInputComponent->BindAction(BlockAction, ETriggerEvent::Completed, this, &AWarriorPlayerController::CancelBlock);
+	EnhancedInputComponent->BindAction(DodgeAction, ETriggerEvent::Completed, this, &AWarriorPlayerController::DisableRun);
 	EnhancedInputComponent->BindAction(DodgeAction, ETriggerEvent::Completed, this, &AWarriorPlayerController::Dodge);
 	EnhancedInputComponent->BindAction(DodgeAction, ETriggerEvent::Started, this, &AWarriorPlayerController::EnableRun);
 	EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &AWarriorPlayerController::Jump);
@@ -48,7 +55,6 @@ void AWarriorPlayerController::SetupInputComponent()
 
 void AWarriorPlayerController::Attack()
 {
-	TObjectPtr<APlayerCharacter> PlayerCharacter = GetPawn<APlayerCharacter>();
 	if (IsValid(PlayerCharacter))
 	{
 		PlayerCharacter->Attack();
@@ -57,7 +63,6 @@ void AWarriorPlayerController::Attack()
 
 void AWarriorPlayerController::ExecuteBlock()
 {
-	TObjectPtr<APlayerCharacter> PlayerCharacter = GetPawn<APlayerCharacter>();
 	if (IsValid(PlayerCharacter))
 	{
 		TObjectPtr<UGuardAbilityComponent> GuardAbility = PlayerCharacter->GetGuardAbility();
@@ -70,7 +75,6 @@ void AWarriorPlayerController::ExecuteBlock()
 
 void AWarriorPlayerController::CancelBlock()
 {
-	TObjectPtr<APlayerCharacter> PlayerCharacter = GetPawn<APlayerCharacter>();
 	if (IsValid(PlayerCharacter))
 	{
 		TObjectPtr<UGuardAbilityComponent> GuardAbility = PlayerCharacter->GetGuardAbility();
@@ -83,7 +87,6 @@ void AWarriorPlayerController::CancelBlock()
 
 void AWarriorPlayerController::Dodge()
 {
-	TObjectPtr<APlayerCharacter> PlayerCharacter = GetPawn<APlayerCharacter>();
 	if (IsValid(PlayerCharacter))
 	{
 		TObjectPtr<UMovementAbilityComponent> MovementAbility = PlayerCharacter->GetMovementAbility();
@@ -94,9 +97,20 @@ void AWarriorPlayerController::Dodge()
 	}
 }
 
+void AWarriorPlayerController::DisableRun()
+{
+	if (IsValid(PlayerCharacter))
+	{
+		TObjectPtr<UMovementAbilityComponent> MovementAbility = PlayerCharacter->GetMovementAbility();
+		if (IsValid(MovementAbility))
+		{
+			MovementAbility->DisableRun();
+		}
+	}
+}
+
 void AWarriorPlayerController::EnableRun()
 {
-	TObjectPtr<APlayerCharacter> PlayerCharacter = GetPawn<APlayerCharacter>();
 	if (IsValid(PlayerCharacter))
 	{
 		TObjectPtr<UMovementAbilityComponent> MovementAbility = PlayerCharacter->GetMovementAbility();
@@ -109,7 +123,6 @@ void AWarriorPlayerController::EnableRun()
 
 void AWarriorPlayerController::Jump()
 {
-	TObjectPtr<APlayerCharacter> PlayerCharacter = GetPawn<APlayerCharacter>();
 	if (IsValid(PlayerCharacter))
 	{
 		PlayerCharacter->Jump();
@@ -118,7 +131,6 @@ void AWarriorPlayerController::Jump()
 
 void AWarriorPlayerController::LockOn()
 {
-	TObjectPtr<APlayerCharacter> PlayerCharacter = GetPawn<APlayerCharacter>();
 	if (IsValid(PlayerCharacter))
 	{
 		TObjectPtr<UTargetingComponent> TargetingComponent = PlayerCharacter->GetTargetingComponent();
@@ -139,7 +151,6 @@ void AWarriorPlayerController::LockOn()
 void AWarriorPlayerController::Look(const FInputActionValue& InputActionValue)
 {
 	const FVector2D InputAxisVector = InputActionValue.Get<FVector2D>();
-	TObjectPtr<APlayerCharacter> PlayerCharacter = GetPawn<APlayerCharacter>();
 	if (IsValid(PlayerCharacter))
 	{
 		TObjectPtr<UTargetingComponent> TargetingComponent = PlayerCharacter->GetTargetingComponent();
@@ -155,7 +166,6 @@ void AWarriorPlayerController::Look(const FInputActionValue& InputActionValue)
 
 void AWarriorPlayerController::Move(const FInputActionValue& InputActionValue)
 {
-	TObjectPtr<APlayerCharacter> PlayerCharacter = GetPawn<APlayerCharacter>();
 	if (IsValid(PlayerCharacter))
 	{
 		if (PlayerCharacter->GetActionState() != EActionState::EAS_Unoccupied)
