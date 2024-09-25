@@ -41,8 +41,6 @@ public:
 
 	virtual void GetPostureDamage(const float PostureDamage) override;
 
-	virtual void GetStunned();
-
 	virtual TObjectPtr<UWeaponSystemComponent> GetWeaponSystem() const;
 
 	virtual bool IsAlive();
@@ -50,6 +48,8 @@ public:
 	virtual void PlayMontageSection(UAnimMontage* Montage, const FName& SectionName);
 
 	virtual void SetActionState(EActionState OtherActionState);
+
+	virtual void Stunned();
 
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 
@@ -61,7 +61,9 @@ protected:
 	virtual void BeginPlay() override;
 
 	UFUNCTION(BlueprintCallable)
-	virtual void AttackEnd() PURE_VIRTUAL(ACharacterBase::AttackEnd, );
+	virtual void AttackEnd();
+
+	virtual void AttackCoolDownEnd();
 
 	virtual void Die();
 	
@@ -98,6 +100,10 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Montage")
 	TArray<FName> AttackMontageSections;
+
+	FTimerHandle AttackEndTimerHandle;
+
+	float CoolDownToAttack;
 
 private:
 	UPROPERTY(VisibleAnywhere, Category = "State")

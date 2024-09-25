@@ -96,12 +96,12 @@ void ACharacterBase::GetPostureDamage(const float PostureDamage)
 
 		if (Attributes->IsPostureBroken() && GetActionState() != EActionState::EAS_Stunned)
 		{
-			GetStunned();
+			Stunned();
 		}
 	}
 }
 
-void ACharacterBase::GetStunned()
+void ACharacterBase::Stunned()
 {
 	SetActionState(EActionState::EAS_Stunned);
 
@@ -144,6 +144,19 @@ void ACharacterBase::BeginPlay()
 	if (IsValid(WeaponSystem))
 	{
 		WeaponSystem->SpawnWeapons();
+	}
+}
+
+void ACharacterBase::AttackEnd()
+{
+	GetWorld()->GetTimerManager().SetTimer(AttackEndTimerHandle, this, &ACharacterBase::AttackCoolDownEnd, CoolDownToAttack, false);
+}
+
+void ACharacterBase::AttackCoolDownEnd()
+{
+	if (GetActionState() == EActionState::EAS_Attacking)
+	{
+		SetActionState(EActionState::EAS_Unoccupied);
 	}
 }
 
@@ -236,6 +249,8 @@ void ACharacterBase::SetupData()
 			Attributes->SetMaxPosture(CharacterInfo->MaxPosture);
 			Attributes->SetRecoveryAmountPerSec(CharacterInfo->RecoveryAmountPerSec);
 		}
+		CoolDownToAttack = CharacterInfo->CoolDownToAttack;
+
 		AttackMontage = CharacterInfo->AttackMontage;
 		DeathMontage = CharacterInfo->DeathMontage;
 		HitReactMontage = CharacterInfo->HitReactMontage;
@@ -254,14 +269,11 @@ void ACharacterBase::SpawnHitParticles(const FVector& ImpactPoint)
 {
 	const FVector ImpactPointNormalVector = (ImpactPoint - GetActorLocation()).GetSafeNormal();
 	check(HitParticles);
-	UGameplayStatics::SpawnEmitterAttached(
+
+	UGameplayStatics::SpawnEmitterAtLocation(
+		GetWorld(),
 		HitParticles,
-		GetRootComponent(),
-		FName("Hit"),
-		ImpactPoint,
-		ImpactPointNormalVector.Rotation(),
-		GetActorScale() * 2,
-		EAttachLocation::KeepWorldPosition
+		FTransform(ImpactPointNormalVector.Rotation(), ImpactPoint, GetActorScale() * 2)
 	);
 }
 

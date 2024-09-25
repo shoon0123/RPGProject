@@ -41,6 +41,8 @@ protected:
 
 	virtual void AttackEnd() override;
 
+	virtual void AttackCoolDownEnd() override;
+
 	virtual void Die() override;
 
 	virtual void SetupData() override;
@@ -65,7 +67,13 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = "Targeting")
 	TObjectPtr<UTargetingComponent> TargetingComponent;
 
+	void ComboAttack();
+
 	bool bDoNextAttack = false;
+
+	bool bIsAttackCoolDown = false;
+
+	uint8 ComboCount = 0;
 
 	void SetupSpringArm();
 

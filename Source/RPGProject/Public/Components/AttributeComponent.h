@@ -62,5 +62,7 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Actor Attributes")
 	float RecoveryAmountPerSec = 1;
 
+	FTimerHandle RecoveryTimerHandle;
+
 	void RecoverPerSec();
 };

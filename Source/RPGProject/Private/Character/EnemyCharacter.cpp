@@ -83,8 +83,3 @@ void AEnemyCharacter::SetupData()
 		DetectionRange = EnemyCharacterInfo->DetectionRange;
 	}
 }
-
-void AEnemyCharacter::AttackEnd()
-{
-	SetActionState(EActionState::EAS_Unoccupied);
-}

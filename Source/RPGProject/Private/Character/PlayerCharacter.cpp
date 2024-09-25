@@ -44,12 +44,18 @@ void APlayerCharacter::Attack()
 
     if (GetActionState() == EActionState::EAS_Attacking)
     {
-        bDoNextAttack = true;
+        if (bIsAttackCoolDown)
+        {
+            ComboAttack();
+            bIsAttackCoolDown = false;
+        }
+        else {
+            bDoNextAttack = true;
+        }
     }
     else if(GetActionState() == EActionState::EAS_Unoccupied)
     {
-        PlayMontageSection(AttackMontage, FName("Attack1"));
-        SetActionState(EActionState::EAS_Attacking);
+        ComboAttack();
     }
 }
 
@@ -115,6 +121,41 @@ void APlayerCharacter::BeginPlay()
     SetupHUD();
 }
 
+void APlayerCharacter::AttackEnd()
+{
+    if (bDoNextAttack) {
+        bDoNextAttack = false;
+        ComboAttack();
+    }
+    else
+    {
+        Super::AttackEnd();
+
+        bIsAttackCoolDown = true;
+
+        TObjectPtr<UAnimInstance> AnimInstance = GetMesh()->GetAnimInstance();
+        if (AnimInstance && AttackMontage)
+        {
+            AnimInstance->Montage_Stop(CoolDownToAttack*3, AttackMontage);
+        }
+    }
+}
+
+void APlayerCharacter::AttackCoolDownEnd()
+{
+    if (GetActionState() == EActionState::EAS_Attacking)
+    {
+        if (bIsAttackCoolDown)
+        {
+            SetActionState(EActionState::EAS_Unoccupied);
+            bIsAttackCoolDown = false;
+            bDoNextAttack = false;
+            ComboCount = 0;
+        }
+    }
+}
+
+
 void APlayerCharacter::Die()
 {
     Super::Die();
@@ -176,6 +217,13 @@ void APlayerCharacter::UpdatePostureBar()
     }
 }
 
+void APlayerCharacter::ComboAttack()
+{
+    PlayMontageSection(AttackMontage, AttackMontageSections[ComboCount]);
+    ++ComboCount %= AttackMontageSections.Num();
+    SetActionState(EActionState::EAS_Attacking);
+}
+
 void APlayerCharacter::SetupSpringArm()
 {
     SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
@@ -212,15 +260,3 @@ void APlayerCharacter::SetupHUD()
     }
 }
 
-void APlayerCharacter::AttackEnd()
-{
-    if (!bDoNextAttack)
-    {
-        SetActionState(EActionState::EAS_Unoccupied);
-        TObjectPtr<UAnimInstance> AnimInstance = GetMesh()->GetAnimInstance();
-        check(AnimInstance);
-        check(AttackMontage);
-        AnimInstance->Montage_Stop(0.5f, AttackMontage);
-    }
-    bDoNextAttack = false;
-}

@@ -85,7 +85,6 @@ void UAttributeComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	FTimerHandle RecoveryTimerHandle;
 	GetWorld()->GetTimerManager().SetTimer(RecoveryTimerHandle, this, &UAttributeComponent::RecoverPerSec, 1.0f, true, 1.0f);
 }
 

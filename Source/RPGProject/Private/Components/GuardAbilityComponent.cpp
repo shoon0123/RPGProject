@@ -106,14 +106,10 @@ void UGuardAbilityComponent::SpawnBlockParticles(const FVector& ImpactPoint)
 	{
 		const FVector ImpactPointNormalVector = (ImpactPoint - OwnerCharacter->GetActorLocation()).GetSafeNormal();
 		check(BlockParticles);
-		UGameplayStatics::SpawnEmitterAttached(
+		UGameplayStatics::SpawnEmitterAtLocation(
+			GetWorld(),
 			BlockParticles,
-			OwnerCharacter->GetRootComponent(),
-			FName("Block"),
-			ImpactPoint,
-			ImpactPointNormalVector.Rotation(),
-			OwnerCharacter->GetActorScale() * 0.5,
-			EAttachLocation::KeepWorldPosition
+			FTransform(ImpactPointNormalVector.Rotation(), ImpactPoint, OwnerCharacter->GetActorScale() * 0.5)
 		);
 	}
 }
@@ -124,14 +120,11 @@ void UGuardAbilityComponent::SpawnParryingParticles(const FVector& ImpactPoint)
 	{
 		const FVector ImpactPointNormalVector = (ImpactPoint - OwnerCharacter->GetActorLocation()).GetSafeNormal();
 		check(BlockParticles);
-		UGameplayStatics::SpawnEmitterAttached(
+		UGameplayStatics::SpawnEmitterAtLocation(
+			GetWorld(),
 			BlockParticles,
-			OwnerCharacter->GetRootComponent(),
-			FName("Block"),
-			ImpactPoint,
-			ImpactPointNormalVector.Rotation(),
-			OwnerCharacter->GetActorScale() * 2,
-			EAttachLocation::KeepWorldPosition
+			FTransform(ImpactPointNormalVector.Rotation(), ImpactPoint, OwnerCharacter->GetActorScale() * 2),
+			true
 		);
 	}
 }

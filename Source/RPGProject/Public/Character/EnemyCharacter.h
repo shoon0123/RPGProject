@@ -45,8 +45,6 @@ protected:
 
 	virtual void BeginPlay() override;
 
-	virtual void AttackEnd() override;
-
 	virtual void Die() override;
 
 	virtual void SetupData() override;

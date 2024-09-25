@@ -44,6 +44,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes")
 	float RecoveryAmountPerSec;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes")
+	float CoolDownToAttack;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Montage")
 	TObjectPtr<UAnimMontage> AttackMontage;
 
