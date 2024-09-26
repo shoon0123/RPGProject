@@ -71,8 +71,6 @@ private:
 
 	bool bDoNextAttack = false;
 
-	bool bIsAttackCoolDown = false;
-
 	uint8 ComboCount = 0;
 
 	void SetupSpringArm();

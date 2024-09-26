@@ -103,6 +103,7 @@ protected:
 
 	FTimerHandle AttackEndTimerHandle;
 
+	UPROPERTY(VisibleAnywhere)
 	float CoolDownToAttack;
 
 private:

@@ -44,10 +44,9 @@ void APlayerCharacter::Attack()
 
     if (GetActionState() == EActionState::EAS_Attacking)
     {
-        if (bIsAttackCoolDown)
+        if (AttackEndTimerHandle.IsValid())
         {
             ComboAttack();
-            bIsAttackCoolDown = false;
         }
         else {
             bDoNextAttack = true;
@@ -131,8 +130,6 @@ void APlayerCharacter::AttackEnd()
     {
         Super::AttackEnd();
 
-        bIsAttackCoolDown = true;
-
         TObjectPtr<UAnimInstance> AnimInstance = GetMesh()->GetAnimInstance();
         if (AnimInstance && AttackMontage)
         {
@@ -145,14 +142,10 @@ void APlayerCharacter::AttackCoolDownEnd()
 {
     if (GetActionState() == EActionState::EAS_Attacking)
     {
-        if (bIsAttackCoolDown)
-        {
-            SetActionState(EActionState::EAS_Unoccupied);
-            bIsAttackCoolDown = false;
-            bDoNextAttack = false;
-            ComboCount = 0;
-        }
+        SetActionState(EActionState::EAS_Unoccupied);
     }
+    bDoNextAttack = false;
+    ComboCount = 0;
 }
 
 
@@ -220,6 +213,7 @@ void APlayerCharacter::UpdatePostureBar()
 void APlayerCharacter::ComboAttack()
 {
     PlayMontageSection(AttackMontage, AttackMontageSections[ComboCount]);
+    GetWorld()->GetTimerManager().ClearTimer(AttackEndTimerHandle);
     ++ComboCount %= AttackMontageSections.Num();
     SetActionState(EActionState::EAS_Attacking);
 }
