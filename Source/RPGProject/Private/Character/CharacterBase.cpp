@@ -74,17 +74,7 @@ void ACharacterBase::GetHit(const FVector& ImpactPoint, AActor* Hitter)
 		WeaponSystem->SetWeaponsCollisionDisable();
 	}
 	
-	if (IsAlive())
-	{
-		if (GetActionState() != EActionState::EAS_Stunned)
-		{
-			DirectionalHitReact(Hitter);
-		}
-	}
-	else
-	{
-		Die();
-	}
+	
 }
 
 void ACharacterBase::GetPostureDamage(const float PostureDamage)
@@ -115,7 +105,16 @@ TObjectPtr<UWeaponSystemComponent> ACharacterBase::GetWeaponSystem() const
 
 float ACharacterBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
-	if (IsValid(Attributes) && GetActionState() != EActionState::EAS_Block)
+	if (GetActionState() == EActionState::EAS_Block || GetActionState() == EActionState::EAS_Parrying)
+	{
+		const double Angle = GetAngle2DFromForwardVector(DamageCauser);
+		if (-90.f < Angle && Angle < 90.f)
+		{
+			return 0;
+		}
+	}
+
+	if (IsValid(Attributes))
 	{
 		if (GetActionState() == EActionState::EAS_Stunned)
 		{
@@ -123,6 +122,18 @@ float ACharacterBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageE
 		}
 		Attributes->ReceiveDamage(DamageAmount);
 		UpdateHealthBar();
+
+		if (IsAlive())
+		{
+			if (GetActionState() != EActionState::EAS_Stunned)
+			{
+				DirectionalHitReact(DamageCauser);
+			}
+		}
+		else
+		{
+			Die();
+		}
 	}
 
 	return DamageAmount;

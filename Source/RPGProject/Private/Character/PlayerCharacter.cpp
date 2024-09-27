@@ -54,6 +54,7 @@ void APlayerCharacter::Attack()
     }
     else if(GetActionState() == EActionState::EAS_Unoccupied)
     {
+        ComboCount = 0;
         ComboAttack();
     }
 }
@@ -145,7 +146,6 @@ void APlayerCharacter::AttackCoolDownEnd()
         SetActionState(EActionState::EAS_Unoccupied);
     }
     bDoNextAttack = false;
-    ComboCount = 0;
 }
 
 

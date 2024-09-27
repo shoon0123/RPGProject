@@ -21,16 +21,25 @@ void UMovementAbilityComponent::Dodge()
     {
         if (OwnerCharacter->GetActionState() == EActionState::EAS_Unoccupied && !OwnerCharacter->GetCharacterMovement()->IsFalling())
         {
-            OwnerCharacter->SetActionState(EActionState::EAS_Dodge);
-            OwnerCharacter->PlayMontageSection(DodgeMontage, FName("Dodge"));
+            const FVector VelocityNormal2D = OwnerCharacter->GetCharacterMovement()->Velocity.GetSafeNormal2D();
+            const float Angle = OwnerCharacter->GetAngle2DFromForwardVector(OwnerCharacter->GetActorLocation()+ VelocityNormal2D);
 
-            if (OwnerCharacter->GetCharacterMovement()->Velocity.IsZero())
+            if (VelocityNormal2D.IsZero())
             {
-                OwnerCharacter->LaunchCharacter(OwnerCharacter->GetActorForwardVector() * DodgingSpeed, true, true);
+                OwnerCharacter->SetActionState(EActionState::EAS_Dodge);
+                OwnerCharacter->PlayMontageSection(DodgeMontage, FName("DodgeForward"));
+            }
+            else if ( (- 90.f < Angle && Angle < 90.f))
+            {
+                OwnerCharacter->SetActorRotation(VelocityNormal2D.Rotation());
+                OwnerCharacter->SetActionState(EActionState::EAS_Dodge);
+                OwnerCharacter->PlayMontageSection(DodgeMontage, FName("DodgeForward"));
             }
             else
             {
-                OwnerCharacter->LaunchCharacter(OwnerCharacter->GetCharacterMovement()->Velocity.GetSafeNormal2D() * DodgingSpeed, true, true);
+                OwnerCharacter->SetActorRotation((-VelocityNormal2D).Rotation());
+                OwnerCharacter->SetActionState(EActionState::EAS_Dodge);
+                OwnerCharacter->PlayMontageSection(DodgeMontage, FName("DodgeBackward"));
             }
         }
     }
@@ -78,6 +87,5 @@ void UMovementAbilityComponent::DodgeEnd()
     {
         OwnerCharacter->SetActionState(EActionState::EAS_Unoccupied);
     }
-    DisableRun();
 }
 

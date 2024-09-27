@@ -19,13 +19,13 @@ public:
 	TObjectPtr<UAnimMontage> DodgeMontage;
 
 	UPROPERTY(EditAnywhere, Category = "Movement Attributes")
-	float DodgingSpeed;
+	float DodgingSpeed = 0;
 
 	UPROPERTY(EditAnywhere, Category = "Movement Attributes")
-	float WalkingSpeed;
+	float WalkingSpeed = 0;
 
 	UPROPERTY(EditAnywhere, Category = "Movement Attributes")
-	float RunningSpeed;
+	float RunningSpeed = 0;
 
 	void Dodge();
 
