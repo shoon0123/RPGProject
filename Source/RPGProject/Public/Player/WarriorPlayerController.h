@@ -22,6 +22,12 @@ class RPGPROJECT_API AWarriorPlayerController : public APlayerController
 public:
 	AWarriorPlayerController();
 
+	void Resume();
+
+	void SetMouseSensitivity(float Value);
+
+	void SwitchInputMode(bool bIsUIMode);
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -57,6 +63,15 @@ private:
 	UPROPERTY(EditAnywhere, Category="Input")
 	TObjectPtr<UInputAction> MoveAction;
 
+	UPROPERTY(EditAnywhere, Category = "Input")
+	TObjectPtr<UInputAction> PauseAction;
+
+	FInputModeGameOnly GameInputMode;
+
+	FInputModeUIOnly   UIInputMode;
+
+	float MouseSensitivity = 1.f;
+
 	void Attack();
 
 	void ExecuteBlock();
@@ -76,4 +91,6 @@ private:
 	void Look(const FInputActionValue& InputActionValue);
 
 	void Move(const FInputActionValue& InputActionValue);
+
+	void Pause();
 };

@@ -25,6 +25,8 @@ public:
 	virtual void SetCombatTarget(ACharacterBase* NewTarget) override;
 
 protected:
+	virtual bool CanHitReact() override;
+
 	virtual void UpdateHealthBar() override;
 
 	virtual void UpdatePostureBar() override;

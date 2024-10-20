@@ -10,10 +10,40 @@
 #include "Components/MovementAbilityComponent.h"
 #include "Components/TargetingComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "HUD/PlayerHUD.h"
 
 AWarriorPlayerController::AWarriorPlayerController()
 {
 	bReplicates = true;
+}
+
+void AWarriorPlayerController::Resume()
+{
+	TObjectPtr<APlayerHUD> PlayerHUD = Cast<APlayerHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
+	if (PlayerHUD)
+	{
+		PlayerHUD->SetPauseOverlay(false);
+		bShowMouseCursor = false;
+		SetInputMode(GameInputMode);
+		SetPause(false);
+	}
+}
+
+void AWarriorPlayerController::SetMouseSensitivity(float Value)
+{
+	MouseSensitivity = Value;
+}
+
+void AWarriorPlayerController::SwitchInputMode(bool bIsUIMode)
+{
+	if (bIsUIMode)
+	{
+		SetInputMode(UIInputMode);
+	}
+	else
+	{
+		SetInputMode(GameInputMode);
+	}
 }
 
 void AWarriorPlayerController::BeginPlay()
@@ -25,7 +55,6 @@ void AWarriorPlayerController::BeginPlay()
 	check(Context);
 	Subsystem->AddMappingContext(Context, 0);
 
-	bShowMouseCursor = false;
 	DefaultMouseCursor = EMouseCursor::Default;
 }
 
@@ -57,6 +86,8 @@ void AWarriorPlayerController::SetupInputComponent()
 	EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AWarriorPlayerController::Look);
 
 	EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AWarriorPlayerController::Move);
+
+	EnhancedInputComponent->BindAction(PauseAction, ETriggerEvent::Started, this, &AWarriorPlayerController::Pause);
 }
 
 void AWarriorPlayerController::Attack()
@@ -156,7 +187,7 @@ void AWarriorPlayerController::LockOn()
 
 void AWarriorPlayerController::Look(const FInputActionValue& InputActionValue)
 {
-	const FVector2D InputAxisVector = InputActionValue.Get<FVector2D>();
+	const FVector2D InputAxisVector = InputActionValue.Get<FVector2D>() * MouseSensitivity;
 	if (IsValid(PlayerCharacter))
 	{
 		TObjectPtr<UTargetingComponent> TargetingComponent = PlayerCharacter->GetTargetingComponent();
@@ -187,5 +218,17 @@ void AWarriorPlayerController::Move(const FInputActionValue& InputActionValue)
 	
 		PlayerCharacter->AddMovementInput(ForwardDirection, InputAxisVector.Y);
 		PlayerCharacter->AddMovementInput(RightDirection, InputAxisVector.X);
+	}
+}
+
+void AWarriorPlayerController::Pause()
+{
+	TObjectPtr<APlayerHUD> PlayerHUD = Cast<APlayerHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
+	if (PlayerHUD)
+	{
+		PlayerHUD->SetPauseOverlay(true);
+		bShowMouseCursor = true;
+		SetInputMode(UIInputMode);
+		SetPause(true);
 	}
 }

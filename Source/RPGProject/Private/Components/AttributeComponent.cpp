@@ -3,6 +3,7 @@
 
 #include "Components/AttributeComponent.h"
 #include "Character/CharacterBase.h"
+#include "Data/CharacterBasePDA.h"
 
 
 UAttributeComponent::UAttributeComponent()

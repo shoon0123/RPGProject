@@ -42,20 +42,21 @@ TObjectPtr<UCharacterBasePDA> ACharacterBase::GetCharacterInfo() const
 	return CharacterInfo;
 }
 
-double ACharacterBase::GetAngle2DFromForwardVector(AActor* Actor) const
+double ACharacterBase::GetAngle2DFromForwardVector(AActor* OtherActor) const
 {
-	return IsValid(Actor) ? GetAngle2DFromForwardVector(Actor->GetActorLocation()) : 0.f ;
+	return IsValid(OtherActor) ? GetAngle2DFromForwardVector(OtherActor->GetActorLocation()) : 0.f ;
 }
 
 double ACharacterBase::GetAngle2DFromForwardVector(const FVector& Location) const
 {
 	const FVector Vector = Location - GetActorLocation();
 	const FVector Vector2D = Vector.GetSafeNormal2D();
-	const double CosTheta = FVector::DotProduct(GetActorForwardVector(), Vector2D);
+	const FVector ForwardVector2D = GetActorForwardVector().GetSafeNormal2D();
+	const double CosTheta = FVector::DotProduct(ForwardVector2D, Vector2D);
 	const double Theta = FMath::Acos(CosTheta);
 	double Angle = FMath::RadiansToDegrees(Theta);
 
-	const FVector CrossProduct = FVector::CrossProduct(GetActorForwardVector(), Vector2D);
+	const FVector CrossProduct = FVector::CrossProduct(ForwardVector2D, Vector2D);
 
 	return (CrossProduct.Z >= 0) ? Angle : -Angle;
 }
@@ -73,13 +74,11 @@ void ACharacterBase::GetHit(const FVector& ImpactPoint, AActor* Hitter)
 	{
 		WeaponSystem->SetWeaponsCollisionDisable();
 	}
-	
-	
 }
 
 void ACharacterBase::GetPostureDamage(const float PostureDamage)
 {
-	if (IsValid(Attributes))
+	if (IsValid(Attributes) && GetActionState() != EActionState::EAS_Parrying)
 	{
 		Attributes->ReceivePostureDamage(PostureDamage);
 		UpdatePostureBar();
@@ -125,7 +124,7 @@ float ACharacterBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageE
 
 		if (IsAlive())
 		{
-			if (GetActionState() != EActionState::EAS_Stunned)
+			if (CanHitReact())
 			{
 				DirectionalHitReact(DamageCauser);
 			}
@@ -156,6 +155,11 @@ void ACharacterBase::BeginPlay()
 	{
 		WeaponSystem->SpawnWeapons();
 	}
+	if (IsValid(Attributes))
+	{
+		Attributes->SetHealth(CharacterInfo->MaxHealth);
+		Attributes->SetPosture(0.f);
+	}
 }
 
 void ACharacterBase::AttackEnd()
@@ -169,6 +173,11 @@ void ACharacterBase::AttackCoolDownEnd()
 	{
 		SetActionState(EActionState::EAS_Unoccupied);
 	}
+}
+
+bool ACharacterBase::CanHitReact()
+{
+	return GetActionState() != EActionState::EAS_Stunned;
 }
 
 void ACharacterBase::Die()
@@ -212,9 +221,8 @@ void ACharacterBase::DirectionalHitReact(AActor* Hitter)
 
 void ACharacterBase::PlayMontageSection(UAnimMontage* Montage, const FName& SectionName)
 {
-	check(Montage);
 	TObjectPtr<UAnimInstance> AnimInstance = GetMesh()->GetAnimInstance();
-	if (IsValid(AnimInstance))
+	if (IsValid(AnimInstance) && Montage)
 	{
 		AnimInstance->Montage_Play(Montage);
 		AnimInstance->Montage_JumpToSection(SectionName, Montage);
@@ -254,9 +262,9 @@ void ACharacterBase::SetupData()
 	{
 		if (IsValid(Attributes))
 		{
-			Attributes->SetHealth(CharacterInfo->Health);
+			Attributes->SetHealth(CharacterInfo->MaxHealth);
 			Attributes->SetMaxHealth(CharacterInfo->MaxHealth);
-			Attributes->SetPosture(CharacterInfo->Posture);
+			Attributes->SetPosture(0.f);
 			Attributes->SetMaxPosture(CharacterInfo->MaxPosture);
 			Attributes->SetRecoveryAmountPerSec(CharacterInfo->RecoveryAmountPerSec);
 		}

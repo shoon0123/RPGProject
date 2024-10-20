@@ -18,6 +18,8 @@ public:
 
 	void DestroyWeapons();
 
+	TObjectPtr<AWeapon> GetWeapon(uint8 Index);
+
 	void SetWeaponsCollisionDisable();
 
 	void SpawnWeapons();

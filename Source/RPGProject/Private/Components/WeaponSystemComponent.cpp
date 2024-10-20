@@ -21,6 +21,11 @@ void UWeaponSystemComponent::DestroyWeapons()
 	}
 }
 
+TObjectPtr<AWeapon> UWeaponSystemComponent::GetWeapon(uint8 Index)
+{
+	return Index < Weapons.Num() ? Weapons[Index] : nullptr;
+}
+
 void UWeaponSystemComponent::SetWeaponsCollisionDisable()
 {
 	for (TObjectPtr<AWeapon> Weapon : Weapons)
@@ -33,7 +38,6 @@ void UWeaponSystemComponent::SpawnWeapons()
 {
 	if (IsValid(OwnerCharacter))
 	{
-		TObjectPtr<UCharacterBasePDA> CharacterInfo = OwnerCharacter->GetCharacterInfo();
 		if (IsValid(CharacterInfo))
 		{
 			for (const FWeaponSocket& WeaponSocket : CharacterInfo->WeaponSocketInfo)

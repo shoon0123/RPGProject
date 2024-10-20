@@ -76,6 +76,4 @@ private:
 	void SetupSpringArm();
 
 	void SetupCamera();
-
-	void SetupHUD();
 };

@@ -13,6 +13,7 @@ class AWeapon;
 class UAttributeComponent;
 class UCharacterBasePDA;
 class UHealthBarComponent;
+class UStateSystemComponent;
 class UWeaponSystemComponent;
 
 UCLASS(Abstract)
@@ -27,11 +28,14 @@ public:
 
 	virtual void Attack() PURE_VIRTUAL(ACharacterBase::Attack, );
 
+	UFUNCTION(BlueprintCallable)
+	virtual void AttackEnd();
+
 	virtual void Destroyed() override;
 
 	virtual EActionState GetActionState() const;
 
-	virtual double GetAngle2DFromForwardVector(AActor* Actor) const;
+	virtual double GetAngle2DFromForwardVector(AActor* OtherActor) const;
 
 	virtual double GetAngle2DFromForwardVector(const FVector& Vector) const;
 
@@ -43,6 +47,9 @@ public:
 
 	virtual TObjectPtr<UWeaponSystemComponent> GetWeaponSystem() const;
 
+	UFUNCTION(BlueprintCallable)
+	virtual void HitReactEnd();
+
 	virtual bool IsAlive();
 
 	virtual void PlayMontageSection(UAnimMontage* Montage, const FName& SectionName);
@@ -50,6 +57,9 @@ public:
 	virtual void SetActionState(EActionState OtherActionState);
 
 	virtual void Stunned();
+
+	UFUNCTION(BlueprintCallable)
+	virtual void StunnedEnd();
 
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 
@@ -60,17 +70,13 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
-	UFUNCTION(BlueprintCallable)
-	virtual void AttackEnd();
-
 	virtual void AttackCoolDownEnd();
+
+	virtual bool CanHitReact();
 
 	virtual void Die();
 	
 	virtual void DirectionalHitReact(AActor* Hitter);
-
-	UFUNCTION(BlueprintCallable)
-	virtual void HitReactEnd();
 
 	virtual void PlayHitSound(const FVector& ImpactPoint);
 
@@ -80,11 +86,11 @@ protected:
 
 	virtual void SpawnHitParticles(const FVector& ImpactPoint);
 
-	UFUNCTION(BlueprintCallable)
-	virtual void StunnedEnd();
-
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UAttributeComponent> Attributes;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UStateSystemComponent> StateSystem;
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UWeaponSystemComponent> WeaponSystem;

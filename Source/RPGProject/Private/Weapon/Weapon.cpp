@@ -49,11 +49,11 @@ void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 	const FName TargetTag = GetTargetTag();
 	if (IsValid(HittedCharacter) && HittedCharacter->ActorHasTag(TargetTag))
 	{
+		ExecuteGetPostureDamage(HittedCharacter);
 		ExecuteGetHit(BoxHit);
-		if (HittedCharacter->GetActionState() != EActionState::EAS_Parrying)
+		//if (HittedCharacter->GetActionState() != EActionState::EAS_Parrying)
 		{
 			AddImpulse(HittedCharacter);
-			ExecuteGetPostureDamage(HittedCharacter);
 			UGameplayStatics::ApplyDamage(HittedCharacter, Damage, GetOwner()->GetInstigatorController(), this->GetOwner(), UDamageType::StaticClass());
 		}
 	}

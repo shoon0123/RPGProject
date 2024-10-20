@@ -9,9 +9,31 @@
 /**
  * 
  */
+class APlayerHUD;
 UCLASS()
 class RPGPROJECT_API AWarriorGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
 	
+public:
+	void PlayerDied();
+
+	void EnemyBossDied();
+
+protected:
+	virtual void BeginPlay() override;
+
+private:
+	TObjectPtr<APlayerHUD> PlayerHUD;
+
+	FTimerHandle GameOverTimerHandle;
+
+	UPROPERTY(EditAnywhere)
+	float CoolDownToGameOver = 3.f;
+
+	void Lose();
+
+	void Win();
+
+	void PauseController();
 };

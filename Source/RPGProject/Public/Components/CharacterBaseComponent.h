@@ -7,6 +7,7 @@
 #include "CharacterBaseComponent.generated.h"
 
 class ACharacterBase;
+class UCharacterBasePDA;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class RPGPROJECT_API UCharacterBaseComponent : public UActorComponent
@@ -23,6 +24,9 @@ protected:
 protected:
 	UPROPERTY()
 	TObjectPtr<ACharacterBase> OwnerCharacter;
+
+	UPROPERTY()
+	TObjectPtr<UCharacterBasePDA> CharacterInfo;
 
 	virtual void InitializeOwner();
 

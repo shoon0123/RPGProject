@@ -6,12 +6,15 @@
 #include "Components/AttributeComponent.h"
 #include "Components/TargetingComponent.h"
 #include "Data/EnemyCharacterBossPDA.h"
+#include "Game/WarriorGameModeBase.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "HUD/PlayerHUD.h"
 #include "HUD/CombatOverlay.h"
+#include "Kismet/GameplayStatics.h"
 
 AEnemyCharacterBoss::AEnemyCharacterBoss()
 {
+    GetCharacterMovement()->RotationRate = FRotator(0.f, 500.f, 0.f);
 }
 
 void AEnemyCharacterBoss::Attack()
@@ -20,7 +23,7 @@ void AEnemyCharacterBoss::Attack()
     {
         return;
     }
-    if (GetActionState() != EActionState::EAS_Unoccupied)
+    if (GetActionState() != EActionState::EAS_Unoccupied && GetActionState() != EActionState::EAS_HitReaction)
     {
         return;
     }
@@ -85,6 +88,11 @@ void AEnemyCharacterBoss::SetCombatTarget(ACharacterBase* NewTarget)
     Super::SetCombatTarget(NewTarget);
 }
 
+bool AEnemyCharacterBoss::CanHitReact()
+{
+    return GetActionState() != EActionState::EAS_Stunned && GetActionState() != EActionState::EAS_Attacking;
+}
+
 void AEnemyCharacterBoss::UpdateHealthBar()
 {
     TObjectPtr<APlayerCharacter> TargetPlayer = Cast<APlayerCharacter>(CombatTarget);
@@ -123,6 +131,9 @@ void AEnemyCharacterBoss::Die()
         }
     }
     Super::Die();
+
+    TObjectPtr<AWarriorGameModeBase> WarriorGameMode = Cast<AWarriorGameModeBase>(UGameplayStatics::GetGameMode(this));
+    WarriorGameMode->EnemyBossDied();
 }
 
 void AEnemyCharacterBoss::SetupData()

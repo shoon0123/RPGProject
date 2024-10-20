@@ -57,7 +57,7 @@ private:
 	float Posture = 0;
 
 	UPROPERTY(EditAnywhere, Category = "Actor Attributes")
-	float MaxPosture = 100;
+	float MaxPosture = 0;
 
 	UPROPERTY(EditAnywhere, Category = "Actor Attributes")
 	float RecoveryAmountPerSec = 1;

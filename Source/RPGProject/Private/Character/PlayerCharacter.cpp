@@ -8,6 +8,7 @@
 #include "Components/MovementAbilityComponent.h"
 #include "Components/TargetingComponent.h"
 #include "Data/PlayerCharacterPDA.h"
+#include "Game/WarriorGameModeBase.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "HUD/PlayerHUD.h"
@@ -24,7 +25,7 @@ APlayerCharacter::APlayerCharacter()
     TargetingComponent = CreateDefaultSubobject<UTargetingComponent>(TEXT("Targeting"));
 
     GetCharacterMovement()->bOrientRotationToMovement = true;
-    GetCharacterMovement()->RotationRate = FRotator(0.f, 1000.f, 0.f);
+    GetCharacterMovement()->RotationRate = FRotator(0.f, 400.f, 0.f);
     if (IsValid(MovementAbility))
     {
         GetCharacterMovement()->MaxWalkSpeed = MovementAbility->WalkingSpeed;
@@ -51,7 +52,10 @@ void APlayerCharacter::Attack()
         else {
             bDoNextAttack = true;
         }
+
+        return;
     }
+
     else if(GetActionState() == EActionState::EAS_Unoccupied)
     {
         ComboCount = 0;
@@ -118,7 +122,10 @@ void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay(); 
 
-    SetupHUD();
+    if (IsValid(MovementAbility))
+    {
+        GetCharacterMovement()->MaxWalkSpeed = MovementAbility->WalkingSpeed;
+    }
 }
 
 void APlayerCharacter::AttackEnd()
@@ -155,6 +162,12 @@ void APlayerCharacter::Die()
 
     GetCharacterMovement()->bOrientRotationToMovement = false;
     GetTargetingComponent()->CancelLockOn();
+
+    TObjectPtr<AWarriorGameModeBase> WarriorGameMode = Cast<AWarriorGameModeBase>(UGameplayStatics::GetGameMode(this));
+    if (WarriorGameMode)
+    {
+        WarriorGameMode->PlayerDied();
+    }
 }
 
 void APlayerCharacter::SetupData()
@@ -237,20 +250,5 @@ void APlayerCharacter::SetupCamera()
     Camera->SetupAttachment(SpringArm);
 }
 
-void APlayerCharacter::SetupHUD()
-{
-    TObjectPtr<APlayerController> PlayerController = Cast<APlayerController>(GetController());
-    if (IsValid(PlayerController))
-    {
-        TObjectPtr<APlayerHUD> PlayerHUD = Cast<APlayerHUD>(PlayerController->GetHUD());
-        if (IsValid(PlayerHUD))
-        {
-            TObjectPtr<UCombatOverlay> CombatOverlay = PlayerHUD->GetCombatOverlay();
-            if (IsValid(CombatOverlay))
-            {
-                CombatOverlay->SetEnemyWidgetVisibility(ESlateVisibility::Hidden);
-            }
-        }
-    }
-}
+
 

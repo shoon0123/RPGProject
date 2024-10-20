@@ -32,16 +32,16 @@ protected:
 
 private:
 	UPROPERTY(EditAnywhere)
-	float TargetableDistance = 3000.f;
-
-	UPROPERTY(EditAnywhere)
-	float InterpSpeed = 10.f;
+	float ChangeTargetCooldown = 0.5f;
 
 	UPROPERTY(EditAnywhere)
 	float ChangeTargetSensitivity = 2.f;
 
 	UPROPERTY(EditAnywhere)
-	float ChangeTargetCooldown = 0.5f;
+	float InterpSpeed = 10.f;
+
+	UPROPERTY(EditAnywhere)
+	float TargetableDistance = 3000.f;
 
 	UPROPERTY(VisibleInstanceOnly)
 	TSet<TObjectPtr<AActor>> TargetableActors;
@@ -52,15 +52,30 @@ private:
 	UPROPERTY(VisibleInstanceOnly)
 	bool bIsLockOn = false;
 
+	UPROPERTY(VisibleInstanceOnly)
+	bool bCanChangeTarget = true;
+	
+	FTimerHandle ChangeTargetTimerHandle;
+
+	FTimerHandle CheckDistanceTimerHandle;
+
 	float LastTimeSetTarget = 0.f;
 
 	void AddTargetableActor(TObjectPtr<AActor> Actor);
 
+	void CheckTargetDistance();
+
+	void EnableChangeTarget();
+
 	void FindTargetableActors();
+	
+	TObjectPtr<AActor> FindClosestTarget(const FVector2D InputVector);
 
 	TObjectPtr<AActor> FindTargetInViewport();
 
 	FVector GetCameraLocation();
+
+	float GetTargetDistance();
 
 	bool IsTargetable(TObjectPtr<AActor> Actor);
 

@@ -20,5 +20,6 @@ void UCharacterBaseComponent::OnRegister()
 void UCharacterBaseComponent::InitializeOwner()
 {
 	OwnerCharacter = Cast<ACharacterBase>(GetOwner());
+	CharacterInfo = OwnerCharacter->GetCharacterInfo();
 }
 

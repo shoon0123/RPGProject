@@ -7,6 +7,9 @@
 #include "PlayerHUD.generated.h"
 
 class UCombatOverlay;
+class UMainMenuOverlay;
+class UPauseOverlay;
+class UGameOverOverlay;
 
 UCLASS()
 class RPGPROJECT_API APlayerHUD : public AHUD
@@ -15,14 +18,34 @@ class RPGPROJECT_API APlayerHUD : public AHUD
 
 public:
 	TObjectPtr<UCombatOverlay> GetCombatOverlay() const;
+
+	void SetCombatOverlay();
+	void SetMainMenuOverlay();
+	void SetPauseOverlay(bool bFlag);
+	void SetGameOverOverlay(bool bIsWin);
 	
+
 protected:
 	virtual void BeginPlay() override;
 
 private:
-	UPROPERTY(EditDefaultsOnly, Category = Slash)
+	UPROPERTY(EditDefaultsOnly, Category = CombatOverlay)
 	TSubclassOf<UCombatOverlay> CombatOverlayClass;
-	
 	UPROPERTY()
 	TObjectPtr<UCombatOverlay> CombatOverlay;
+
+	UPROPERTY(EditDefaultsOnly, Category = MainMenuOverlay)
+	TSubclassOf<UMainMenuOverlay> MainMenuOverlayClass;
+	UPROPERTY()
+	TObjectPtr<UMainMenuOverlay> MainMenuOverlay;
+
+	UPROPERTY(EditDefaultsOnly, Category = PauseOverlay)
+	TSubclassOf<UPauseOverlay> PauseOverlayClass;
+	UPROPERTY()
+	TObjectPtr<UPauseOverlay> PauseOverlay;
+
+	UPROPERTY(EditDefaultsOnly, Category = GameOverOverlay)
+	TSubclassOf<UGameOverOverlay> GameOverOverlayClass;
+	UPROPERTY()
+	TObjectPtr<UGameOverOverlay> GameOverOverlay;
 };
