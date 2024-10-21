@@ -90,9 +90,6 @@ protected:
 	TObjectPtr<UAttributeComponent> Attributes;
 
 	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<UStateSystemComponent> StateSystem;
-
-	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UWeaponSystemComponent> WeaponSystem;
 
 	UPROPERTY(BlueprintReadOnly)

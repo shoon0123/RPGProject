@@ -23,8 +23,6 @@ void UTargetingComponent::ExecuteLockOn()
 
 		if (IsValid(NewTarget))
 		{
-			DrawDebugSphere(GetWorld(), NewTarget->GetActorLocation(), 100.f, 20, FColor::Blue, false, 1.f);
-
 			SetTarget(NewTarget);
 			SetComponentTickEnabled(true);
 			OwnerCharacter->GetCharacterMovement()->bOrientRotationToMovement = false;
